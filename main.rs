@@ -4,6 +4,8 @@ use regex::Regex;
 use once_cell::sync::Lazy;
 use mysql::*;
 use mysql::prelude::*;
+use myloginrs::*;
+use std::path::PathBuf;
 
 const DEVICES_API: &str = "https://solarpi.artfulkraken.com/cgi-bin/dl_cgi?Command=DeviceList";
 //const MYSQL_USER: &str = "pvs6_data";
@@ -42,9 +44,9 @@ async fn main() {
 
     pvs6_to_mysql(&solarpi_client, &mut data_points).await;
     
-    for dp in data_points.iter() {
-        println!("Serial:{}  Date: {}  Parameter: {}  Data: {}", dp.serial, dp.data_time, dp.parameter, dp.data);
-    }
+   // for dp in data_points.iter() {
+   //     println!("Serial:{}  Date: {}  Parameter: {}  Data: {}", dp.serial, dp.data_time, dp.parameter, dp.data);
+   // }
 
     
 }
@@ -143,16 +145,23 @@ fn to_sql_timestamp(str_timestamp: &str) -> String {
 
 
 fn import_to_mysql( data_points: &mut Vec<Pvs6DataPoint>  ) -> std::result::Result<(), Box<dyn std::error::Error>> {
-    let url = "mysql://pvs6_data@localhost/solar";
-    let mac_url = "mysql://dave@10.0.0.151/solar";
+    //let url = "mysql://pvs6_data@localhost/solar";
+    //let mac_url = "mysql://dave@10.0.0.151/solar";
 
-    //let mac_opts = OptsBuilder::new()
-    //.user(Some("dave"))
-    //.ip_or_hostname(Some("10.0.0.151"))
-    //.port(Some("3306"))
-    //.db_name(Some("solar"));
+    let my_login_file_path = PathBuf::from(
+        "/home/solarnodered/.mylogin.cnf",
+    );
+    let mysql_client_info = myloginrs::parse("client", Some(&my_login_file_path));
 
-    let pool = Pool::new(mac_url)?;
+
+
+    let solar_db_opts = OptsBuilder::new()
+        .ip_or_hostname(Some(&mysql_client_info["host"]))
+        .db_name(Some("solar"))
+        .user(Some(&mysql_client_info["user"]))
+        .pass(Some(&mysql_client_info["password"]));
+
+    let pool = Pool::new(solar_db_opts)?;
     let mut conn = pool.get_conn()?;
 
     // Now let's insert data to the database
@@ -167,4 +176,5 @@ fn import_to_mysql( data_points: &mut Vec<Pvs6DataPoint>  ) -> std::result::Resu
         })
     )?;
     Ok(())
+
 }
