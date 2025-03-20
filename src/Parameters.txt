@@ -32,4 +32,4 @@ p_mppt1_kw,kW
 v_mppt1_v,V
 i_mppt1_a,A
 t_htsnk_degc,C
-stat_ind, unk
+stat_ind,unk

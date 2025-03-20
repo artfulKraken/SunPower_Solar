@@ -4,6 +4,10 @@ use regex::Regex;
 use once_cell::sync::Lazy;
 use mysql::*;
 use mysql::prelude::*;
+use myloginrs::*;
+use std::path::PathBuf;
+use tokio::time::{self, Duration};
+use std::time::Instant;
 
 const DEVICES_API: &str = "https://solarpi.artfulkraken.com/cgi-bin/dl_cgi?Command=DeviceList";
 //const MYSQL_USER: &str = "pvs6_data";
@@ -40,48 +44,71 @@ async fn main() {
     let mut data_points: Vec<Pvs6DataPoint> = Vec::new();
     let solarpi_client: Client = Client::new();
 
+    let mut interval = time::interval(Duration::from_secs(60)); // Set interval to 1 minute
+    let start = Instant::now(); // Record the start time
+
+    //let response = solarpi_client.get(DEVICES_API)
+    //    .send()
+    //    //.header(ACCEPT, "application/json")
+    //    .await;
+    //match response {
+    //    Ok(_) => println!("No Error Here"),
+    //    Err(eff) => println!("Error: {}", eff),
+    //}
+
     pvs6_to_mysql(&solarpi_client, &mut data_points).await;
     
     for dp in data_points.iter() {
         println!("Serial:{}  Date: {}  Parameter: {}  Data: {}", dp.serial, dp.data_time, dp.parameter, dp.data);
     }
 
+    //loop {
+    //    interval.tick().await; // Wait until the next tick
+    //    let elapsed = start.elapsed().as_millis(); // Calculate elapsed time
+    //    println!("Task executed after {} milliseconds", elapsed);
+    //}
+
+    
+
     
 }
 
 async fn pvs6_to_mysql( solarpi_client: &Client, data_points: &mut Vec<Pvs6DataPoint> ) {
 
-    let response = solarpi_client.get(DEVICES_API)
+    let pvs6_received = solarpi_client.get(DEVICES_API)
         .send()
         //.header(ACCEPT, "application/json")
-        .await
-        .unwrap();  // !!!!!!NOTE!!!!!!! - Unwraps without checking for errors - If solarpi can't be found
-        // such as when using vpn and vpn's dns (not on local dns with local servers defined)
+        .await;
 
-    match response.status() {
-        reqwest::StatusCode::OK => {
-            // on success, parse our JSON to an APIResponse
-            match response.text().await {
-                Ok(pvs6_data) => {
-
-                    process_pvs6_devices_output( pvs6_data, data_points );
-                    let sql_response = import_to_mysql( data_points );
-                    match sql_response {
-                        Ok(_) => data_points.clear(),
-                        Err(sql_eff) => println!("Error Uploading to mysql. Err: {:#?}", sql_eff),
+        match pvs6_received {
+            Ok(pvs6_response) => {
+                match pvs6_response.status() {
+                    reqwest::StatusCode::OK => {
+                        // on success, parse our JSON to an APIResponse
+                        match pvs6_response.text().await {
+                            Ok(pvs6_data) => {
+            
+                                process_pvs6_devices_output( pvs6_data, data_points );
+                                let sql_response = import_to_mysql( data_points );
+                                match sql_response {
+                                    Ok(_) => data_points.clear(),
+                                    Err(sql_eff) => println!("Error Uploading to mysql. Err: {:#?}", sql_eff),
+                                }
+            
+                            },
+                            Err(text_eff) => println!("Hm, the response didn't match the shape we expected. Err: {:#?}", text_eff),
+                        };
                     }
-
-                },
-                Err(eff) => println!("Hm, the response didn't match the shape we expected. Err: {:#?}", eff),
-            };
+                    reqwest::StatusCode::UNAUTHORIZED => {
+                        println!("Need to grab a new token");
+                    }
+                    other => {
+                        panic!("Uh oh! Something unexpected happened: {:?}", other);
+                    }
+                };
+            },
+            Err(response_eff) => println!("Error: {}", response_eff),
         }
-        reqwest::StatusCode::UNAUTHORIZED => {
-            println!("Need to grab a new token");
-        }
-        other => {
-            panic!("Uh oh! Something unexpected happened: {:?}", other);
-        }
-    };
 }
 
 
@@ -143,22 +170,25 @@ fn to_sql_timestamp(str_timestamp: &str) -> String {
 
 
 fn import_to_mysql( data_points: &mut Vec<Pvs6DataPoint>  ) -> std::result::Result<(), Box<dyn std::error::Error>> {
-    let url = "mysql://pvs6_data@localhost/solar";
-    let mac_url = "mysql://dave@10.0.0.151/solar";
 
-    //let mac_opts = OptsBuilder::new()
-    //.user(Some("dave"))
-    //.ip_or_hostname(Some("10.0.0.151"))
-    //.port(Some("3306"))
-    //.db_name(Some("solar"));
+    let my_login_file_path = PathBuf::from(
+        "/home/solarnodered/.mylogin.cnf",
+    );
+    let mysql_client_info = myloginrs::parse("client", Some(&my_login_file_path));
 
-    let pool = Pool::new(mac_url)?;
+    let solar_db_opts = OptsBuilder::new()
+        .ip_or_hostname(Some(&mysql_client_info["host"]))
+        .db_name(Some("solar"))
+        .user(Some(&mysql_client_info["user"]))
+        .pass(Some(&mysql_client_info["password"]));
+     
+    let pool = Pool::new(solar_db_opts)?;
     let mut conn = pool.get_conn()?;
-
+    
     // Now let's insert data to the database
     conn.exec_batch(
         r"INSERT INTO pvs6_data (serial, parameter, data_time, data)
-          VALUES (:serial, :parameter, :data_time, :data)",
+        VALUES (:serial, :parameter, :data_time, :data)",
         data_points.iter().map(|dp| params! {
             "serial" => &dp.serial,
             "parameter" => &dp.parameter,
@@ -167,4 +197,5 @@ fn import_to_mysql( data_points: &mut Vec<Pvs6DataPoint>  ) -> std::result::Resu
         })
     )?;
     Ok(())
+     
 }
