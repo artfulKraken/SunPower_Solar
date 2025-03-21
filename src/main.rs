@@ -5,11 +5,12 @@ use once_cell::sync::Lazy;
 use mysql::*;
 use mysql::prelude::*;
 use myloginrs::*;
-use std::path::PathBuf;
 use tokio::time::{self, Duration};
-use std::time::Instant;
+use std::{time::Instant, fs, path::PathBuf};
+
 
 const DEVICES_API: &str = "https://solarpi.artfulkraken.com/cgi-bin/dl_cgi?Command=DeviceList";
+const LOGIN_INFO_LOC: &str= "/_home/solarnodered/.mylogin.cnf";
 //const MYSQL_USER: &str = "pvs6_data";
 
 
@@ -171,31 +172,38 @@ fn to_sql_timestamp(str_timestamp: &str) -> String {
 
 fn import_to_mysql( data_points: &mut Vec<Pvs6DataPoint>  ) -> std::result::Result<(), Box<dyn std::error::Error>> {
 
-    let my_login_file_path = PathBuf::from(
-        "/home/solarnodered/.mylogin.cnf",
-    );
-    let mysql_client_info = myloginrs::parse("client", Some(&my_login_file_path));
-
-    let solar_db_opts = OptsBuilder::new()
-        .ip_or_hostname(Some(&mysql_client_info["host"]))
-        .db_name(Some("solar"))
-        .user(Some(&mysql_client_info["user"]))
-        .pass(Some(&mysql_client_info["password"]));
-     
-    let pool = Pool::new(solar_db_opts)?;
-    let mut conn = pool.get_conn()?;
+    let my_login_file_path = PathBuf::from( LOGIN_INFO_LOC );
+    match fs::exists(&my_login_file_path) {
+        Ok(file_exists) => {
+            if file_exists == true {
+                let mysql_client_info = myloginrs::parse("client", Some(&my_login_file_path));
+                let solar_db_opts = OptsBuilder::new()
+                    .ip_or_hostname(Some(&mysql_client_info["host"]))
+                    .db_name(Some("solar"))
+                    .user(Some(&mysql_client_info["user"]))
+                    .pass(Some(&mysql_client_info["password"]));
+                
+                let pool = Pool::new(solar_db_opts)?;
+                let mut conn = pool.get_conn()?;
+                
+                // Now let's insert data to the database
+                conn.exec_batch(
+                    r"INSERT INTO pvs6_data (serial, parameter, data_time, data)
+                    VALUES (:serial, :parameter, :data_time, :data)",
+                    data_points.iter().map(|dp| params! {
+                        "serial" => &dp.serial,
+                        "parameter" => &dp.parameter,
+                        "data_time" => &dp.data_time,
+                        "data" => &dp.data,
+                    })
+                )?;
+            } else {
+                println!("Error: {} File does not exist on local client device", LOGIN_INFO_LOC);
+            };
+        },
+        Err(fp_eff) => println!("Error: {}",fp_eff),
+    }
     
-    // Now let's insert data to the database
-    conn.exec_batch(
-        r"INSERT INTO pvs6_data (serial, parameter, data_time, data)
-        VALUES (:serial, :parameter, :data_time, :data)",
-        data_points.iter().map(|dp| params! {
-            "serial" => &dp.serial,
-            "parameter" => &dp.parameter,
-            "data_time" => &dp.data_time,
-            "data" => &dp.data,
-        })
-    )?;
     Ok(())
      
 }
