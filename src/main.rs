@@ -4,9 +4,9 @@ use regex::Regex;
 use once_cell::sync::Lazy;
 use mysql::*;
 use mysql::prelude::*;
-use myloginrs::*;
+use myloginrs::parse as myloginrs_parse;
 use tokio::time::{self, interval_at, Duration as TokioDuration};
-use std::{str, time::Instant, fs, path::PathBuf};
+use std::{str,  fs, path::PathBuf};
 use log::{debug, error, info, trace, warn};
 use log4rs;
 use chrono::prelude::*;
@@ -97,19 +97,22 @@ async fn pvs6_to_mysql( solarpi_client: &Client, data_points: &mut Vec<Pvs6DataP
         .send()
         //.header(ACCEPT, "application/json")
         .await;
-
         match pvs6_received {
             Ok(pvs6_response) => {
                 match pvs6_response.status() {
                     reqwest::StatusCode::OK => {
                         // on success, parse our JSON to an APIResponse
+                        info!("PVS6 response code: Ok");
                         match pvs6_response.text().await {
                             Ok(pvs6_data) => {
-            
+                                
                                 process_pvs6_devices_output( pvs6_data, data_points );
                                 let sql_response = import_to_mysql( data_points );
                                 match sql_response {
-                                    Ok(_) => data_points.clear(),
+                                    Ok(_) => {
+                                        info!("Mysql database: solar successfully updated");
+                                        data_points.clear()
+                                    },
                                     Err(sql_eff) => warn!("Warning Uploading to mysql. Err: {:#?}", sql_eff),
                                 }
             
@@ -190,7 +193,7 @@ fn import_to_mysql( data_points: &mut Vec<Pvs6DataPoint>  ) -> std::result::Resu
     match fs::exists(&my_login_file_path) {
         Ok(file_exists) => {
             if file_exists == true {
-                let mysql_client_info = myloginrs::parse("client", Some(&my_login_file_path));
+                let mysql_client_info = myloginrs_parse("client", Some(&my_login_file_path));
                 let solar_db_opts = OptsBuilder::new()
                     .ip_or_hostname(Some(&mysql_client_info["host"]))
                     .db_name(Some("solar"))
