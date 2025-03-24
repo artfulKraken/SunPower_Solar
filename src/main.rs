@@ -13,7 +13,7 @@ use chrono::prelude::*;
 
 
 const DEVICES_API: &str = "https://solarpi.artfulkraken.com/cgi-bin/dl_cgi?Command=DeviceList";
-const LOGIN_INFO_LOC: &str= "/_home/solarnodered/.mylogin.cnf";
+const LOGIN_INFO_LOC: &str= "/home/solarnodered/.mylogin.cnf";
 //const MYSQL_USER: &str = "pvs6_data";
 
 
@@ -223,7 +223,7 @@ fn import_to_mysql( data_points: &mut Vec<Pvs6DataPoint>  ) -> std::result::Resu
         
     }
     
-    Ok(())
+    Ok(())  //Incorrect format, always returns ok.  Need to return error when not able to upload file
      
 }
 
