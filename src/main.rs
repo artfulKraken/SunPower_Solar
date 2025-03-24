@@ -5,8 +5,11 @@ use once_cell::sync::Lazy;
 use mysql::*;
 use mysql::prelude::*;
 use myloginrs::*;
-use tokio::time::{self, Duration};
-use std::{time::Instant, fs, path::PathBuf};
+use tokio::time::{self, interval_at, Duration as TokioDuration};
+use std::{str, time::Instant, fs, path::PathBuf};
+use log::{debug, error, info, trace, warn};
+use log4rs;
+use chrono::prelude::*;
 
 
 const DEVICES_API: &str = "https://solarpi.artfulkraken.com/cgi-bin/dl_cgi?Command=DeviceList";
@@ -42,11 +45,31 @@ impl Pvs6DataPoint {
 #[tokio::main]
 async fn main() {
     
+    log4rs::init_file("log_config.yml", Default::default()).unwrap();   //Need Error Handling here.  What if log doesn't unwrap
+
     let mut data_points: Vec<Pvs6DataPoint> = Vec::new();
     let solarpi_client: Client = Client::new();
 
-    let mut interval = time::interval(Duration::from_secs(60)); // Set interval to 1 minute
-    let start = Instant::now(); // Record the start time
+    let now: DateTime<Utc> = Utc::now();
+    //let start_time = Instant::now();
+    
+    //println!("Current Time: {}", now.to_string() );
+
+    let target_time = now.date_naive().and_hms_opt(now.hour(), now.minute(), 55).unwrap(); // Set target_time to date, cur hour, min and 55 seconds (could be before or after actual current time)
+    //println!("Target Time: {}", target_time.to_string() );
+    let mut start = target_time.signed_duration_since(now.naive_utc());
+    //println!("Start: {}", start.to_string() );
+    //println!("chrono Duration: {}", chrono::Duration::seconds(1).to_string());
+    
+    if start < chrono::Duration::seconds(1) {
+        start = start + chrono::Duration::minutes(1);
+        //println!("Start with 1 min: {}", start.to_string() );
+    }
+
+    let mut interval = interval_at(tokio::time::Instant::now() + start.to_std().unwrap(), TokioDuration::from_secs( 60 ) );
+
+    //let mut interval = time::interval(TokioDuration::from_secs(60)); // Set interval to 1 minute
+    //let start_time = Instant::now(); // Record the start time
 
     //let response = solarpi_client.get(DEVICES_API)
     //    .send()
@@ -56,22 +79,16 @@ async fn main() {
     //    Ok(_) => println!("No Error Here"),
     //    Err(eff) => println!("Error: {}", eff),
     //}
-
-    pvs6_to_mysql(&solarpi_client, &mut data_points).await;
-    
-    for dp in data_points.iter() {
-        println!("Serial:{}  Date: {}  Parameter: {}  Data: {}", dp.serial, dp.data_time, dp.parameter, dp.data);
-    }
-
-    //loop {
-    //    interval.tick().await; // Wait until the next tick
-    //    let elapsed = start.elapsed().as_millis(); // Calculate elapsed time
-    //    println!("Task executed after {} milliseconds", elapsed);
+    //for dp in data_points.iter() {
+    //    println!("Serial:{}  Date: {}  Parameter: {}  Data: {}", dp.serial, dp.data_time, dp.parameter, dp.data);
     //}
 
-    
-
-    
+    loop {
+        interval.tick().await; // Wait until the next tick
+        pvs6_to_mysql(&solarpi_client, &mut data_points).await;
+        //let elapsed = start_time.elapsed().as_millis(); // Calculate elapsed time
+        //println!("Task executed after {} milliseconds", elapsed);
+    }    
 }
 
 async fn pvs6_to_mysql( solarpi_client: &Client, data_points: &mut Vec<Pvs6DataPoint> ) {
@@ -93,22 +110,19 @@ async fn pvs6_to_mysql( solarpi_client: &Client, data_points: &mut Vec<Pvs6DataP
                                 let sql_response = import_to_mysql( data_points );
                                 match sql_response {
                                     Ok(_) => data_points.clear(),
-                                    Err(sql_eff) => println!("Error Uploading to mysql. Err: {:#?}", sql_eff),
+                                    Err(sql_eff) => warn!("Warning Uploading to mysql. Err: {:#?}", sql_eff),
                                 }
             
                             },
-                            Err(text_eff) => println!("Hm, the response didn't match the shape we expected. Err: {:#?}", text_eff),
+                            Err(text_eff) => error!("Hm, the response didn't match the shape we expected. Err: {:#?}", text_eff),
                         };
                     }
-                    reqwest::StatusCode::UNAUTHORIZED => {
-                        println!("Need to grab a new token");
-                    }
                     other => {
-                        panic!("Uh oh! Something unexpected happened: {:?}", other);
+                        error!("PVS6 returned error code: {}", other)
                     }
                 };
             },
-            Err(response_eff) => println!("Error: {}", response_eff),
+            Err(response_eff) => warn!("PVS6 did not respond. Error Code: {}", response_eff),
         }
 }
 
@@ -137,7 +151,7 @@ fn process_pvs6_devices_output(pvs6_data: String, data_points: &mut Vec<Pvs6Data
             for device in device_list {
                 //println!("Device: {}", &device);
                 let serial = RE_SERIAL.captures(&device).unwrap().get(1).unwrap().as_str();  //first unwap may cause crash as error
-                let data_time = to_sql_timestamp( 
+                let data_time = round_time_to_sql_timestamp( 
                     RE_DATA_TIME
                     .captures(&device)
                     .unwrap()
@@ -198,12 +212,35 @@ fn import_to_mysql( data_points: &mut Vec<Pvs6DataPoint>  ) -> std::result::Resu
                     })
                 )?;
             } else {
-                println!("Error: {} File does not exist on local client device", LOGIN_INFO_LOC);
+                error!("Error: {} File does not exist on local client device", LOGIN_INFO_LOC);
             };
         },
-        Err(fp_eff) => println!("Error: {}",fp_eff),
+        Err(fp_eff) => error!("Error: Mysql login file exists but can't be accessed.  
+            May have incorrect permissions. Err: {}",fp_eff),
+        
     }
     
     Ok(())
      
+}
+
+fn round_time_to_sql_timestamp(str_timestamp: &str) -> String {
+    // Rounds time to nearest minute from string timestamp in format: YYYY,MM,dd,HH,mm,ss and outputs in mysql timestamp
+    // format of YYYY-MM-dd hh:mm:ss.  uses naive datetime and assumes datetime is in utc or other non daylight savings time 
+    // changing format.
+    let mut dt = NaiveDateTime::parse_from_str(str_timestamp, "%Y,%m,%d,%H,%M,%S").unwrap();
+
+    //let dt = NaiveDate::from_ymd_opt(time[0], time[1], time[2]).unwrap()
+    //.and_hms_milli_opt(time[3], time[4], time[5]).unwrap();
+
+    let seconds: i64 = dt.second() as i64;
+
+    if seconds >= 30 {
+        // Round up to the next minute
+        dt += chrono::Duration::seconds(60 - seconds);
+    } else {
+        // Round down to the current minute
+        dt -= chrono::Duration::seconds(seconds);
+    }
+    dt.format("%Y-%m-%d %H:%M:%S").to_string()
 }

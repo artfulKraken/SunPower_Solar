@@ -1,0 +1,48 @@
+appenders:
+    stdout:
+        kind: console
+        encoder:
+            pattern: "{d(%+)(utc)} [{f}:{L}] {h({l})} {M}:{m}{n}"
+        filters:
+            - kind: threshold
+              level: warn
+    rolling_file:
+        kind: rolling_file
+        path: "log/pvs6_rolling.log"
+        encoder:
+            pattern: "[{d(%Y-%m-%dT%H:%M:%S%.6f)} {h({l}):<5.5} {M}] {m}{n}"
+        policy:
+            trigger:
+                kind: time
+                interval: 1 day
+            roller:
+                kind: fixed_window
+                pattern: "log/pvs6_rolling_{}.log"
+                base: 1
+                count: 5
+    debug_rolling_file:
+        kind: rolling_file
+        path: "log/pvs6_debug_rolling.log"
+        encoder:
+            pattern: "[{d(%Y-%m-%dT%H:%M:%S%.6f)} {h({l}):<5.5} {M}] {m}{n}"
+        policy:
+            trigger:
+              kind: size
+              limit: 1mb
+            roller:
+              kind: delete
+root:
+    level: info
+    appenders:
+      - rolling_file
+loggers:
+  debug_logger:
+    level: debug
+    appenders:
+      - debug_rolling_file
+    additive: true
+  log_config_error:
+    level: error
+    appenders:
+      - stdout
+    additive: false 
