@@ -49,7 +49,7 @@ async fn main() {
     log4rs::init_file("log_config.yml", Default::default()).unwrap();   //Need Error Handling here.  What if log doesn't unwrap
 
     let mut device_ts_data: Vec<Vec<Pvs6DataPoint>> = Vec::new();
-    let solarpi_client: Client = Client::new();
+    
     
     //get sql pool and connection
     let result_sql_pool = get_mysql_pool();
@@ -67,8 +67,9 @@ async fn main() {
                     loop {
                         get_pvs6_device_interval.tick().await; // Wait until the next tick
                         // get pvs6 data and upload to mysql solar database
-                        pvs6_to_mysql(&solarpi_client, &mut device_ts_data, &mut solar_sql_upload_conn).await;
-                        println!( "Run at: {}", Utc::now().to_string() ); //for loop timing testing
+                        debug!( "Run at: {}", Utc::now().to_string() ); //for loop timing testing
+                        pvs6_to_mysql( &mut device_ts_data, &mut solar_sql_upload_conn).await;
+                        
                     }    
                 },
                 Err(sql_conn_err) => {
@@ -86,8 +87,8 @@ async fn main() {
     
 }
 
-async fn pvs6_to_mysql( solarpi_client: &Client, device_ts_data: &mut Vec<Vec<Pvs6DataPoint>>, solar_sql_upload_conn: &mut PooledConn ) {
-
+async fn pvs6_to_mysql( device_ts_data: &mut Vec<Vec<Pvs6DataPoint>>, solar_sql_upload_conn: &mut PooledConn ) {
+    let solarpi_client: Client = Client::new();
     let pvs6_received = solarpi_client.get(DEVICES_API)
         .send()
         //.header(ACCEPT, "application/json")
@@ -239,7 +240,7 @@ fn import_to_mysql( device_ts_data: &mut Vec<Vec<Pvs6DataPoint>>, solar_sql_uplo
         match upload_success {
             Ok(_) => {
                 debug!("Device: {} @ {} uploaded to Mysql solar database", datapoints[0].serial, datapoints[0].data_time );
-                debug!("Index is {}.  Device is: {}", index, datapoints[0].serial);
+                //debug!("Index is {}.  Device is: {}", index, datapoints[0].serial);
                 index_delete.push(index);
 
             },
