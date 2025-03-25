@@ -245,62 +245,76 @@ fn set_interval(repeat_interval: i64, units: char, offset: Duration) -> Interval
         'h' => repeat_interval * 60 * 60,
         'm' => repeat_interval * 60,
         's' => repeat_interval,
-        other => panic!("Invalid time unit. Use d, h, m, or s"),
+        other => panic!("Invalid time unit: {}. Use d, h, m, or s", other),
     };
     // Get current time 
     let now: DateTime<Utc> = Utc::now();
 
     let mut target_time: NaiveDateTime = now.naive_utc();
-    let mut next_start: Duration = chrono::Duration::seconds( 60 ); 
+    debug!("Original Target Time: {}", target_time.to_string() );
+    let mut next_start: Duration = chrono::Duration::seconds( 60 );
+    debug!("Original next_start: {}", next_start); 
 
     // Round target_time (planned Start time) to nearest interval based on interval length.  Intent is to have intervals that will
     // match clock times as much as possible.  Only works if exact intervals used here.  Future changes may round repeat_interval to match options.
     if repeat_interval_s <= 60 {  // round to nearest minute
         target_time.duration_round( Duration::minutes( 1 ) ).unwrap();
+        debug!("target_time rounded to nearest minute. Target Time: {}", target_time);
     }
     else if repeat_interval_s <= 60 * 5 {  // round to nearest 5 minutes
         target_time.duration_round( Duration::minutes( 5 ) ).unwrap();
         next_start = chrono::Duration::seconds ( 60 * 5 );
+        debug!("target_time rounded to nearest 5 minutes. Target Time: {}", target_time);
     }
 	else if repeat_interval_s <= 60 * 10 {  // round to nearest 10 minutes
         target_time.duration_round( Duration::minutes( 10 ) ).unwrap();
         next_start = chrono::Duration::seconds ( 60 * 10 );
+        debug!("target_time rounded to nearest 10 minutes. Target Time: {}", target_time);
     }
 	else if repeat_interval_s <= 60 * 15 {  // round to nearest 15 minutes
         target_time.duration_round( Duration::minutes( 15 ) ).unwrap();
         next_start = chrono::Duration::minutes ( 15 );
+        debug!("target_time rounded to nearest 15 minutes. Target Time: {}", target_time);
     }
 	else if repeat_interval_s <= 60 * 30 {  // round to nearest 30 minutes
         target_time.duration_round( Duration::minutes( 30 ) ).unwrap();
         next_start = chrono::Duration::minutes ( 30 );
+        debug!("target_time rounded to nearest 30 minutes. Target Time: {}", target_time);
     }
 	else if repeat_interval_s <= 60 * 60 * 1 {  // round to nearest hour
         target_time.duration_round( Duration::hours( 1 ) ).unwrap();
         next_start = chrono::Duration::hours ( 1 );
+        debug!("target_time rounded to nearest hour. Target Time: {}", target_time);
     }
 	else if repeat_interval_s <= 60 * 60 * 2 {  // round to nearest 2 hours
         target_time.duration_round( Duration::hours( 2 ) ).unwrap();
         next_start = chrono::Duration::hours ( 2 );
+        debug!("target_time rounded to nearest 2 hours. Target Time: {}", target_time);
     }
 	else if repeat_interval_s <= 60 * 60 * 3 {  // round to nearest 3 hours
         target_time.duration_round( Duration::hours( 3 ) ).unwrap();
         next_start = chrono::Duration::hours ( 3 );
+        debug!("target_time rounded to nearest 3 hours. Target Time: {}", target_time);
     }
 	else if repeat_interval_s <= 60 * 60 * 4 {  // round to nearest 4 hours
         target_time.duration_round( Duration::hours( 4 ) ).unwrap();
         next_start = chrono::Duration::hours ( 4 );
+        debug!("target_time rounded to nearest 4 hours. Target Time: {}", target_time);
     }
 	else if repeat_interval_s <= 60 * 60 * 6 {  // round to nearest 6 hours
         target_time.duration_round( Duration::hours( 6 ) ).unwrap();
         next_start = chrono::Duration::hours ( 6 );
+        debug!("target_time rounded to nearest 6 hours. Target Time: {}", target_time);
     }
 	else if repeat_interval_s <= 60 * 60 * 12 {  // round to nearest 12 hours
         target_time.duration_round( Duration::hours( 12 ) ).unwrap();
         next_start = chrono::Duration::hours ( 12 );
+        debug!("target_time rounded to nearest 12 hours. Target Time: {}", target_time);
     }
 	else {  // round to nearest day
         target_time.duration_round( Duration::days( 1 ) ).unwrap();
         next_start = chrono::Duration::days ( 1 );
+        debug!("target_time rounded to nearest day. Target Time: {}", target_time);
     }
     
     target_time += offset;  //adjust target time by user supplied offset

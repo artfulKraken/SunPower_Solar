@@ -32,7 +32,7 @@ appenders:
             roller:
               kind: delete
 root:
-    level: info
+    level: debug
     appenders:
       - rolling_file
 loggers:
