@@ -61,14 +61,14 @@ async fn main() {
                    let mut solar_sql_upload_conn = solar_sql_upload_conn; 
 
                    // Set start time and interval of pvs6 data pulls.  
-                    let offset_dur = chrono::Duration::seconds( -5 );
+                    let offset_dur = chrono::Duration::seconds( 0 );
                     let mut get_pvs6_device_interval = set_interval(PVS6_GET_DEVICES_INTERVAL, PVS6_GET_DEVICES_INTERVAL_UNITS, offset_dur);
 
                     loop {
                         get_pvs6_device_interval.tick().await; // Wait until the next tick
                         // get pvs6 data and upload to mysql solar database
                         pvs6_to_mysql(&solarpi_client, &mut device_ts_data, &mut solar_sql_upload_conn).await;
-                        // println!( "Run at: {}", Utc::now().to_string() ); //for loop timing testing
+                        println!( "Run at: {}", Utc::now().to_string() ); //for loop timing testing
                     }    
                 },
                 Err(sql_conn_err) => {
@@ -165,8 +165,16 @@ fn process_pvs6_devices_output(pvs6_data: String, device_ts_data: &mut Vec<Vec<P
                     }
                 }
             }
+            println!("Proces Device Output. Before datapoint clear");
+            for dp in data_points.iter() {
+                println!("Serial: {} Time: {} Param: {} Data: {}",dp.serial, dp.data_time, dp.parameter, dp.data)
+            }
             device_ts_data.push(data_points.clone());
             data_points.clear();
+            println!("Proces Device Output. After datapoint clear");
+            for dp in data_points.iter() {
+                println!("Serial: {} Time: {} Param: {} Data: {}",dp.serial, dp.data_time, dp.parameter, dp.data)
+            }
         }
     }
     //for dp in data_points.iter() {
