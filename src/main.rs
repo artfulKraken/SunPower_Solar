@@ -6,7 +6,7 @@ use mysql::*;
 use mysql::prelude::*;
 use myloginrs::parse as myloginrs_parse;
 use tokio::time::{self, Interval, interval_at, Duration as TokioDuration};
-use std::{str,  fs, path::PathBuf};
+use std::{str, fs, path::PathBuf};
 use log::{debug, error, info, trace, warn};
 use log4rs;
 use chrono::{prelude::*, Duration, DurationRound};
@@ -50,20 +50,43 @@ async fn main() {
 
     let mut device_ts_data: Vec<Vec<Pvs6DataPoint>> = Vec::new();
     let solarpi_client: Client = Client::new();
+    
+    //get sql pool and connection
+    let result_sql_pool = get_mysql_pool();
+    match result_sql_pool {
+        Ok(solar_sql_pool) => {
+            let conn = solar_sql_pool.get_conn();
+            match conn {
+                Ok(solar_sql_upload_conn) => {
+                   let mut solar_sql_upload_conn = solar_sql_upload_conn; 
 
-    // Set start time and interval of pvs6 data pulls.  
-    let offset_dur = chrono::Duration::seconds( -5 );
-    let mut get_pvs6_device_interval = set_interval(PVS6_GET_DEVICES_INTERVAL, PVS6_GET_DEVICES_INTERVAL_UNITS, offset_dur);
+                   // Set start time and interval of pvs6 data pulls.  
+                    let offset_dur = chrono::Duration::seconds( -5 );
+                    let mut get_pvs6_device_interval = set_interval(PVS6_GET_DEVICES_INTERVAL, PVS6_GET_DEVICES_INTERVAL_UNITS, offset_dur);
 
-    loop {
-        get_pvs6_device_interval.tick().await; // Wait until the next tick
-        // get pvs6 data and upload to mysql solar database
-        //pvs6_to_mysql(&solarpi_client, &mut device_ts_data).await;
-        println!( "Run at: {}", Utc::now().to_string() );
-    }    
+                    loop {
+                        get_pvs6_device_interval.tick().await; // Wait until the next tick
+                        // get pvs6 data and upload to mysql solar database
+                        pvs6_to_mysql(&solarpi_client, &mut device_ts_data, &mut solar_sql_upload_conn).await;
+                        // println!( "Run at: {}", Utc::now().to_string() ); //for loop timing testing
+                    }    
+                },
+                Err(sql_conn_err) => {
+                    error!("Unable to get solar sql conn. Err: {}", sql_conn_err);
+                    panic!("Panicing. Unable to get solar sql conn.");
+                },
+            }
+        },
+        Err(e) => {
+            error!( "Unable to get solar sql pool.  Err: {}", e );
+            panic!( "Panicing. Unable to get solar sql pool." );
+        },
+    }
+
+    
 }
 
-async fn pvs6_to_mysql( solarpi_client: &Client, device_ts_data: &mut Vec<Vec<Pvs6DataPoint>> ) {
+async fn pvs6_to_mysql( solarpi_client: &Client, device_ts_data: &mut Vec<Vec<Pvs6DataPoint>>, solar_sql_upload_conn: &mut PooledConn ) {
 
     let pvs6_received = solarpi_client.get(DEVICES_API)
         .send()
@@ -79,20 +102,14 @@ async fn pvs6_to_mysql( solarpi_client: &Client, device_ts_data: &mut Vec<Vec<Pv
                             Ok(pvs6_data) => {
                                 
                                 process_pvs6_devices_output( pvs6_data, device_ts_data );
-                                let sql_response = import_to_mysql( device_ts_data );
-                                match sql_response {
-                                    Ok(_) => {
-                                        info!("Mysql database: solar successfully updated");
-                                    },
-                                    Err(sql_eff) => warn!("Warning Uploading to mysql. Err: {:#?}", sql_eff),
-                                }
-            
+                                import_to_mysql( device_ts_data, solar_sql_upload_conn );
+                
                             },
-                            Err(text_eff) => error!("Hm, the response didn't match the shape we expected. Err: {:#?}", text_eff),
+                            Err(text_eff) => error!("Unable to extract json body from pvs6 response. Err: {:#?}", text_eff),
                         };
                     }
                     other => {
-                        error!("PVS6 returned error code: {}", other)
+                        error!("PVS6 returned error code: {}", other);
                     }
                 };
             },
@@ -162,10 +179,9 @@ fn to_sql_timestamp(str_timestamp: &str) -> String {
     ts_values[0].to_owned() + "-" + ts_values[1] + "-" + ts_values[2] + " " + ts_values[3] + ":" + ts_values[4] + ":" + ts_values[5]
 }
 
-
-fn import_to_mysql( device_ts_data: &mut Vec<Vec<Pvs6DataPoint>>  ) -> std::result::Result<(), Box<dyn std::error::Error>> {
-
+fn get_mysql_pool() -> Result<Pool, Box<dyn std::error::Error>> {
     let my_login_file_path = PathBuf::from( LOGIN_INFO_LOC );
+
     match fs::exists(&my_login_file_path) {
         Ok(file_exists) => {
             if file_exists == true {
@@ -176,40 +192,78 @@ fn import_to_mysql( device_ts_data: &mut Vec<Vec<Pvs6DataPoint>>  ) -> std::resu
                     .user(Some(&mysql_client_info["user"]))
                     .pass(Some(&mysql_client_info["password"]));
                 
-                let pool = Pool::new(solar_db_opts)?;
-                let mut conn = pool.get_conn()?;
-                
-
-                for datapoints in device_ts_data.iter_mut() {
-
-                    // Now let's insert data to the database
-                    let upload_success = conn.exec_batch(
-                        r"INSERT INTO pvs6_data (serial, parameter, data_time, data)
-                        VALUES (:serial, :parameter, :data_time, :data)",
-                        datapoints.iter().map(|dp| params! {
-                            "serial" => &dp.serial,
-                            "parameter" => &dp.parameter,
-                            "data_time" => &dp.data_time,
-                            "data" => &dp.data,
-                        })
-                    );
-                    match upload_success {
-                        Ok(_) => {
-                            info!("Device: {} @ {} uploaded to Mysql solar database", datapoints[0].serial, datapoints[0].data_time )
-                        },
-                        Err(e) => error!("Device: {} @ {} failed to upload to Mysql solar database. Error: {}", datapoints[0].serial, datapoints[0].data_time, e), 
+                let pool = Pool::new(solar_db_opts);
+                match pool {
+                    Ok(solar_pool) => {
+                        info!("Pool Created");
+                        return Ok(solar_pool)
+                    },
+                    Err(err_pool) => {
+                        error!("Unable to create pool for mysql db solar. Err: {}", err_pool);
+                        return Err( "Unable to create pool for mysql db solar.".into() )
                     }
                 }
+   
             } else {
-                error!("Error: {} File does not exist on local client device", LOGIN_INFO_LOC);
+                error!("Error: {} Login Credential file does not exist on local client device", LOGIN_INFO_LOC);
+                return Err( "Login Credential file not found on local client device".into() )
             };
         },
-        Err(fp_eff) => error!("Error: Mysql login file exists but can't be accessed.  
-            May have incorrect permissions. Err: {}",fp_eff),
+        Err(fp_eff) => {
+            error!("Error: Mysql login file exists but can't be accessed.  
+            May have incorrect permissions. Err: {}",fp_eff);
+            return Err( "Login Credential file can't be accessed. Potential file permission issues".into() )
+        }
         
     }
-    
-    Ok(())  //Incorrect format, always returns ok.  Need to return error when not able to upload file
+}
+
+fn import_to_mysql( device_ts_data: &mut Vec<Vec<Pvs6DataPoint>>, solar_sql_upload_conn: &mut PooledConn ) {
+    let mut all_device_success: bool = true;  
+    let mut index_delete: Vec<usize> = Vec::new();  
+    for (index, datapoints) in device_ts_data.iter_mut().enumerate() {
+
+        // Now let's insert data to the database
+        let upload_success = solar_sql_upload_conn.exec_batch(
+            r"INSERT INTO pvs6_data (serial, parameter, data_time, data)
+            VALUES (:serial, :parameter, :data_time, :data)",
+            datapoints.iter().map(|dp| params! {
+                "serial" => &dp.serial,
+                "parameter" => &dp.parameter,
+                "data_time" => &dp.data_time,
+                "data" => &dp.data,
+            })
+        );
+        match upload_success {
+            Ok(_) => {
+                debug!("Device: {} @ {} uploaded to Mysql solar database", datapoints[0].serial, datapoints[0].data_time );
+                debug!("Index is {}.  Device is: {}", index, datapoints[0].serial);
+                index_delete.push(index);
+
+            },
+            Err(e) => {
+                error!("Device: {} @ {} failed to upload to Mysql solar database. Error: {}", datapoints[0].serial, datapoints[0].data_time, e);
+                debug!("Index is {}.  Device is: {}", index, datapoints[0].serial);
+                index_delete.push(index);
+                all_device_success = false;
+            }, 
+        }
+    }
+    for dex in index_delete.iter().rev() {
+        debug!("Removed Device: {} @ {}", device_ts_data[*dex][0].serial, device_ts_data[*dex][0].data_time);
+        device_ts_data.remove(*dex);
+    }
+            
+    match all_device_success {
+        true => {
+            info!("All devices uploaded to mysql db solar");
+            //return Ok(())
+        }
+        false => {
+            warn!("Some devices not uploaded to mysql db solar. See specific device errors.");
+            //return Err(())
+        }
+    }
      
 }
 
@@ -262,57 +316,57 @@ fn set_interval(repeat_interval: i64, units: char, offset: Duration) -> Interval
         debug!("target_time rounded to nearest minute. Target Time: {}", target_time);
     }
     else if repeat_interval_s <= 60 * 5 {  // round to nearest 5 minutes
-        target_time.duration_round( Duration::minutes( 5 ) ).unwrap();
+        target_time = target_time.duration_round( Duration::minutes( 5 ) ).unwrap();
         next_start = chrono::Duration::seconds ( 60 * 5 );
         debug!("target_time rounded to nearest 5 minutes. Target Time: {}", target_time);
     }
 	else if repeat_interval_s <= 60 * 10 {  // round to nearest 10 minutes
-        target_time.duration_round( Duration::minutes( 10 ) ).unwrap();
+        target_time = target_time.duration_round( Duration::minutes( 10 ) ).unwrap();
         next_start = chrono::Duration::seconds ( 60 * 10 );
         debug!("target_time rounded to nearest 10 minutes. Target Time: {}", target_time);
     }
 	else if repeat_interval_s <= 60 * 15 {  // round to nearest 15 minutes
-        target_time.duration_round( Duration::minutes( 15 ) ).unwrap();
+        target_time = target_time.duration_round( Duration::minutes( 15 ) ).unwrap();
         next_start = chrono::Duration::minutes ( 15 );
         debug!("target_time rounded to nearest 15 minutes. Target Time: {}", target_time);
     }
 	else if repeat_interval_s <= 60 * 30 {  // round to nearest 30 minutes
-        target_time.duration_round( Duration::minutes( 30 ) ).unwrap();
+        target_time = target_time.duration_round( Duration::minutes( 30 ) ).unwrap();
         next_start = chrono::Duration::minutes ( 30 );
         debug!("target_time rounded to nearest 30 minutes. Target Time: {}", target_time);
     }
 	else if repeat_interval_s <= 60 * 60 * 1 {  // round to nearest hour
-        target_time.duration_round( Duration::hours( 1 ) ).unwrap();
+        target_time = target_time.duration_round( Duration::hours( 1 ) ).unwrap();
         next_start = chrono::Duration::hours ( 1 );
         debug!("target_time rounded to nearest hour. Target Time: {}", target_time);
     }
 	else if repeat_interval_s <= 60 * 60 * 2 {  // round to nearest 2 hours
-        target_time.duration_round( Duration::hours( 2 ) ).unwrap();
+        target_time = target_time.duration_round( Duration::hours( 2 ) ).unwrap();
         next_start = chrono::Duration::hours ( 2 );
         debug!("target_time rounded to nearest 2 hours. Target Time: {}", target_time);
     }
 	else if repeat_interval_s <= 60 * 60 * 3 {  // round to nearest 3 hours
-        target_time.duration_round( Duration::hours( 3 ) ).unwrap();
+        target_time = target_time.duration_round( Duration::hours( 3 ) ).unwrap();
         next_start = chrono::Duration::hours ( 3 );
         debug!("target_time rounded to nearest 3 hours. Target Time: {}", target_time);
     }
 	else if repeat_interval_s <= 60 * 60 * 4 {  // round to nearest 4 hours
-        target_time.duration_round( Duration::hours( 4 ) ).unwrap();
+        target_time = target_time.duration_round( Duration::hours( 4 ) ).unwrap();
         next_start = chrono::Duration::hours ( 4 );
         debug!("target_time rounded to nearest 4 hours. Target Time: {}", target_time);
     }
 	else if repeat_interval_s <= 60 * 60 * 6 {  // round to nearest 6 hours
-        target_time.duration_round( Duration::hours( 6 ) ).unwrap();
+        target_time = target_time.duration_round( Duration::hours( 6 ) ).unwrap();
         next_start = chrono::Duration::hours ( 6 );
         debug!("target_time rounded to nearest 6 hours. Target Time: {}", target_time);
     }
 	else if repeat_interval_s <= 60 * 60 * 12 {  // round to nearest 12 hours
-        target_time.duration_round( Duration::hours( 12 ) ).unwrap();
+        target_time = target_time.duration_round( Duration::hours( 12 ) ).unwrap();
         next_start = chrono::Duration::hours ( 12 );
         debug!("target_time rounded to nearest 12 hours. Target Time: {}", target_time);
     }
 	else {  // round to nearest day
-        target_time.duration_round( Duration::days( 1 ) ).unwrap();
+        target_time = target_time.duration_round( Duration::days( 1 ) ).unwrap();
         next_start = chrono::Duration::days ( 1 );
         debug!("target_time rounded to nearest day. Target Time: {}", target_time);
     }
