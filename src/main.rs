@@ -5,18 +5,18 @@ use once_cell::sync::Lazy;
 use mysql::*;
 use mysql::prelude::*;
 use myloginrs::parse as myloginrs_parse;
-use tokio::time::{self, error::Elapsed, interval_at, Duration as TokioDuration};
+use tokio::time::{self, Interval, interval_at, Duration as TokioDuration};
 use std::{str,  fs, path::PathBuf};
 use log::{debug, error, info, trace, warn};
 use log4rs;
-use chrono::{prelude::*, Duration};
+use chrono::{prelude::*, Duration, DurationRound};
 
 
 const DEVICES_API: &str = "https://solarpi.artfulkraken.com/cgi-bin/dl_cgi?Command=DeviceList";
 const LOGIN_INFO_LOC: &str= "/home/solarnodered/.mylogin.cnf";
 const PVS6_GET_DEVICES_INTERVAL: i64 = 1; // Time in minutes
 const PVS6_GET_DEVICES_INTERVAL_UNITS: char = 'm';
-
+ 
 
 struct Pvs6DataPoint {
     serial: String,
@@ -250,7 +250,7 @@ fn set_interval(repeat_interval: i64, units: char, offset: Duration) -> Interval
     // Get current time 
     let now: DateTime<Utc> = Utc::now();
 
-    let target_time: NaiveDateTime = now.naive_utc();
+    let mut target_time: NaiveDateTime = now.naive_utc();
     let mut next_start: Duration = chrono::Duration::seconds( 60 ); 
 
     // Round target_time (planned Start time) to nearest interval based on interval length.  Intent is to have intervals that will
