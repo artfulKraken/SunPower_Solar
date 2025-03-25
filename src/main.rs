@@ -5,7 +5,7 @@ use once_cell::sync::Lazy;
 use mysql::*;
 use mysql::prelude::*;
 use myloginrs::parse as myloginrs_parse;
-use tokio::time::{self, interval_at, Duration as TokioDuration};
+use tokio::time::{self, error::Elapsed, interval_at, Duration as TokioDuration};
 use std::{str,  fs, path::PathBuf};
 use log::{debug, error, info, trace, warn};
 use log4rs;
@@ -41,18 +41,36 @@ impl Pvs6DataPoint {
     }
 }
 
+impl Clone for Pvs6DataPoint {
+    fn clone(&self) -> Pvs6DataPoint {
+        Pvs6DataPoint::new(&self.serial, &self.data_time, &self.parameter, &self.data)
+    }
+}
+
 //#[tokio::main]
 #[tokio::main]
 async fn main() {
     
     log4rs::init_file("log_config.yml", Default::default()).unwrap();   //Need Error Handling here.  What if log doesn't unwrap
 
-    let mut data_points: Vec<Pvs6DataPoint> = Vec::new();
+    let mut device_ts_data: Vec<Vec<Pvs6DataPoint>> = Vec::new();
     let solarpi_client: Client = Client::new();
 
     let now: DateTime<Utc> = Utc::now();
     //let start_time = Instant::now();
     
+    /* 
+    let now_minutes = now.minutes();
+    let target_minutes = if now_minutes < 14 || ( now_minutes == 29 && now_seconds < 54 ) {
+        14;
+    } else if now_minutes < 29 || ( now_minutes == 29 && now_seconds < 54 ) {
+        29;
+    } else if now_minutes < 44 || ( now_minutes == 29 && now_seconds < 54 ) {
+        44;
+    } else {
+        59;
+    };
+    */
     //println!("Current Time: {}", now.to_string() );
 
     let target_time = now.date_naive().and_hms_opt(now.hour(), now.minute(), 55).unwrap(); // Set target_time to date, cur hour, min and 55 seconds (could be before or after actual current time)
@@ -85,13 +103,13 @@ async fn main() {
 
     loop {
         interval.tick().await; // Wait until the next tick
-        pvs6_to_mysql(&solarpi_client, &mut data_points).await;
+        pvs6_to_mysql(&solarpi_client, &mut device_ts_data).await;
         //let elapsed = start_time.elapsed().as_millis(); // Calculate elapsed time
         //println!("Task executed after {} milliseconds", elapsed);
     }    
 }
 
-async fn pvs6_to_mysql( solarpi_client: &Client, data_points: &mut Vec<Pvs6DataPoint> ) {
+async fn pvs6_to_mysql( solarpi_client: &Client, device_ts_data: &mut Vec<Vec<Pvs6DataPoint>> ) {
 
     let pvs6_received = solarpi_client.get(DEVICES_API)
         .send()
@@ -106,12 +124,11 @@ async fn pvs6_to_mysql( solarpi_client: &Client, data_points: &mut Vec<Pvs6DataP
                         match pvs6_response.text().await {
                             Ok(pvs6_data) => {
                                 
-                                process_pvs6_devices_output( pvs6_data, data_points );
-                                let sql_response = import_to_mysql( data_points );
+                                process_pvs6_devices_output( pvs6_data, device_ts_data );
+                                let sql_response = import_to_mysql( device_ts_data );
                                 match sql_response {
                                     Ok(_) => {
                                         info!("Mysql database: solar successfully updated");
-                                        data_points.clear()
                                     },
                                     Err(sql_eff) => warn!("Warning Uploading to mysql. Err: {:#?}", sql_eff),
                                 }
@@ -131,7 +148,7 @@ async fn pvs6_to_mysql( solarpi_client: &Client, data_points: &mut Vec<Pvs6DataP
 
 
 
-fn process_pvs6_devices_output(pvs6_data: String, data_points: &mut Vec<Pvs6DataPoint> ) {
+fn process_pvs6_devices_output(pvs6_data: String, device_ts_data: &mut Vec<Vec<Pvs6DataPoint>> ) {
     //Regex patterns synced lazy for compile efficiency improvement
     //Unwrapping all Regex expressions.  If it doesn't unwrap, its a bug in my expression.
     static RE_DEVICES: Lazy<Regex> = Lazy::new( || Regex::new(r"\[.*\]").unwrap() );
@@ -150,8 +167,11 @@ fn process_pvs6_devices_output(pvs6_data: String, data_points: &mut Vec<Pvs6Data
             let devices: &str = mat_devices.as_str();
             //println!("Devices: {:?}", devices);
             
+            let mut data_points: Vec<Pvs6DataPoint>= Vec::new();
+
             let device_list = devices.split("},{");
             for device in device_list {
+                
                 //println!("Device: {}", &device);
                 let serial = RE_SERIAL.captures(&device).unwrap().get(1).unwrap().as_str();  //first unwap may cause crash as error
                 let data_time = round_time_to_sql_timestamp( 
@@ -174,6 +194,8 @@ fn process_pvs6_devices_output(pvs6_data: String, data_points: &mut Vec<Pvs6Data
                     }
                 }
             }
+            device_ts_data.push(data_points.clone());
+            data_points.clear();
         }
     }
     //for dp in data_points.iter() {
@@ -187,7 +209,7 @@ fn to_sql_timestamp(str_timestamp: &str) -> String {
 }
 
 
-fn import_to_mysql( data_points: &mut Vec<Pvs6DataPoint>  ) -> std::result::Result<(), Box<dyn std::error::Error>> {
+fn import_to_mysql( device_ts_data: &mut Vec<Vec<Pvs6DataPoint>>  ) -> std::result::Result<(), Box<dyn std::error::Error>> {
 
     let my_login_file_path = PathBuf::from( LOGIN_INFO_LOC );
     match fs::exists(&my_login_file_path) {
@@ -203,17 +225,27 @@ fn import_to_mysql( data_points: &mut Vec<Pvs6DataPoint>  ) -> std::result::Resu
                 let pool = Pool::new(solar_db_opts)?;
                 let mut conn = pool.get_conn()?;
                 
-                // Now let's insert data to the database
-                conn.exec_batch(
-                    r"INSERT INTO pvs6_data (serial, parameter, data_time, data)
-                    VALUES (:serial, :parameter, :data_time, :data)",
-                    data_points.iter().map(|dp| params! {
-                        "serial" => &dp.serial,
-                        "parameter" => &dp.parameter,
-                        "data_time" => &dp.data_time,
-                        "data" => &dp.data,
-                    })
-                )?;
+
+                for datapoints in device_ts_data.iter_mut() {
+
+                    // Now let's insert data to the database
+                    let upload_success = conn.exec_batch(
+                        r"INSERT INTO pvs6_data (serial, parameter, data_time, data)
+                        VALUES (:serial, :parameter, :data_time, :data)",
+                        datapoints.iter().map(|dp| params! {
+                            "serial" => &dp.serial,
+                            "parameter" => &dp.parameter,
+                            "data_time" => &dp.data_time,
+                            "data" => &dp.data,
+                        })
+                    );
+                    match upload_success {
+                        Ok(_) => {
+                            debug!("Device: {} @ {} uploaded to Mysql solar database", datapoints[0].serial, datapoints[0].data_time )
+                        },
+                        Err(e) => error!("Device: {} @ {} failed to upload to Mysql solar database. Error: {}", datapoints[0].serial, datapoints[0].data_time, e), 
+                    }
+                }
             } else {
                 error!("Error: {} File does not exist on local client device", LOGIN_INFO_LOC);
             };
