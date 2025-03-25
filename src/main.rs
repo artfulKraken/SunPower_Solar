@@ -14,7 +14,7 @@ use chrono::{prelude::*, Duration, DurationRound};
 
 const DEVICES_API: &str = "https://solarpi.artfulkraken.com/cgi-bin/dl_cgi?Command=DeviceList";
 const LOGIN_INFO_LOC: &str= "/home/solarnodered/.mylogin.cnf";
-const PVS6_GET_DEVICES_INTERVAL: i64 = 1; // Time in minutes
+const PVS6_GET_DEVICES_INTERVAL: i64 = 5; // Time in minutes
 const PVS6_GET_DEVICES_INTERVAL_UNITS: char = 'm';
  
 
@@ -61,7 +61,7 @@ async fn main() {
                    let mut solar_sql_upload_conn = solar_sql_upload_conn; 
 
                    // Set start time and interval of pvs6 data pulls.  
-                    let offset_dur = chrono::Duration::seconds( 0 );
+                    let offset_dur = chrono::Duration::milliseconds( -250 );
                     let mut get_pvs6_device_interval = set_interval(PVS6_GET_DEVICES_INTERVAL, PVS6_GET_DEVICES_INTERVAL_UNITS, offset_dur);
 
                     loop {
@@ -164,16 +164,10 @@ fn process_pvs6_devices_output(pvs6_data: String, device_ts_data: &mut Vec<Vec<P
                         data_points.push(data_point);
                     }
                 }
-                println!("Proces Device Output. Before datapoint clear");
-                for dp in data_points.iter() {
-                    println!("Serial: {} Time: {} Param: {} Data: {}",dp.serial, dp.data_time, dp.parameter, dp.data)
-                }
+                
                 device_ts_data.push(data_points.clone());
                 data_points.clear();
-                println!("Proces Device Output. After datapoint clear");
-                for dp in data_points.iter() {
-                    println!("Serial: {} Time: {} Param: {} Data: {}",dp.serial, dp.data_time, dp.parameter, dp.data)
-                }
+                
             }
         }
     }
