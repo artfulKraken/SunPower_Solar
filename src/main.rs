@@ -5,9 +5,9 @@ use once_cell::sync::Lazy;
 use mysql::*;
 use mysql::prelude::*;
 use myloginrs::parse as myloginrs_parse;
-use tokio::time::{self, Interval, interval_at, Duration as TokioDuration};
+use tokio::time::{Interval, interval_at, Duration as TokioDuration};
 use std::{str, fs, path::PathBuf};
-use log::{debug, error, info, trace, warn};
+use log::{debug, error, info, warn};
 use log4rs;
 use chrono::{prelude::*, Duration, DurationRound};
 
