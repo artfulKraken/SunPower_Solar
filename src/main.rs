@@ -164,16 +164,16 @@ fn process_pvs6_devices_output(pvs6_data: String, device_ts_data: &mut Vec<Vec<P
                         data_points.push(data_point);
                     }
                 }
-            }
-            println!("Proces Device Output. Before datapoint clear");
-            for dp in data_points.iter() {
-                println!("Serial: {} Time: {} Param: {} Data: {}",dp.serial, dp.data_time, dp.parameter, dp.data)
-            }
-            device_ts_data.push(data_points.clone());
-            data_points.clear();
-            println!("Proces Device Output. After datapoint clear");
-            for dp in data_points.iter() {
-                println!("Serial: {} Time: {} Param: {} Data: {}",dp.serial, dp.data_time, dp.parameter, dp.data)
+                println!("Proces Device Output. Before datapoint clear");
+                for dp in data_points.iter() {
+                    println!("Serial: {} Time: {} Param: {} Data: {}",dp.serial, dp.data_time, dp.parameter, dp.data)
+                }
+                device_ts_data.push(data_points.clone());
+                data_points.clear();
+                println!("Proces Device Output. After datapoint clear");
+                for dp in data_points.iter() {
+                    println!("Serial: {} Time: {} Param: {} Data: {}",dp.serial, dp.data_time, dp.parameter, dp.data)
+                }
             }
         }
     }
