@@ -303,6 +303,7 @@ fn set_interval(repeat_interval: i64, units: char, offset: Duration) -> Interval
         's' => repeat_interval,
         other => panic!("Invalid time unit: {}. Use d, h, m, or s", other),
     };
+    debug!("Repeat Interval in seconds: {}", repeat_interval_s);
     // Get current time 
     let now: DateTime<Utc> = Utc::now();
 
@@ -382,5 +383,5 @@ fn set_interval(repeat_interval: i64, units: char, offset: Duration) -> Interval
         start = start + next_start;
     }
 
-    interval_at(tokio::time::Instant::now() + start.to_std().unwrap(), TokioDuration::from_secs( 60 ) )
+    interval_at(tokio::time::Instant::now() + start.to_std().unwrap(), TokioDuration::from_secs( repeat_interval_s ) )
 }
