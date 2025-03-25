@@ -14,7 +14,7 @@ use chrono::{prelude::*, Duration, DurationRound};
 
 const DEVICES_API: &str = "https://solarpi.artfulkraken.com/cgi-bin/dl_cgi?Command=DeviceList";
 const LOGIN_INFO_LOC: &str= "/home/solarnodered/.mylogin.cnf";
-const PVS6_GET_DEVICES_INTERVAL: i64 = 5; // Time in minutes
+const PVS6_GET_DEVICES_INTERVAL: u64 = 5; // Time in minutes
 const PVS6_GET_DEVICES_INTERVAL_UNITS: char = 'm';
  
 
@@ -290,13 +290,13 @@ fn round_time_to_sql_timestamp(str_timestamp: &str) -> String {
     dt.format("%Y-%m-%d %H:%M:%S").to_string()
 }
 
-fn set_interval(repeat_interval: i64, units: char, offset: Duration) -> Interval {
+fn set_interval(repeat_interval: u64, units: char, offset: Duration) -> Interval {
     // repeat_interval: time in seconds that interval should repeat
     // units: unit of time.  Only d, h, m, s are accepted.  All others will panic
     // Set start time and interval of pvs6 data pulls.  
 
     // convert repeat interval to seconds.  Panic if units is not 'd' day(s), 'h' hour(s), 'm' minute(s)), or 's' second(s) 
-    let repeat_interval_s =   match units {
+    let repeat_interval_s: u64 =   match units {
         'd' => repeat_interval * 60 * 60 * 24,
         'h' => repeat_interval * 60 * 60,
         'm' => repeat_interval * 60,
