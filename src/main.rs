@@ -258,7 +258,7 @@ fn set_interval(repeat_interval: i64, units: char, offset: Duration) -> Interval
     // Round target_time (planned Start time) to nearest interval based on interval length.  Intent is to have intervals that will
     // match clock times as much as possible.  Only works if exact intervals used here.  Future changes may round repeat_interval to match options.
     if repeat_interval_s <= 60 {  // round to nearest minute
-        target_time.duration_round( Duration::minutes( 1 ) ).unwrap();
+        target_time = target_time.duration_round( Duration::minutes( 1 ) ).unwrap();
         debug!("target_time rounded to nearest minute. Target Time: {}", target_time);
     }
     else if repeat_interval_s <= 60 * 5 {  // round to nearest 5 minutes
