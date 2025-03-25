@@ -9,19 +9,14 @@ use tokio::time::{self, error::Elapsed, interval_at, Duration as TokioDuration};
 use std::{str,  fs, path::PathBuf};
 use log::{debug, error, info, trace, warn};
 use log4rs;
-use chrono::prelude::*;
+use chrono::{prelude::*, Duration};
 
 
 const DEVICES_API: &str = "https://solarpi.artfulkraken.com/cgi-bin/dl_cgi?Command=DeviceList";
 const LOGIN_INFO_LOC: &str= "/home/solarnodered/.mylogin.cnf";
-//const MYSQL_USER: &str = "pvs6_data";
+const PVS6_GET_DEVICES_INTERVAL: i64 = 1; // Time in minutes
+const PVS6_GET_DEVICES_INTERVAL_UNITS: char = 'm';
 
-
-
-//struct Pvs6Response {
-//    devices: String,
-//    result: String,
-//}
 
 struct Pvs6DataPoint {
     serial: String,
@@ -56,56 +51,15 @@ async fn main() {
     let mut device_ts_data: Vec<Vec<Pvs6DataPoint>> = Vec::new();
     let solarpi_client: Client = Client::new();
 
-    let now: DateTime<Utc> = Utc::now();
-    //let start_time = Instant::now();
-    
-    /* 
-    let now_minutes = now.minutes();
-    let target_minutes = if now_minutes < 14 || ( now_minutes == 29 && now_seconds < 54 ) {
-        14;
-    } else if now_minutes < 29 || ( now_minutes == 29 && now_seconds < 54 ) {
-        29;
-    } else if now_minutes < 44 || ( now_minutes == 29 && now_seconds < 54 ) {
-        44;
-    } else {
-        59;
-    };
-    */
-    //println!("Current Time: {}", now.to_string() );
-
-    let target_time = now.date_naive().and_hms_opt(now.hour(), now.minute(), 55).unwrap(); // Set target_time to date, cur hour, min and 55 seconds (could be before or after actual current time)
-    //println!("Target Time: {}", target_time.to_string() );
-    let mut start = target_time.signed_duration_since(now.naive_utc());
-    //println!("Start: {}", start.to_string() );
-    //println!("chrono Duration: {}", chrono::Duration::seconds(1).to_string());
-    
-    if start < chrono::Duration::seconds(1) {
-        start = start + chrono::Duration::minutes(1);
-        //println!("Start with 1 min: {}", start.to_string() );
-    }
-
-    let mut interval = interval_at(tokio::time::Instant::now() + start.to_std().unwrap(), TokioDuration::from_secs( 60 ) );
-
-    //let mut interval = time::interval(TokioDuration::from_secs(60)); // Set interval to 1 minute
-    //let start_time = Instant::now(); // Record the start time
-
-    //let response = solarpi_client.get(DEVICES_API)
-    //    .send()
-    //    //.header(ACCEPT, "application/json")
-    //    .await;
-    //match response {
-    //    Ok(_) => println!("No Error Here"),
-    //    Err(eff) => println!("Error: {}", eff),
-    //}
-    //for dp in data_points.iter() {
-    //    println!("Serial:{}  Date: {}  Parameter: {}  Data: {}", dp.serial, dp.data_time, dp.parameter, dp.data);
-    //}
+    // Set start time and interval of pvs6 data pulls.  
+    let offset_dur = chrono::Duration::seconds( -5 );
+    let mut get_pvs6_device_interval = set_interval(PVS6_GET_DEVICES_INTERVAL, PVS6_GET_DEVICES_INTERVAL_UNITS, offset_dur);
 
     loop {
-        interval.tick().await; // Wait until the next tick
-        pvs6_to_mysql(&solarpi_client, &mut device_ts_data).await;
-        //let elapsed = start_time.elapsed().as_millis(); // Calculate elapsed time
-        //println!("Task executed after {} milliseconds", elapsed);
+        get_pvs6_device_interval.tick().await; // Wait until the next tick
+        // get pvs6 data and upload to mysql solar database
+        //pvs6_to_mysql(&solarpi_client, &mut device_ts_data).await;
+        println!( "Run at: {}", Utc::now().to_string() );
     }    
 }
 
@@ -174,7 +128,7 @@ fn process_pvs6_devices_output(pvs6_data: String, device_ts_data: &mut Vec<Vec<P
                 
                 //println!("Device: {}", &device);
                 let serial = RE_SERIAL.captures(&device).unwrap().get(1).unwrap().as_str();  //first unwap may cause crash as error
-                let data_time = round_time_to_sql_timestamp( 
+                let data_time = to_sql_timestamp( 
                     RE_DATA_TIME
                     .captures(&device)
                     .unwrap()
@@ -241,7 +195,7 @@ fn import_to_mysql( device_ts_data: &mut Vec<Vec<Pvs6DataPoint>>  ) -> std::resu
                     );
                     match upload_success {
                         Ok(_) => {
-                            debug!("Device: {} @ {} uploaded to Mysql solar database", datapoints[0].serial, datapoints[0].data_time )
+                            info!("Device: {} @ {} uploaded to Mysql solar database", datapoints[0].serial, datapoints[0].data_time )
                         },
                         Err(e) => error!("Device: {} @ {} failed to upload to Mysql solar database. Error: {}", datapoints[0].serial, datapoints[0].data_time, e), 
                     }
@@ -278,4 +232,85 @@ fn round_time_to_sql_timestamp(str_timestamp: &str) -> String {
         dt -= chrono::Duration::seconds(seconds);
     }
     dt.format("%Y-%m-%d %H:%M:%S").to_string()
+}
+
+fn set_interval(repeat_interval: i64, units: char, offset: Duration) -> Interval {
+    // repeat_interval: time in seconds that interval should repeat
+    // units: unit of time.  Only d, h, m, s are accepted.  All others will panic
+    // Set start time and interval of pvs6 data pulls.  
+
+    // convert repeat interval to seconds.  Panic if units is not 'd' day(s), 'h' hour(s), 'm' minute(s)), or 's' second(s) 
+    let repeat_interval_s =   match units {
+        'd' => repeat_interval * 60 * 60 * 24,
+        'h' => repeat_interval * 60 * 60,
+        'm' => repeat_interval * 60,
+        's' => repeat_interval,
+        other => panic!("Invalid time unit. Use d, h, m, or s"),
+    };
+    // Get current time 
+    let now: DateTime<Utc> = Utc::now();
+
+    let target_time: NaiveDateTime = now.naive_utc();
+    let mut next_start: Duration = chrono::Duration::seconds( 60 ); 
+
+    // Round target_time (planned Start time) to nearest interval based on interval length.  Intent is to have intervals that will
+    // match clock times as much as possible.  Only works if exact intervals used here.  Future changes may round repeat_interval to match options.
+    if repeat_interval_s <= 60 {  // round to nearest minute
+        target_time.duration_round( Duration::minutes( 1 ) ).unwrap();
+    }
+    else if repeat_interval_s <= 60 * 5 {  // round to nearest 5 minutes
+        target_time.duration_round( Duration::minutes( 5 ) ).unwrap();
+        next_start = chrono::Duration::seconds ( 60 * 5 );
+    }
+	else if repeat_interval_s <= 60 * 10 {  // round to nearest 10 minutes
+        target_time.duration_round( Duration::minutes( 10 ) ).unwrap();
+        next_start = chrono::Duration::seconds ( 60 * 10 );
+    }
+	else if repeat_interval_s <= 60 * 15 {  // round to nearest 15 minutes
+        target_time.duration_round( Duration::minutes( 15 ) ).unwrap();
+        next_start = chrono::Duration::minutes ( 15 );
+    }
+	else if repeat_interval_s <= 60 * 30 {  // round to nearest 30 minutes
+        target_time.duration_round( Duration::minutes( 30 ) ).unwrap();
+        next_start = chrono::Duration::minutes ( 30 );
+    }
+	else if repeat_interval_s <= 60 * 60 * 1 {  // round to nearest hour
+        target_time.duration_round( Duration::hours( 1 ) ).unwrap();
+        next_start = chrono::Duration::hours ( 1 );
+    }
+	else if repeat_interval_s <= 60 * 60 * 2 {  // round to nearest 2 hours
+        target_time.duration_round( Duration::hours( 2 ) ).unwrap();
+        next_start = chrono::Duration::hours ( 2 );
+    }
+	else if repeat_interval_s <= 60 * 60 * 3 {  // round to nearest 3 hours
+        target_time.duration_round( Duration::hours( 3 ) ).unwrap();
+        next_start = chrono::Duration::hours ( 3 );
+    }
+	else if repeat_interval_s <= 60 * 60 * 4 {  // round to nearest 4 hours
+        target_time.duration_round( Duration::hours( 4 ) ).unwrap();
+        next_start = chrono::Duration::hours ( 4 );
+    }
+	else if repeat_interval_s <= 60 * 60 * 6 {  // round to nearest 6 hours
+        target_time.duration_round( Duration::hours( 6 ) ).unwrap();
+        next_start = chrono::Duration::hours ( 6 );
+    }
+	else if repeat_interval_s <= 60 * 60 * 12 {  // round to nearest 12 hours
+        target_time.duration_round( Duration::hours( 12 ) ).unwrap();
+        next_start = chrono::Duration::hours ( 12 );
+    }
+	else {  // round to nearest day
+        target_time.duration_round( Duration::days( 1 ) ).unwrap();
+        next_start = chrono::Duration::days ( 1 );
+    }
+    
+    target_time += offset;  //adjust target time by user supplied offset
+    
+    let mut start = target_time.signed_duration_since(now.naive_utc());
+    
+    
+    if start < chrono::Duration::milliseconds(500) {
+        start = start + next_start;
+    }
+
+    interval_at(tokio::time::Instant::now() + start.to_std().unwrap(), TokioDuration::from_secs( 60 ) )
 }
