@@ -1,3 +1,12 @@
+/*
+Program completes the following actions:
+1)  At a regular interval connects to Sunpower PVS6 Supervisor via http api call and collects pvs6 data.
+    Processes data into a usable format and then uploads data to mysql database (solar).
+
+2)  Future: Processes energy produced and energy consumed data (in solar db) to tabular format for data analysis  
+*/
+
+
 use reqwest;
 use reqwest::get;
 use regex::Regex;
@@ -236,6 +245,11 @@ fn process_pvs6_devices_output(pvs6_data: String, device_ts_data: &mut Vec<Vec<P
                 data_points.clear();
                 
             }
+            for device in device_ts_data.iter() {
+                for dp in device.iter() {
+                    println!("Serial: {} Time: {} Parameter: {} Data: {}", dp.serial, dp.data_time, dp.parameter, dp.data);
+                }
+            }
         }
     }
     //for dp in data_points.iter() {
@@ -454,13 +468,20 @@ fn set_interval(repeat_interval: u64, units: char, offset: Duration) -> Interval
 }
 
 async fn get_pvs6_device_data( ) -> Option<String> {
+    // Using direct Reqwest::get fn instead of creating client.  PVS6 loses main internet connection and will not upload data when installer port (where we are making request) connection
+    //  remains open.  PVS6 is known to have a bug that causes memory to fill up and crash PVS6 if data is not uploaded.
     let pvs6_received = get(URL_DEVICES_API).await;
-    match pvs6_received {
-        Ok(pvs6_response) => {
-            match pvs6_response.status() {
+
+    // If PVS6 responded, check response status.  Else, log error and return none
+    match pvs6_received {  
+        Ok(pvs6_response) => {   
+            
+            //if PVS6 response is ok, then get body as text. Else, log response as error and return none
+            match pvs6_response.status() {   
                 reqwest::StatusCode::OK => {
-                    // on success, parse our JSON to an APIResponse
-                    match pvs6_response.text().await {
+                    
+                    //If body extracts as text, return body as Some(String) else log error and return none
+                    match pvs6_response.text().await {  
                         Ok(pvs6_data) => {
                             info!("PVS6 response body extracted to text: Ok");
                             return Some(pvs6_data)
