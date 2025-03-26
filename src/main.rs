@@ -1,5 +1,5 @@
 use reqwest;
-use reqwest::Client;
+use reqwest::get;
 use regex::Regex;
 use once_cell::sync::Lazy;
 use mysql::*;
@@ -17,6 +17,91 @@ const LOGIN_INFO_LOC: &str= "/home/solarnodered/.mylogin.cnf";
 const PVS6_GET_DEVICES_INTERVAL: u64 = 5; // Time in minutes
 const PVS6_GET_DEVICES_INTERVAL_UNITS: char = 'm';
  
+struct Inverter {
+    serial: String,
+    data_time: String,
+    freq_hz: String,
+    i_3phsum_a: String,
+    i_mppt1_a: String,
+    ltea_3phsum_kwh: String,
+    p_3phsum_kw: String,
+    p_mppt1_kw: String,
+    stat_ind: String,
+    t_htsnk_degc: String,
+    v_mppt1_v: String,
+    vln_3phavg_v: String,
+
+}
+impl Inverter {
+    fn new( 
+        serial: &str, data_time: &str, freq_hz: &str, i_3phsum_a: &str, i_mppt1_a: &str,
+        ltea_3phsum_kwh: &str, p_3phsum_kw: &str, p_mppt1_kw: &str, stat_ind: &str,
+        t_htsnk_degc: &str, v_mppt1_v: &str, vln_3phavg_v: &str,
+    ) -> Self {
+        Self {
+            serial: serial.to_owned(),
+            data_time: data_time.to_owned(),
+            freq_hz: freq_hz.to_owned(),
+            i_3phsum_a: i_3phsum_a.to_owned(),
+            i_mppt1_a: i_mppt1_a.to_owned(),
+            ltea_3phsum_kwh: ltea_3phsum_kwh.to_owned(),
+            p_3phsum_kw: p_3phsum_kw.to_owned(),
+            p_mppt1_kw: p_mppt1_kw.to_owned(),
+            stat_ind: stat_ind.to_owned(),
+            t_htsnk_degc: t_htsnk_degc.to_owned(),
+            v_mppt1_v: v_mppt1_v.to_owned(),
+            vln_3phavg_v: vln_3phavg_v.to_owned(),
+        }
+    }
+} 
+
+struct ProductionMeter {
+    serial: String,
+    data_time: String,
+    freq_hz: String,
+    i_a: String,
+    net_ltea_3phsum_kwh: String,
+    p_3phsum_kw: String,
+    q_3phsum_kvar: String,
+    s_3phsum_kva: String,
+    tot_pf_rto: String,
+    v12_v: String,
+}
+
+struct ConsumptionMeter {
+    serial: String,
+    data_time: String,
+    freq_hz: String,
+    i1_a: String,
+    i2_a: String,
+    neg_ltea_3phsum_kwh: String,
+    net_ltea_3phsum_kwh: String,
+    p_3phsum_kw: String,
+    p1_kw: String,
+    p2_kw: String,
+    pos_ltea_3phsum_kwh: String,
+    q_3phsum_kvar: String,
+    s_3phsum_kva: String,
+    tot_pf_rto: String,
+    v12_v: String,
+    v1n_v: String,
+    v2n_v: String,
+}
+
+struct Supervisor {
+    serial: String,
+    data_time: String,
+    dl_comm_err: String,
+    dl_cpu_load: String,
+    dl_err_count: String,
+    dl_flash_avail: String,
+    dl_mem_used: String,
+    dl_scan_time: String,
+    dl_skipped_scans: String,
+    dl_untransmitted: String,
+    dl_uptime: String,
+}
+
 
 struct Pvs6DataPoint {
     serial: String,
@@ -24,6 +109,7 @@ struct Pvs6DataPoint {
     parameter: String,
     data: String,
 }
+
 
 impl Pvs6DataPoint {
     fn new( serial: &str, data_time: &str, parameter: &str, data: &str ) -> Self {
@@ -122,13 +208,13 @@ async fn pvs6_to_mysql( device_ts_data: &mut Vec<Vec<Pvs6DataPoint>>, solar_sql_
 
 fn process_pvs6_devices_output(pvs6_data: String, device_ts_data: &mut Vec<Vec<Pvs6DataPoint>> ) {
     //Regex patterns synced lazy for compile efficiency improvement
-    //Unwrapping all Regex expressions.  If it doesn't unwrap, its a bug in my expression.
+    //Unwrapping all Regex expressions.  If it doesn't unwrap, its a bug in my expression and needs to be caught at compile time.
     static RE_DEVICES: Lazy<Regex> = Lazy::new( || Regex::new(r"\[.*\]").unwrap() );
     static RE_RESULT: Lazy<Regex> = Lazy::new( || Regex::new(r"\}\],result:succeed").unwrap() );
     static RE_SERIAL: Lazy<Regex> = Lazy::new( || Regex::new(r"SERIAL:([^,]*)").unwrap() );
     static RE_DATA_TIME: Lazy<Regex> = Lazy::new( || Regex::new(r"DATATIME:([0-9]{4},[0-9]{2},[0-9]{2},[0-9]{2},[0-9]{2},[0-9]{2})").unwrap() );
     static RE_PARAMETER: Lazy<Regex> = Lazy::new( || Regex::new(r",([a-z_0-9]*):([^,]*)").unwrap() );
-    static RE_EXCLUDED_PARAMETER: Lazy<Regex> = Lazy::new( || Regex::new(r"interface|subtype|origin|hw_version|slave").unwrap() );
+    static RE_EXCLUDED_PARAMETER: Lazy<Regex> = Lazy::new( || Regex::new(r"interface|subtype|origin|hw_version|slave|panid|ct_scl_fctr").unwrap() );
     
     let pvs6_data: String = pvs6_data.chars().filter(|c| !matches!(c, '\"' | '\t' | '\n' | ' ' )).collect::<String>();
     let mat_result = RE_RESULT.find(&pvs6_data).unwrap();
@@ -246,7 +332,7 @@ fn import_to_mysql( device_ts_data: &mut Vec<Vec<Pvs6DataPoint>>, solar_sql_uplo
             },
             Err(e) => {
                 error!("Device: {} @ {} failed to upload to Mysql solar database. Error: {}", datapoints[0].serial, datapoints[0].data_time, e);
-                debug!("Index is {}.  Device is: {}", index, datapoints[0].serial);
+                //debug!("Index is {}.  Device is: {}", index, datapoints[0].serial);
                 index_delete.push(index);
                 all_device_success = false;
             }, 
@@ -385,4 +471,34 @@ fn set_interval(repeat_interval: u64, units: char, offset: Duration) -> Interval
     }
 
     interval_at(tokio::time::Instant::now() + start.to_std().unwrap(), TokioDuration::from_secs( repeat_interval_s ) )
+}
+
+async fn get_pvs6_device_data( ) -> String {
+    
+
+
+    let pvs6_received = get(DEVICES_API).await();
+    match pvs6_received {
+        Ok(pvs6_response) => {
+            match pvs6_response.status() {
+                reqwest::StatusCode::OK => {
+                    // on success, parse our JSON to an APIResponse
+                    info!("PVS6 response code: Ok");
+                    match pvs6_response.text().await {
+                        Ok(pvs6_data) => {
+                            
+                            process_pvs6_devices_output( pvs6_data, device_ts_data );
+                            import_to_mysql( device_ts_data, solar_sql_upload_conn );
+            
+                        },
+                        Err(text_eff) => error!("Unable to extract json body from pvs6 response. Err: {:#?}", text_eff),
+                    };
+                }
+                other => {
+                    error!("PVS6 returned error code: {}", other);
+                }
+            };
+        },
+        Err(response_eff) => warn!("PVS6 did not respond. Error Code: {}", response_eff),
+    }
 }
