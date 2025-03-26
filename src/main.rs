@@ -12,7 +12,7 @@ use log4rs;
 use chrono::{prelude::*, Duration, DurationRound};
 
 
-const DEVICES_API: &str = "https://solarpi.artfulkraken.com/cgi-bin/dl_cgi?Command=DeviceList";
+const URL_DEVICES_API: &str = "https://solarpi.artfulkraken.com/cgi-bin/dl_cgi?Command=DeviceList";
 const LOGIN_INFO_LOC: &str= "/home/solarnodered/.mylogin.cnf";
 const PVS6_GET_DEVICES_INTERVAL: u64 = 5; // Time in minutes
 const PVS6_GET_DEVICES_INTERVAL_UNITS: char = 'm';
@@ -174,37 +174,17 @@ async fn main() {
 }
 
 async fn pvs6_to_mysql( device_ts_data: &mut Vec<Vec<Pvs6DataPoint>>, solar_sql_upload_conn: &mut PooledConn ) {
-    let solarpi_client: Client = Client::new();
-    let pvs6_received = solarpi_client.get(DEVICES_API)
-        .send()
-        //.header(ACCEPT, "application/json")
-        .await;
-        match pvs6_received {
-            Ok(pvs6_response) => {
-                match pvs6_response.status() {
-                    reqwest::StatusCode::OK => {
-                        // on success, parse our JSON to an APIResponse
-                        info!("PVS6 response code: Ok");
-                        match pvs6_response.text().await {
-                            Ok(pvs6_data) => {
-                                
-                                process_pvs6_devices_output( pvs6_data, device_ts_data );
-                                import_to_mysql( device_ts_data, solar_sql_upload_conn );
-                
-                            },
-                            Err(text_eff) => error!("Unable to extract json body from pvs6 response. Err: {:#?}", text_eff),
-                        };
-                    }
-                    other => {
-                        error!("PVS6 returned error code: {}", other);
-                    }
-                };
-            },
-            Err(response_eff) => warn!("PVS6 did not respond. Error Code: {}", response_eff),
-        }
+    let pvs6_result = get_pvs6_device_data().await;
+    match pvs6_result {
+        Some(pvs6_data) => {
+            process_pvs6_devices_output( pvs6_data, device_ts_data );  //Function needs some error handling and response to determine if we should move to
+            // mysql upload step.
+            import_to_mysql( device_ts_data, solar_sql_upload_conn );
+
+        },
+        None => warn!("Incorrect or no PVS6 response. No data to process or upload "),
+    };
 }
-
-
 
 fn process_pvs6_devices_output(pvs6_data: String, device_ts_data: &mut Vec<Vec<Pvs6DataPoint>> ) {
     //Regex patterns synced lazy for compile efficiency improvement
@@ -473,32 +453,33 @@ fn set_interval(repeat_interval: u64, units: char, offset: Duration) -> Interval
     interval_at(tokio::time::Instant::now() + start.to_std().unwrap(), TokioDuration::from_secs( repeat_interval_s ) )
 }
 
-async fn get_pvs6_device_data( ) -> String {
-    
-
-
-    let pvs6_received = get(DEVICES_API).await();
+async fn get_pvs6_device_data( ) -> Option<String> {
+    let pvs6_received = get(URL_DEVICES_API).await;
     match pvs6_received {
         Ok(pvs6_response) => {
             match pvs6_response.status() {
                 reqwest::StatusCode::OK => {
                     // on success, parse our JSON to an APIResponse
-                    info!("PVS6 response code: Ok");
                     match pvs6_response.text().await {
                         Ok(pvs6_data) => {
-                            
-                            process_pvs6_devices_output( pvs6_data, device_ts_data );
-                            import_to_mysql( device_ts_data, solar_sql_upload_conn );
-            
+                            info!("PVS6 response body extracted to text: Ok");
+                            return Some(pvs6_data)
                         },
-                        Err(text_eff) => error!("Unable to extract json body from pvs6 response. Err: {:#?}", text_eff),
+                        Err(text_eff) => {
+                            error!("PVS Response code: OK, but unable to extract body text from pvs6 response. Err: {:#?}", text_eff);
+                            return None
+                        },
                     };
-                }
+                },
                 other => {
                     error!("PVS6 returned error code: {}", other);
-                }
+                    return None
+                },
             };
         },
-        Err(response_eff) => warn!("PVS6 did not respond. Error Code: {}", response_eff),
+        Err(response_eff) => {
+            warn!("PVS6 did not respond. Error Code: {}", response_eff);
+            return None
+        },
     }
 }
