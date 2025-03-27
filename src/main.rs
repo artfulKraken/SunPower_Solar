@@ -869,6 +869,7 @@ fn get_sql_last_device_data( solar_sql_upload_conn: &mut PooledConn ) -> Result<
                                 for inv in inverter.iter() {
                                     inverters.push(inv.clone());
                                     inv_cnt += 1
+                                    debug!( "Inverter Count: {}.  Should be 1", inv_cnt);
                                 }
                                 if inv_cnt > 1 {
                                     warn!("Query should have returned only one inverter with serial: {}.  {} were returned", s.0, inv_cnt)
@@ -999,11 +1000,17 @@ fn get_sql_last_device_data( solar_sql_upload_conn: &mut PooledConn ) -> Result<
                 }
             }
         let last_data: Pvs6DevicesResponse = Pvs6DevicesResponse::set_values(sup, consump_meter, prod_meter, inverters);
+        println!("Print 1st");
         println!("Serial: {} Time: {}", last_data.supervisor.serial, last_data.supervisor.data_time);
+        println!("Print 2nd");
         println!("Serial: {} Time: {}", last_data.cons_meter.serial, last_data.cons_meter.data_time);
+        println!("Print 3rd");
         println!("Serial: {} Time: {}", last_data.prod_meter.serial, last_data.prod_meter.data_time);
+        println!("Print last");
+        let mut test_cnt = 1;
         for inv in last_data.inverters.iter() {
-            println!("Serial: {} Time: {}", inv.serial, inv.data_time);
+            println!("#: {} Serial: {} Time: {}",test_cnt, inv.serial, inv.data_time);
+            test_cnt += 1;
         }
         return Ok(last_data)
         },
