@@ -881,7 +881,7 @@ fn get_sql_last_device_data( solar_sql_upload_conn: &mut PooledConn ) -> Result<
                         match &s.2 {
                             Some(meter_type) => {
                                 match meter_type {
-                                    val if *val == CONSUMPTION_METER => {
+                                    val if *val == "PVS5-METER-C" => {
                                         let consump_query = format!("{}{}{}{}{}{}", CONSUMP_QUERY_P1, DEV_QUERY_P2, s.0, DEV_QUERY_P3, s.0, DEV_QUERY_P4 );
                                         /*
                                         let consumption_res = solar_sql_upload_conn.query_map(
@@ -930,7 +930,7 @@ fn get_sql_last_device_data( solar_sql_upload_conn: &mut PooledConn ) -> Result<
                                             },
                                         }
                                     },
-                                    val if *val == POWER_METER => {
+                                    val if *val == "PVS5-METER-P" => {
                                         let production_query = format!("{}{}{}{}{}{}", PRODUCT_QUERY_P1, DEV_QUERY_P2, s.0, DEV_QUERY_P3, s.0, DEV_QUERY_P4 );
 
                                         let production_res = solar_sql_upload_conn.query_map(
@@ -991,7 +991,7 @@ fn get_sql_last_device_data( solar_sql_upload_conn: &mut PooledConn ) -> Result<
                     },
                     _ => {
                         error!("Not a valid device type");
-                        return Err( "Not a valid power meter type".into() )
+                        return Err( "Not a valid device type".into() )
                     },
                 }
             }
