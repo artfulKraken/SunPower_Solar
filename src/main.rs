@@ -868,7 +868,7 @@ fn get_sql_last_device_data( solar_sql_upload_conn: &mut PooledConn ) -> Result<
                                 let mut inv_cnt = 0;
                                 for inv in inverter.iter() {
                                     inverters.push(inv.clone());
-                                    inv_cnt += 1
+                                    inv_cnt += 1;
                                     debug!( "Inverter Count: {}.  Should be 1", inv_cnt);
                                 }
                                 if inv_cnt > 1 {
