@@ -898,6 +898,8 @@ fn get_sql_last_device_data( solar_sql_upload_conn: &mut PooledConn ) -> Result<
                                             Ok(row) => {
                                                 match row {
                                                     Some(cm) => {
+                                                        print!("{:#?}", cm[0]);
+                                                        print!("{:#?}", cm[1]);
                                                         consump_meter = ConsumptionMeter::set_values(
                                                             from_value::<String>(cm[0].clone()),
                                                             from_value::<String>(cm[1].clone()), 
