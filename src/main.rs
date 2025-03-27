@@ -19,6 +19,7 @@ use std::{str, fs, path::PathBuf};
 use log::{debug, error, info, warn};
 use log4rs;
 use chrono::{prelude::*, Duration, DurationRound};
+use frunk::{HList, hlist, hlist_pat};
 
 
 const URL_DEVICES_API: &str = "https://solarpi.artfulkraken.com/cgi-bin/dl_cgi?Command=DeviceList";
@@ -883,6 +884,16 @@ fn get_sql_last_device_data( solar_sql_upload_conn: &mut PooledConn ) -> Result<
                                 match meter_type {
                                     val if *val == "PVS5-METER-C" => {
                                         let consump_query = format!("{}{}{}{}{}{}", CONSUMP_QUERY_P1, DEV_QUERY_P2, s.0, DEV_QUERY_P3, s.0, DEV_QUERY_P4 );
+                                        type RowType = HList!(String, NaiveDateTime, Option<String>, Option<String>, Option<String>, Option<String>, Option<String>, Option<String>,
+                                            Option<String>, Option<String>, Option<String>, Option<String>, Option<String>, Option<String>, Option<String>, Option<String>, Option<String>);
+                                        let consump = solar_sql_upload_conn.query_map( consump_query, |row: RowType| {
+                                            let hlist_pat![cm0, cm1, cm2, cm3, cm4, cm5, cm6, cm7, cm8, cm9, cm10, cm11, cm12, cm13, cm14, cm15, cm16] = row;
+                                            //(cm0, cm1, cm2, cm3, cm4, cm5, cm6, cm7, cm8, cm9, cm10, cm11, cm12, cm13, cm14, cm15, cm16, cm17)
+                                        });
+
+                                        println!("serial: {}, timedate: {}", cm0, cm1);
+
+
                                         /*
                                         let consumption_res = solar_sql_upload_conn.query_map(
                                             consump_query,
@@ -892,7 +903,39 @@ fn get_sql_last_device_data( solar_sql_upload_conn: &mut PooledConn ) -> Result<
                                                     p1_kw, p2_kw, pos_ltea_3phsum_kwh, q_3phsum_kvar, s_3phsum_kva, tot_pf_rto, v12_v, v1n_v, v2n_v }
                                                 },
                                             );
+
+                                            
+
+                                                    
+
+                                        
+                                        let consumption_res = solar_sql_upload_conn.exec_first(consump_query, ())
+                                        .map( |row| {
+                                            row.map(| ( serial, data_time, freq_hz, i1_a, i2_a, neg_ltea_3phsum_kwh, net_ltea_3phsum_kwh, p_3phsum_kw, 
+                                                p1_kw, p2_kw, pos_ltea_3phsum_kwh, q_3phsum_kvar, s_3phsum_kva, tot_pf_rto, v12_v, v1n_v, v2n_v ) |
+                                                ConsumptionMeter {
+                                                    serial: serial,
+                                                    data_time: data_time,
+                                                    freq_hz: freq_hz,
+                                                    i1_a: i1_a, 
+                                                    i2_a: i2_a, 
+                                                    neg_ltea_3phsum_kwh: neg_ltea_3phsum_kwh, 
+                                                    net_ltea_3phsum_kwh: net_ltea_3phsum_kwh, 
+                                                    p_3phsum_kw: p_3phsum_kw, 
+                                                    p1_kw: p1_kw, 
+                                                    p2_kw: p2_kw, 
+                                                    pos_ltea_3phsum_kwh: pos_ltea_3phsum_kwh, 
+                                                    q_3phsum_kvar: q_3phsum_kvar, 
+                                                    s_3phsum_kva: s_3phsum_kva, 
+                                                    tot_pf_rto: tot_pf_rto, 
+                                                    v12_v: v12_v, 
+                                                    v1n_v: v1n_v, 
+                                                    v2n_v: v2n_v,
+                                                })
+                                            }
+                                        );
                                         */
+                                        /*
                                         let consumption_res: Result<Option<Row>,Error> = solar_sql_upload_conn.exec_first(consump_query, ());
                                         match consumption_res {
                                             Ok(row) => {
@@ -900,9 +943,10 @@ fn get_sql_last_device_data( solar_sql_upload_conn: &mut PooledConn ) -> Result<
                                                     Some(cm) => {
                                                         print!("{:#?}", cm[0]);
                                                         print!("{:#?}", cm[1]);
+                                                        chron_dt = DateTime::from_timestamp_opt(cm[1].timestamp(),0);
                                                         consump_meter = ConsumptionMeter::set_values(
                                                             from_value::<String>(cm[0].clone()),
-                                                            from_value::<String>(cm[1].clone()), 
+                                                            "westwasys".to_string(),//from_value::<String>(cm[1].clone()), 
                                                             if cm[2] == "NULL".into() {None} else {Some( from_value::<String>(cm[2].clone()) )}, 
                                                             if cm[3] == "NULL".into() {None} else {Some( from_value::<String>(cm[3].clone()) )}, 
                                                             if cm[4] == "NULL".into() {None} else {Some( from_value::<String>(cm[4].clone()) )},
@@ -930,7 +974,7 @@ fn get_sql_last_device_data( solar_sql_upload_conn: &mut PooledConn ) -> Result<
                                                 error!("{}", con_eff);
                                                 return Err( format!("{}", con_eff).into() )
                                             },
-                                        }
+                                        }*/
                                     },
                                     val if *val == "PVS5-METER-P" => {
                                         let production_query = format!("{}{}{}{}{}{}", PRODUCT_QUERY_P1, DEV_QUERY_P2, s.0, DEV_QUERY_P3, s.0, DEV_QUERY_P4 );
