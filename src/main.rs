@@ -31,6 +31,7 @@ const INVERTER: &str = "Inverter";
 const POWER_METER: &str = "GROSS_PRODUCTION_SITE";
 const CONSUMPTION_METER: &str = "NET_CONSUMPTION_LOADSIDE";
 
+
 const INV_QUERY_P1: &str = 
     "SELECT \
         serial, \
@@ -842,17 +843,12 @@ fn get_sql_last_device_data( solar_sql_upload_conn: &mut PooledConn ) -> Result<
     let mut prod_meter: ProductionMeter = ProductionMeter::new();
     let mut sup: Supervisor = Supervisor::new();
     let mut consump_meter: ConsumptionMeter = ConsumptionMeter::new();
-    let other_inverter = INVERTER.to_string();
-    let other_supervisor = SUPERVISOR.to_string();
-    let other_meter = METER.to_string();
-    let other_power_meter = POWER_METER.to_string();
-    let other_consumption_meter = CONSUMPTION_METER.to_string();
-
+    
     match serials_result {
         Ok(serials) => {
             for s in serials.iter() {
                 match &s.1 {
-                    other_inverter => {
+                    val if *val ==  INVERTER => {
                         let inv_query = format!("{}{}{}{}{}{}", INV_QUERY_P1, DEV_QUERY_P2, s.0, DEV_QUERY_P3, s.0, DEV_QUERY_P4 );
 
                         let inverters_res = solar_sql_upload_conn.query_map(
@@ -881,11 +877,11 @@ fn get_sql_last_device_data( solar_sql_upload_conn: &mut PooledConn ) -> Result<
                             }
                         }
                     },
-                    other_meter => {
+                    val if *val == METER => {
                         match &s.2 {
                             Some(meter_type) => {
                                 match meter_type {
-                                    other_consumption_meter => {
+                                    val if *val == CONSUMPTION_METER => {
                                         let consump_query = format!("{}{}{}{}{}{}", CONSUMP_QUERY_P1, DEV_QUERY_P2, s.0, DEV_QUERY_P3, s.0, DEV_QUERY_P4 );
                                         /*
                                         let consumption_res = solar_sql_upload_conn.query_map(
@@ -934,7 +930,7 @@ fn get_sql_last_device_data( solar_sql_upload_conn: &mut PooledConn ) -> Result<
                                             },
                                         }
                                     },
-                                    other_power_meter => {
+                                    val if *val == POWER_METER => {
                                         let production_query = format!("{}{}{}{}{}{}", PRODUCT_QUERY_P1, DEV_QUERY_P2, s.0, DEV_QUERY_P3, s.0, DEV_QUERY_P4 );
 
                                         let production_res = solar_sql_upload_conn.query_map(
@@ -968,7 +964,7 @@ fn get_sql_last_device_data( solar_sql_upload_conn: &mut PooledConn ) -> Result<
                             },
                         }
                     },
-                    other_supervisor => {
+                    val if *val == SUPERVISOR => {
                         let sup_query = format!("{}{}{}{}{}{}", SUP_QUERY_P1, DEV_QUERY_P2, s.0, DEV_QUERY_P3, s.0, DEV_QUERY_P4 );
 
                         let supervisor_res = solar_sql_upload_conn.query_map(
