@@ -8,7 +8,7 @@ reqwest = { version = "0.12.14", features = ["blocking", "json"] }
 tokio = { version = "1", features = ["full"] }
 regex = "1.11.1"
 once_cell = "1.21.1"
-mysql = { version = "26.0", features = ["chrono", "frunk", "derive"] }
+mysql = { version = "26.0", features = [ "chrono", "derive" ] }
 myloginrs = "0.1"
 chrono = "0.4"
 log4rs = "1.3"

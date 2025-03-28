@@ -1153,7 +1153,6 @@ dependencies = [
  "cmake",
  "crc32fast",
  "flate2",
- "frunk",
  "lazy_static",
  "mysql-common-derive",
  "num-bigint",
