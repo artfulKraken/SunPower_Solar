@@ -903,6 +903,17 @@ fn get_sql_last_device_data( solar_sql_upload_conn: &mut PooledConn ) -> Result<
                                                 match row {
                                                     Some(cm) => {
                                                         println!("Freq_hz: {:#?}", cm[2]);
+                                                        let opt_value: Option<f64> = match cm[2] {
+                                                            Value::Double(flt_data) => Some(flt_data as f64),
+                                                            Value::NULL => None,
+                                                            _ => {
+                                                                error!("Value for {:#?} was not a Double.", cm[2]);
+                                                                panic!("sql value returned was not a double");
+                                                            },
+                                                        };
+                                                        let opt_value2 = opt_f64_from_value_double(&cm[2]);
+                                                        assert!(opt_value == opt_value2, "Function seems to work");
+                                                        
                                                         consump_meter = ConsumptionMeter::set_values(
                                                             from_value::<String>(cm[0].clone()),
                                                             from_value::<chrono::NaiveDateTime>(cm[1].clone()),
@@ -1022,4 +1033,16 @@ fn get_sql_last_device_data( solar_sql_upload_conn: &mut PooledConn ) -> Result<
         },
     }
 
+}
+
+fn opt_f64_from_value_double(v: &Value) -> Option<f64> {
+    let opt_value: Option<f64> = match v {
+        Value::Double(flt_data) => Some(*flt_data),
+        Value::NULL => None,
+        _ => {
+            error!("Value for {:#?} was not a Double.", v);
+            panic!("sql value returned was not a double");
+        },
+    };
+    opt_value
 }
