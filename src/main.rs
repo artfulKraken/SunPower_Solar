@@ -157,8 +157,8 @@ impl Inverter {
         Self {
             serial: String::new(),
             data_time: NaiveDateTime::new(
-                NaiveDate::from_ymd_opt(2000, 0, 0).unwrap(),
-                NaiveTime::from_hms_opt(0, 0, 0).unwrap(),
+                NaiveDate::from_ymd_opt(2000, 1, 1).unwrap(),  //Planned unwrap.  Want a runtime crash if this doesn't work.  
+                NaiveTime::from_hms_opt(0, 0, 0).unwrap(),       //Planned unwrap.  Want a runtime crash if this doesn't work. 
             ),
             freq_hz: None,
             i_3phsum_a: None,
@@ -213,8 +213,8 @@ impl ProductionMeter {
         Self { 
             serial: String::new(),
             data_time: NaiveDateTime::new(
-                NaiveDate::from_ymd_opt(2000, 0, 0).unwrap(),
-                NaiveTime::from_hms_opt(0, 0, 0).unwrap(),
+                NaiveDate::from_ymd_opt(2000, 1, 1).unwrap(),  //Planned unwrap.  Want a runtime crash if this doesn't work.  
+                NaiveTime::from_hms_opt(0, 0, 0).unwrap(),       //Planned unwrap.  Want a runtime crash if this doesn't work. 
             ),
             freq_hz: None,
             i_a: None,
@@ -269,8 +269,8 @@ impl ConsumptionMeter {
         Self {
             serial: String::new(),
             data_time: NaiveDateTime::new(
-                NaiveDate::from_ymd_opt(2000, 0, 0).unwrap(),
-                NaiveTime::from_hms_opt(0, 0, 0).unwrap(),
+                NaiveDate::from_ymd_opt(2000, 1, 1).unwrap(),  //Planned unwrap.  Want a runtime crash if this doesn't work.  
+                NaiveTime::from_hms_opt(0, 0, 0).unwrap(),       //Planned unwrap.  Want a runtime crash if this doesn't work. 
             ),
             freq_hz: None,
             i1_a: None,
@@ -338,8 +338,8 @@ impl Supervisor {
         Self {
             serial: String::new(),
             data_time: NaiveDateTime::new(
-                NaiveDate::from_ymd_opt(2000, 0, 0).unwrap(),
-                NaiveTime::from_hms_opt(0, 0, 0).unwrap(),
+                NaiveDate::from_ymd_opt(2000, 1, 1).unwrap(),  //Planned unwrap.  Want a runtime crash if this doesn't work.  
+                NaiveTime::from_hms_opt(0, 0, 0).unwrap(),       //Planned unwrap.  Want a runtime crash if this doesn't work. 
             ),
             dl_comm_err:  None,
             dl_cpu_load:  None,
