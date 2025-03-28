@@ -3,3 +3,4 @@ main.rs.bkup
 .DS_Store
 /src/Parameters.txt
 /src/units_table.txt
+/log
