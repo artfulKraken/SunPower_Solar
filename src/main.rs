@@ -902,37 +902,24 @@ fn get_sql_last_device_data( solar_sql_upload_conn: &mut PooledConn ) -> Result<
                                             Ok(row) => {
                                                 match row {
                                                     Some(cm) => {
-                                                        println!("Freq_hz: {:#?}", cm[2]);
-                                                        let opt_value: Option<f64> = match cm[2] {
-                                                            Value::Double(flt_data) => Some(flt_data as f64),
-                                                            Value::NULL => None,
-                                                            _ => {
-                                                                error!("Value for {:#?} was not a Double.", cm[2]);
-                                                                panic!("sql value returned was not a double");
-                                                            },
-                                                        };
-                                                        let opt_value2 = opt_f64_from_value_double(&cm[2]);
-                                                        assert!(opt_value == opt_value2, "Function seems to work");
-                                                        
                                                         consump_meter = ConsumptionMeter::set_values(
                                                             from_value::<String>(cm[0].clone()),
                                                             from_value::<chrono::NaiveDateTime>(cm[1].clone()),
-                                                            //from_value::Option<f64>(cm[2].clone()),
-                                                            if cm[2] == "NULL".into() {None} else {Some( from_value::<f64>(cm[3].clone()) )}, 
-                                                            if cm[3] == "NULL".into() {None} else {Some( from_value::<f64>(cm[3].clone()) )}, 
-                                                            if cm[4] == "NULL".into() {None} else {Some( from_value::<f64>(cm[4].clone()) )},
-                                                            if cm[5] == "NULL".into() {None} else {Some( from_value::<f64>(cm[5].clone()) )},  
-                                                            if cm[6] == "NULL".into() {None} else {Some( from_value::<f64>(cm[6].clone()) )}, 
-                                                            if cm[7] == "NULL".into() {None} else {Some( from_value::<f64>(cm[7].clone()) )}, 
-                                                            if cm[8] == "NULL".into() {None} else {Some( from_value::<f64>(cm[8].clone()) )},
-                                                            if cm[9] == "NULL".into() {None} else {Some( from_value::<f64>(cm[9].clone()) )},
-                                                            if cm[10] == "NULL".into() {None} else {Some( from_value::<f64>(cm[10].clone()) )},
-                                                            if cm[11] == "NULL".into() {None} else {Some( from_value::<f64>(cm[11].clone()) )},
-                                                            if cm[12] == "NULL".into() {None} else {Some( from_value::<f64>(cm[12].clone()) )},
-                                                            if cm[13] == "NULL".into() {None} else {Some( from_value::<f64>(cm[13].clone()) )},
-                                                            if cm[14] == "NULL".into() {None} else {Some( from_value::<f64>(cm[14].clone()) )},
-                                                            if cm[15] == "NULL".into() {None} else {Some( from_value::<f64>(cm[15].clone()) )},
-                                                            if cm[16] == "NULL".into() {None} else {Some( from_value::<f64>(cm[16].clone()) )},
+                                                            opt_f64_from_value_double( &cm[2] ),
+                                                            opt_f64_from_value_double( &cm[3] ),
+                                                            opt_f64_from_value_double( &cm[4] ),
+                                                            opt_f64_from_value_double( &cm[5] ),
+                                                            opt_f64_from_value_double( &cm[6] ),
+                                                            opt_f64_from_value_double( &cm[7] ),
+                                                            opt_f64_from_value_double( &cm[8] ),
+                                                            opt_f64_from_value_double( &cm[9] ),
+                                                            opt_f64_from_value_double( &cm[10] ),
+                                                            opt_f64_from_value_double( &cm[11] ),
+                                                            opt_f64_from_value_double( &cm[12] ),
+                                                            opt_f64_from_value_double( &cm[13] ),
+                                                            opt_f64_from_value_double( &cm[14] ),
+                                                            opt_f64_from_value_double( &cm[15] ),
+                                                            opt_f64_from_value_double( &cm[16] ),
                                                         )
                                                     },
                                                     None => {
