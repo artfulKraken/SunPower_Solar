@@ -902,9 +902,11 @@ fn get_sql_last_device_data( solar_sql_upload_conn: &mut PooledConn ) -> Result<
                                             Ok(row) => {
                                                 match row {
                                                     Some(cm) => {
+                                                        println!("Freq_hz: {:#?}", cm[2]);
                                                         consump_meter = ConsumptionMeter::set_values(
                                                             from_value::<String>(cm[0].clone()),
                                                             from_value::<chrono::NaiveDateTime>(cm[1].clone()),
+                                                            //from_value::Option<f64>(cm[2].clone()),
                                                             if cm[2] == "NULL".into() {None} else {Some( from_value::<f64>(cm[3].clone()) )}, 
                                                             if cm[3] == "NULL".into() {None} else {Some( from_value::<f64>(cm[3].clone()) )}, 
                                                             if cm[4] == "NULL".into() {None} else {Some( from_value::<f64>(cm[4].clone()) )},
