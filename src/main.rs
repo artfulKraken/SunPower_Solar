@@ -948,7 +948,7 @@ fn get_sql_last_device_data( solar_sql_upload_conn: &mut PooledConn ) -> Result<
                                                     Some(cm) => {
                                                         print!("{:#?}", cm[0]);
                                                         print!("{:#?}", cm[1]);
-                                                        let dt = from_value::<chrono::NaiveDateTime>(cm[2].clone());
+                                                        let dt = from_value::<chrono::NaiveDateTime>(cm[1].clone());
                                                         //let st = format!("{}", dt.format("%Y-%m-%d %H:%M:%S"));
                                                         //println!("TimeString: {}", st); 
                                                         consump_meter = ConsumptionMeter::set_values(
