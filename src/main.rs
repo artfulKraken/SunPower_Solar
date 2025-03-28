@@ -241,7 +241,7 @@ impl ProductionMeter {
 #[derive(Clone)] 
 struct ConsumptionMeter {
     serial: String,
-    data_time: String,
+    data_time: NaiveDateTime,
     freq_hz: Option<String>,
     i1_a: Option<String>,
     i2_a: Option<String>,
@@ -262,7 +262,7 @@ impl ConsumptionMeter {
     fn new() -> Self {
         Self {
             serial: String::new(),
-            data_time: String::new(),
+            data_time: NaiveDateTime::new(NaiveDate::from_ymd_opt(2016, 7, 8).unwrap(), NaiveTime::from_hms_opt(12, 59, 59).unwrap()),
             freq_hz: None,
             i1_a: None,
             i2_a: None,
@@ -282,14 +282,14 @@ impl ConsumptionMeter {
     }
 
     fn set_values(
-        serial: String, data_time: String, freq_hz: Option<String>, i1_a: Option<String>, i2_a: Option<String>,
+        serial: String, data_time: NaiveDateTime, freq_hz: Option<String>, i1_a: Option<String>, i2_a: Option<String>,
         neg_ltea_3phsum_kwh: Option<String>, net_ltea_3phsum_kwh: Option<String>, p_3phsum_kw: Option<String>, p1_kw: Option<String>,
         p2_kw: Option<String>, pos_ltea_3phsum_kwh: Option<String>, q_3phsum_kvar: Option<String>, s_3phsum_kva: Option<String>,
         tot_pf_rto: Option<String>, v12_v: Option<String>, v1n_v: Option<String>, v2n_v: Option<String>,
     ) -> Self {
         Self {
             serial: serial.to_owned(),
-            data_time: data_time.to_owned(),
+            data_time: data_time,
             freq_hz: freq_hz.map( |s| s.to_owned() ),
             i1_a: i1_a.map( |s| s.to_owned() ),
             i2_a: i2_a.map( |s| s.to_owned() ),
@@ -538,7 +538,7 @@ fn process_pvs6_devices_output(pvs6_data: String, device_ts_data: &mut Vec<Vec<P
                                 }
                             },
                             CONSUMPTION_METER => {
-                                if last_device_data.cons_meter.data_time == data_time && last_device_data.cons_meter.serial == serial {
+                                if last_device_data.cons_meter.data_time == NaiveDateTime::parse_from_str(&data_time, "%Y-%m-%d %H:%M:%S").unwrap()  && last_device_data.cons_meter.serial == serial {
                                     repeat_flg = true;
                                 }
                             },
@@ -952,7 +952,7 @@ fn get_sql_last_device_data( solar_sql_upload_conn: &mut PooledConn ) -> Result<
                                                         println!("TimeString: {}", st); 
                                                         consump_meter = ConsumptionMeter::set_values(
                                                             from_value::<String>(cm[0].clone()),
-                                                            "westwasys".to_string(),//from_value::<String>(cm[1].clone()), 
+                                                            from_value::<NaiveDateTime>(cm[1].clone()),//from_value::<String>(cm[1].clone()), 
                                                             if cm[2] == "NULL".into() {None} else {Some( from_value::<String>(cm[2].clone()) )}, 
                                                             if cm[3] == "NULL".into() {None} else {Some( from_value::<String>(cm[3].clone()) )}, 
                                                             if cm[4] == "NULL".into() {None} else {Some( from_value::<String>(cm[4].clone()) )},
