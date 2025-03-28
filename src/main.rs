@@ -59,7 +59,6 @@ const SUP_QUERY_P1: &str =
         SUM(CASE WHEN parameter = 'dl_flash_avail' THEN data ELSE NULL END) AS dl_flash_avail,\
         SUM(CASE WHEN parameter = 'dl_mem_used' THEN data ELSE NULL END) AS dl_mem_used, \
         SUM(CASE WHEN parameter = 'dl_scan_time' THEN data ELSE NULL END) AS dl_scan_time, \
-        SUM(CASE WHEN parameter = 'stat_ind' THEN data ELSE NULL END) AS stat_ind, \
         SUM(CASE WHEN parameter = 'dl_skipped_scans' THEN data ELSE NULL END) AS dl_skipped_scans, \
         SUM(CASE WHEN parameter = 'dl_untransmitted' THEN data ELSE NULL END) AS dl_untransmitted, \
         SUM(CASE WHEN parameter = 'dl_uptime' THEN data ELSE NULL END) AS dl_uptime ";
