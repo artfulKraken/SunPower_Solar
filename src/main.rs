@@ -7,19 +7,20 @@ Program completes the following actions:
 */
 
 
-use reqwest;
+//use reqwest;
 use reqwest::get;
 use regex::Regex;
 use once_cell::sync::Lazy;
 use mysql::*;
+//use mysql::prelude::Queryable;
 use mysql::prelude::*;
 use myloginrs::parse as myloginrs_parse;
 use tokio::time::{Interval, interval_at, Duration as TokioDuration};
 use std::{str, fs, path::PathBuf};
 use log::{debug, error, info, warn};
 use log4rs;
-use chrono::{prelude::*, Duration, DurationRound};
-use frunk::{HList, hlist, hlist_pat};
+use chrono::{prelude::*, Duration, DurationRound, NaiveDateTime};
+
 
 
 const URL_DEVICES_API: &str = "https://solarpi.artfulkraken.com/cgi-bin/dl_cgi?Command=DeviceList";

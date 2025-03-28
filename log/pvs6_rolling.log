@@ -1,1 +1,3 @@
 [2025-03-24T08:13:39.722455 ERROR pvs6_to_mysql] Error: /_home/solarnodered/.mylogin.cnf File does not exist on local client device
+[2025-03-28T08:59:25.363458 ERROR pvs6_to_mysql] Error: /home/solarnodered/.mylogin.cnf Login Credential file does not exist on local client device
+[2025-03-28T08:59:25.364053 ERROR pvs6_to_mysql] Unable to get solar sql pool.  Err: Login Credential file not found on local client device
