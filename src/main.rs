@@ -947,12 +947,12 @@ fn get_sql_last_device_data( solar_sql_upload_conn: &mut PooledConn ) -> Result<
                                                     Some(cm) => {
                                                         print!("{:#?}", cm[0]);
                                                         print!("{:#?}", cm[1]);
-                                                        let dt = from_value::<NaiveDateTime>(cm[2].clone());
-                                                        let st = format!("{}", dt.format("%Y-%m-%d %H:%M:%S"));
-                                                        println!("TimeString: {}", st); 
+                                                        //let dt = from_value::<NaiveDateTime>(cm[2].clone());
+                                                        //let st = format!("{}", dt.format("%Y-%m-%d %H:%M:%S"));
+                                                        //println!("TimeString: {}", st); 
                                                         consump_meter = ConsumptionMeter::set_values(
                                                             from_value::<String>(cm[0].clone()),
-                                                            from_value::<NaiveDateTime>(cm[1].clone()),//from_value::<String>(cm[1].clone()), 
+                                                            NaiveDate::from_ymd_opt(2016, 7, 8).unwrap().and_hms_opt(9, 10, 11).unwrap(),//from_value::<NaiveDateTime>(cm[1].clone()),//from_value::<String>(cm[1].clone()), 
                                                             if cm[2] == "NULL".into() {None} else {Some( from_value::<f64>(cm[3].clone()) )}, 
                                                             if cm[3] == "NULL".into() {None} else {Some( from_value::<f64>(cm[3].clone()) )}, 
                                                             if cm[4] == "NULL".into() {None} else {Some( from_value::<f64>(cm[4].clone()) )},
@@ -975,6 +975,8 @@ fn get_sql_last_device_data( solar_sql_upload_conn: &mut PooledConn ) -> Result<
                                                         return Err( format!("No iconsumption meter matching device serial {} found.", s.0).into() )
                                                     },
                                                 }
+                                                println!("Made IT through, panicing now");
+                                                panic!("Good Stuff");
                                             },
                                             Err(con_eff) => {
                                                 error!("{}", con_eff);
