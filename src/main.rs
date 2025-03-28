@@ -884,16 +884,20 @@ fn get_sql_last_device_data( solar_sql_upload_conn: &mut PooledConn ) -> Result<
                                 match meter_type {
                                     val if *val == "PVS5-METER-C" => {
                                         let consump_query = format!("{}{}{}{}{}{}", CONSUMP_QUERY_P1, DEV_QUERY_P2, s.0, DEV_QUERY_P3, s.0, DEV_QUERY_P4 );
-                                        type RowType = HList!(String, NaiveDateTime, Option<String>, Option<String>, Option<String>, Option<String>, Option<String>, Option<String>,
+                                        /*type RowType = HList!(String, NaiveDateTime, Option<String>, Option<String>, Option<String>, Option<String>, Option<String>, Option<String>,
                                             Option<String>, Option<String>, Option<String>, Option<String>, Option<String>, Option<String>, Option<String>, Option<String>, Option<String>);
                                         let consump = solar_sql_upload_conn.query_map( consump_query, |row: RowType| {
                                             let hlist_pat![cm0, cm1, cm2, cm3, cm4, cm5, cm6, cm7, cm8, cm9, cm10, cm11, cm12, cm13, cm14, cm15, cm16] = row;
-                                            //(cm0, cm1, cm2, cm3, cm4, cm5, cm6, cm7, cm8, cm9, cm10, cm11, cm12, cm13, cm14, cm15, cm16, cm17)
+                                            (cm0, cm1, cm2, cm3, cm4, cm5, cm6, cm7, cm8, cm9, cm10, cm11, cm12, cm13, cm14, cm15, cm16)
                                         });
+                                        
+                                        let consump_data = consump.unwrap();
+                                        println!("Len: {}", consump_data.len());
+                                        println!("Head: {}", consump_data.head());
+                                        //et serial_string: String = consump_data[0];
+                                        //let timeString: String = format!("{}", consump_data.1.format("%Y-%m-%d %H:%M:%S"));
 
-                                        println!("serial: {}, timedate: {}", cm0, cm1);
-
-
+*/
                                         /*
                                         let consumption_res = solar_sql_upload_conn.query_map(
                                             consump_query,
@@ -935,7 +939,7 @@ fn get_sql_last_device_data( solar_sql_upload_conn: &mut PooledConn ) -> Result<
                                             }
                                         );
                                         */
-                                        /*
+                                        
                                         let consumption_res: Result<Option<Row>,Error> = solar_sql_upload_conn.exec_first(consump_query, ());
                                         match consumption_res {
                                             Ok(row) => {
@@ -943,7 +947,9 @@ fn get_sql_last_device_data( solar_sql_upload_conn: &mut PooledConn ) -> Result<
                                                     Some(cm) => {
                                                         print!("{:#?}", cm[0]);
                                                         print!("{:#?}", cm[1]);
-                                                        chron_dt = DateTime::from_timestamp_opt(cm[1].timestamp(),0);
+                                                        let dt = from_value::<NaiveDateTime>(cm[2].clone());
+                                                        let st = format!("{}", dt.format("%Y-%m-%d %H:%M:%S"));
+                                                        println!("TimeString: {}", st); 
                                                         consump_meter = ConsumptionMeter::set_values(
                                                             from_value::<String>(cm[0].clone()),
                                                             "westwasys".to_string(),//from_value::<String>(cm[1].clone()), 
@@ -974,7 +980,7 @@ fn get_sql_last_device_data( solar_sql_upload_conn: &mut PooledConn ) -> Result<
                                                 error!("{}", con_eff);
                                                 return Err( format!("{}", con_eff).into() )
                                             },
-                                        }*/
+                                        }
                                     },
                                     val if *val == "PVS5-METER-P" => {
                                         let production_query = format!("{}{}{}{}{}{}", PRODUCT_QUERY_P1, DEV_QUERY_P2, s.0, DEV_QUERY_P3, s.0, DEV_QUERY_P4 );
