@@ -9,402 +9,491 @@ Program completes the following actions:
 
 //use reqwest;
 use reqwest::get;
-use regex::Regex;
+use regex::{Regex, Captures};
 use once_cell::sync::Lazy;
-use mysql::*;
+//use mysql::*;
 //use mysql::prelude::Queryable;
-use mysql::prelude::*;
+//use mysql::prelude::*;
 use myloginrs::parse as myloginrs_parse;
 use tokio::time::{Interval, interval_at, Duration as TokioDuration};
-use std::{str, fs, path::PathBuf};
+use std::{str, fs, path::PathBuf, env};
 use log::{debug, error, info, warn};
 use log4rs;
-use chrono::{prelude::*, Duration, DurationRound, NaiveDateTime};
+use chrono::{prelude::*, Duration, DurationRound, DateTime, Utc, NaiveDateTime};
+use sqlx::mysql::MySqlPoolOptions;
+
+use serde::Deserialize;
+use serde_json::Result;
 
 
 
 const URL_DEVICES_API: &str = "https://solarpi.artfulkraken.com/cgi-bin/dl_cgi?Command=DeviceList";
 const LOGIN_INFO_LOC: &str= "/home/solarnodered/.mylogin.cnf";
+const LOGIN_INFO_LOC_MAC_TESTING: &str= "/home/daveboggs/.mylogin.cnf";
 const PVS6_GET_DEVICES_INTERVAL: u64 = 5; // Time in minutes
 const PVS6_GET_DEVICES_INTERVAL_UNITS: char = 'm';
 const SUPERVISOR: &str = "PVS";
 const METER: &str = "Power Meter";
 const INVERTER: &str = "Inverter";
-const POWER_METER: &str = "GROSS_PRODUCTION_SITE";
-const CONSUMPTION_METER: &str = "NET_CONSUMPTION_LOADSIDE";
+const PRODUCTION_METER: &str = "PVS5-METER-P";
+const CONSUMPTION_METER: &str = "PVS5-METER-C";
 
 
-const INV_QUERY_P1: &str = 
-    "SELECT \
-        serial, \
-        MAX(data_time), \
-        SUM(CASE WHEN parameter = 'freq_hz' THEN data ELSE NULL END) AS freq_hz, \
-        SUM(CASE WHEN parameter = 'i_3phsum_a' THEN data ELSE NULL END) AS i_3phsum_a, \
-        SUM(CASE WHEN parameter = 'i_mppt1_a' THEN data ELSE NULL END) AS i_mppt1_a, \
-        SUM(CASE WHEN parameter = 'ltea_3phsum_kwh' THEN data ELSE NULL END) AS ltea_3phsum_kwh,\
-        SUM(CASE WHEN parameter = 'p_3phsum_kw' THEN data ELSE NULL END) AS p_3phsum_kw, \
-        SUM(CASE WHEN parameter = 'p_mppt1_kw' THEN data ELSE NULL END) AS p_mppt1_kw, \
-        SUM(CASE WHEN parameter = 'stat_ind' THEN data ELSE NULL END) AS stat_ind, \
-        SUM(CASE WHEN parameter = 't_htsnk_degc' THEN data ELSE NULL END) AS t_htsnk_degc, \
-        SUM(CASE WHEN parameter = 'v_mppt1_v' THEN data ELSE NULL END) AS v_mppt1_v, \
-        SUM(CASE WHEN parameter = 'vln_3phavg_v' THEN data ELSE NULL END) AS vln_3phavg_v ";
+// SQL QUERY CONSTANTS
+    const SUP_INSERT_QUERY: &str = 
+    r#"
+        INSERT INTO supervisors_data 
+            ( serial, data_time, dl_comm_err, dl_cpu_load, dl_err_count, dl_flash_avail, dl_mem_used, 
+                dl_scan_time, dl_skipped_scans, dl_untransmitted, dl_uptime ) 
+            VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )
+    "#;
+    const PM_INSERT_QUERY: &str = 
+    r#"
+        INSERT INTO production_meters_data
+            ( serial, data_time, freq_hz, i_a, net_ltea_3phsum_kwh, 
+                p_3phsum_kw, q_3phsum_kvar, s_3phsum_kva, tot_pf_rto, v12_v )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ? )
+    "#;
+    const CM_INSERT_QUERY: &str = 
+    r#"
+        INSERT INTO consumption_meters_data
+            ( serial, data_time, freq_hz, i1_a, i2_a, neg_ltea_3phsum_kwh, net_ltea_3phsum_kwh, p_3phsum_kw,
+                p1_kw, p2_kw, pos_ltea_3phsum_kwh, q_3phsum_kvar, s_3phsum_kva, tot_pf_rto, v12_v, v1n_v, v2n_v )
+            VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )
+    "#;
+    const INV_INSERT_QUERY: &str = 
+    r#"
+        INSERT INTO inverters_data
+            ( serial, data_time, freq_hz, i_3phsum_a, i_mppt1_a, ltea_3phsum_kwh, p_3phsum_kw, 
+                p_mppt1_kw, stat_ind, t_htsnk_degc, v_mppt1_v, vln_3phavg_v )
+            VALUE ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )
+    "#;
+    // sql query to get latest data for each supervisor (serial #) in supervisors_data table
+    const QUERY_GET_LATEST_SUP_DATA: &str =
+    r#"
+        SELECT * FROM supervisors_data AS sup
+        INNER JOIN (
+            SELECT serial, MAX(data_time) AS dt_max
+            FROM supervisors_data
+            GROUP BY serial
+        ) AS sup_max
+        ON sup.serial = sup_max.serial AND sup.data_time = sup_max.dt_max
+    "#;
+    // sql query to get latest data for each consumption meter(serial #) in consumption_meters_data table
+    const QUERY_GET_LATEST_CM_DATA: &str = 
+    r#"
+        SELECT * FROM consumption_meters_data AS cm
+        INNER JOIN (
+            SELECT serial, MAX(data_time) AS dt_max
+            FROM consumption_meters_data
+            GROUP BY serial
+        ) as cm_max
+        ON cm.serial = cm_max.serial AND cm.data_time = cm_max.dt_max
+    "#;
+    // sql query to get latest data for each production meter(serial #) in production_meters_data table
+    const QUERY_GET_LATEST_PM_DATA: &str = 
+    r#"
+        SELECT * FROM production_meters_data AS pm
+        INNER JOIN (
+            SELECT serial, MAX(data_time) AS dt_max
+            FROM production_meters_data
+            GROUP BY serial
+        ) as pm_max
+        ON pm.serial = pm_max.serial AND pm.data_time = pm_max.dt_max
+    "#;
+    // sql query to get latest data for each inverter (serial #) in inverters_data table
+    const QUERY_GET_LATEST_INV_DATA: &str = 
+    r#"
+        SELECT * FROM inverters_data AS inv
+        INNER JOIN (
+            SELECT serial, MAX(data_time) AS dt_max
+            FROM inverters_data
+            GROUP BY serial
+        ) AS inv_max
+        ON inv.serial = inv_max.serial AND inv.data_time = inv_max.dt_max
+    "#;
 
-const SUP_QUERY_P1: &str = 
-    "SELECT \
-        serial, \
-        MAX(data_time), \
-        SUM(CASE WHEN parameter = 'dl_comm_err' THEN data ELSE NULL END) AS dl_comm_err, \
-        SUM(CASE WHEN parameter = 'dl_cpu_load' THEN data ELSE NULL END) AS dl_cpu_load, \
-        SUM(CASE WHEN parameter = 'dl_err_count' THEN data ELSE NULL END) AS dl_err_count, \
-        SUM(CASE WHEN parameter = 'dl_flash_avail' THEN data ELSE NULL END) AS dl_flash_avail,\
-        SUM(CASE WHEN parameter = 'dl_mem_used' THEN data ELSE NULL END) AS dl_mem_used, \
-        SUM(CASE WHEN parameter = 'dl_scan_time' THEN data ELSE NULL END) AS dl_scan_time, \
-        SUM(CASE WHEN parameter = 'dl_skipped_scans' THEN data ELSE NULL END) AS dl_skipped_scans, \
-        SUM(CASE WHEN parameter = 'dl_untransmitted' THEN data ELSE NULL END) AS dl_untransmitted, \
-        SUM(CASE WHEN parameter = 'dl_uptime' THEN data ELSE NULL END) AS dl_uptime ";
 
-const CONSUMP_QUERY_P1: &str = 
-    "SELECT \
-        serial, \
-        MAX(data_time), \
-        SUM(CASE WHEN parameter = 'freq_hz' THEN data ELSE NULL END) AS freq_hz, \
-        SUM(CASE WHEN parameter = 'i1_a' THEN data ELSE NULL END) AS i1_a, \
-        SUM(CASE WHEN parameter = 'i2_a' THEN data ELSE NULL END) AS i2_a, \
-        SUM(CASE WHEN parameter = 'neg_ltea_3phsum_kwh' THEN data ELSE NULL END) AS neg_ltea_3phsum_kwh,\
-        SUM(CASE WHEN parameter = 'net_ltea_3phsum_kwh' THEN data ELSE NULL END) AS net_ltea_3phsum_kwh, \
-        SUM(CASE WHEN parameter = 'p_3phsum_kw' THEN data ELSE NULL END) AS p_3phsum_kw, \
-        SUM(CASE WHEN parameter = 'p1_kw' THEN data ELSE NULL END) AS p1_kw, \
-        SUM(CASE WHEN parameter = 'p2_kw' THEN data ELSE NULL END) AS p2_kw, \
-        SUM(CASE WHEN parameter = 'pos_ltea_3phsum_kwh' THEN data ELSE NULL END) AS pos_ltea_3phsum_kwh, \
-        SUM(CASE WHEN parameter = 'q_3phsum_kvar' THEN data ELSE NULL END) AS q_3phsum_kvar, \
-        SUM(CASE WHEN parameter = 's_3phsum_kva' THEN data ELSE NULL END) AS s_3phsum_kva, \
-        SUM(CASE WHEN parameter = 'tot_pf_rto' THEN data ELSE NULL END) AS tot_pf_rto, \
-        SUM(CASE WHEN parameter = 'v12_v' THEN data ELSE NULL END) AS v12_v, \
-        SUM(CASE WHEN parameter = 'v1n_v' THEN data ELSE NULL END) AS v1n_v, \
-        SUM(CASE WHEN parameter = 'v2n_v' THEN data ELSE NULL END) AS v2n_v ";
-
-const PRODUCT_QUERY_P1: & str = 
-    "SELECT \
-        serial, \
-        MAX(data_time), \
-        SUM(CASE WHEN parameter = 'freq_hz' THEN data ELSE NULL END) AS freq_hz, \
-        SUM(CASE WHEN parameter = 'i_a' THEN data ELSE NULL END) AS i_a, \
-        SUM(CASE WHEN parameter = 'net_ltea_3phsum_kwh' THEN data ELSE NULL END) AS net_ltea_3phsum_kwh, \
-        SUM(CASE WHEN parameter = 'p_3phsum_kw' THEN data ELSE NULL END) AS p_3phsum_kw,\
-        SUM(CASE WHEN parameter = 'q_3phsum_kvar' THEN data ELSE NULL END) AS q_3phsum_kvar, \
-        SUM(CASE WHEN parameter = 's_3phsum_kva' THEN data ELSE NULL END) AS s_3phsum_kva, \
-        SUM(CASE WHEN parameter = 'tot_pf_rto' THEN data ELSE NULL END) AS tot_pf_rto, \
-        SUM(CASE WHEN parameter = 'v12_v' THEN data ELSE NULL END) AS v12_v ";
-    
-const DEV_QUERY_P2: & str =
-    "FROM ( \
-        SELECT serial, parameter, data_time, data \
-        FROM pvs6_data \
-        WHERE serial = '";
-
-const DEV_QUERY_P3: & str =
-    "' AND data_time = ( \
-        SELECT MAX(data_time) from pvs6_data WHERE serial = '";
-
-const DEV_QUERY_P4: & str = "' ) ) AS subquery GROUP BY serial";
-
-#[derive(Clone)] 
-struct Pvs6DevicesResponse {
-    supervisor: Supervisor,
-    cons_meter: ConsumptionMeter,
-    prod_meter: ProductionMeter,
-    inverters: Vec<Inverter>,
-}
-impl Pvs6DevicesResponse {
-    fn new() -> Self {
-        Self {
-            supervisor: Supervisor::new(),
-            cons_meter: ConsumptionMeter::new(),
-            prod_meter: ProductionMeter::new(),
-            inverters: Vec::new(),
-        }
-    }
-    fn set_values(supervisor: Supervisor, cons_meter: ConsumptionMeter, prod_meter: ProductionMeter, inverters: Vec<Inverter>) -> Self {
-        Self {
-            supervisor,
-            cons_meter,
-            prod_meter,
-            inverters,
-        }
+    enum DeviceType {
+        Inverter,
+        ConsumptionMeter,
+        ProductionMeter,
+        Supervisor
     }
     
-}
-
-#[derive(Clone)] 
-struct Inverter {
-    serial: String,
-    data_time: NaiveDateTime,
-    freq_hz: Option<f64>,
-    i_3phsum_a: Option<f64>,
-    i_mppt1_a: Option<f64>,
-    ltea_3phsum_kwh: Option<f64>,
-    p_3phsum_kw: Option<f64>,
-    p_mppt1_kw: Option<f64>,
-    stat_ind: Option<f64>,
-    t_htsnk_degc: Option<f64>,
-    v_mppt1_v: Option<f64>,
-    vln_3phavg_v: Option<f64>,
-
-}
-
-impl Inverter {
-    fn new() -> Self {
-        Self {
-            serial: String::new(),
-            data_time: NaiveDateTime::new(
-                NaiveDate::from_ymd_opt(2000, 1, 1).unwrap(),  //Planned unwrap.  Want a runtime crash if this doesn't work.  
-                NaiveTime::from_hms_opt(0, 0, 0).unwrap(),       //Planned unwrap.  Want a runtime crash if this doesn't work. 
-            ),
-            freq_hz: None,
-            i_3phsum_a: None,
-            i_mppt1_a: None,
-            ltea_3phsum_kwh: None,
-            p_3phsum_kw: None,
-            p_mppt1_kw: None,
-            stat_ind: None,
-            t_htsnk_degc: None,
-            v_mppt1_v: None,
-            vln_3phavg_v: None,
+    #[derive(Clone, Debug)] 
+    
+    struct Pvs6DevicesResponse {
+        supervisor: Supervisor,
+        cons_meter: ConsumptionMeter,
+        prod_meter: ProductionMeter,
+        inverters: Vec<Inverter>,
+    }
+    impl Pvs6DevicesResponse {
+        fn new() -> Self {
+            Self {
+                supervisor: Supervisor::new(),
+                cons_meter: ConsumptionMeter::new(),
+                prod_meter: ProductionMeter::new(),
+                inverters: Vec::new(),
+            }
+        }
+        fn set_values(supervisor: Supervisor, cons_meter: ConsumptionMeter, prod_meter: ProductionMeter, inverters: Vec<Inverter>) -> Self {
+            Self {
+                supervisor,
+                cons_meter,
+                prod_meter,
+                inverters,
+            }
+        }
+        
+    }
+    
+    #[derive(Clone, Deserialize, Debug, sqlx::FromRow)]
+    struct Supervisor {
+        #[serde(alias = "SERIAL")]
+        serial: String,
+        #[serde(with = "pvs6_date_format", alias = "DATATIME")]
+        data_time: Option<DateTime<Utc>>,
+        #[serde(with = "string_to_i32")]
+        dl_comm_err: Option<i32>,
+        #[serde(with = "string_to_f64")]
+        dl_cpu_load: Option<f64>,
+        #[serde(with = "string_to_i32")]
+        dl_err_count: Option<i32>,
+        #[serde(with = "string_to_u32")]
+        dl_flash_avail: Option<u32>,
+        #[serde(with = "string_to_u32")]
+        dl_mem_used: Option<u32>,
+        #[serde(with = "string_to_i32")]
+        dl_scan_time: Option<i32>,
+        #[serde(with = "string_to_i32")]
+        dl_skipped_scans: Option<i32>,
+        #[serde(with = "string_to_u32")]
+        dl_untransmitted: Option<u32>,
+        #[serde(with = "string_to_i64")]
+        dl_uptime: Option<i64>,
+    }
+    
+    impl Supervisor {
+        fn new() -> Self {
+            Self {
+                serial: String::new(),
+                data_time: None,
+                dl_comm_err:  None,
+                dl_cpu_load:  None,
+                dl_err_count:  None,
+                dl_flash_avail:  None,
+                dl_mem_used:  None,
+                dl_scan_time:  None,
+                dl_skipped_scans:  None,
+                dl_untransmitted:  None,
+                dl_uptime:  None,
+            }
+        }
+        
+        /*fn set_values(
+            serial: String,  data_time: NaiveDateTime,  dl_comm_err: Option<f64>,  dl_cpu_load: Option<f64>,  dl_err_count: Option<f64>,
+            dl_flash_avail: Option<f64>,  dl_mem_used: Option<f64>,  dl_scan_time: Option<f64>,  dl_skipped_scans: Option<f64>,
+            dl_untransmitted: Option<f64>,  dl_uptime: Option<f64>,
+        ) -> Self {  
+            Self {
+                serial: serial.to_owned(),
+                data_time: data_time,
+                dl_comm_err:  dl_comm_err.map( |opt_float| opt_float ),
+                dl_cpu_load:  dl_cpu_load.map( |opt_float| opt_float ),
+                dl_err_count:  dl_err_count.map( |opt_float| opt_float ),
+                dl_flash_avail:  dl_flash_avail.map( |opt_float| opt_float ),
+                dl_mem_used:  dl_mem_used.map( |opt_float| opt_float ),
+                dl_scan_time:  dl_scan_time.map( |opt_float| opt_float ),
+                dl_skipped_scans:  dl_skipped_scans.map( |opt_float| opt_float ),
+                dl_untransmitted:  dl_untransmitted.map( |opt_float| opt_float ),
+                dl_uptime:  dl_uptime.map( |opt_float| opt_float ),
+            }
+        }*/
+    }
+    
+    #[derive(Clone, Deserialize, Debug, sqlx::FromRow)]
+    struct ProductionMeter {
+        #[serde(alias = "SERIAL")]
+        serial: String,
+        #[serde(with = "pvs6_date_format", alias = "DATATIME")]
+        data_time: Option<DateTime<Utc>>,
+        #[serde(with = "string_to_f64")]
+        freq_hz: Option<f64>,
+        #[serde(with = "string_to_f64")]
+        i_a: Option<f64>,
+        #[serde(with = "string_to_f64")]
+        net_ltea_3phsum_kwh: Option<f64>,
+        #[serde(with = "string_to_f64")]
+        p_3phsum_kw: Option<f64>,
+        #[serde(with = "string_to_f64")]
+        q_3phsum_kvar: Option<f64>,
+        #[serde(with = "string_to_f64")]
+        s_3phsum_kva: Option<f64>,
+        #[serde(with = "string_to_f64")]
+        tot_pf_rto: Option<f64>,
+        #[serde(with = "string_to_f64")]
+        v12_v: Option<f64>,
+    }
+    impl ProductionMeter {
+        fn new() -> Self {
+            Self { 
+                serial: String::new(),
+                data_time: None,
+                freq_hz: None,
+                i_a: None,
+                net_ltea_3phsum_kwh: None,
+                p_3phsum_kw: None,
+                q_3phsum_kvar: None,
+                s_3phsum_kva: None,
+                tot_pf_rto: None,
+                v12_v: None,
+            }
+        }
+        /*fn set_values(
+            serial: &str, data_time: NaiveDateTime, freq_hz: Option<f64>, i_a: Option<f64>, net_ltea_3phsum_kwh: Option<f64>, p_3phsum_kw: Option<f64>,
+            q_3phsum_kvar: Option<f64>, s_3phsum_kva: Option<f64>, tot_pf_rto: Option<f64>, v12_v: Option<f64>,) -> Self {
+            Self {
+                serial: serial.to_owned(),
+                data_time: data_time,
+                freq_hz: freq_hz.map( |opt_float| opt_float ),
+                i_a: i_a.map( |opt_float| opt_float ),
+                net_ltea_3phsum_kwh: net_ltea_3phsum_kwh.map( |opt_float| opt_float ),
+                p_3phsum_kw: p_3phsum_kw.map( |opt_float| opt_float ),
+                q_3phsum_kvar: q_3phsum_kvar.map( |opt_float| opt_float ),
+                s_3phsum_kva: s_3phsum_kva.map( |opt_float| opt_float ),
+                tot_pf_rto: tot_pf_rto.map( |opt_float| opt_float ),
+                v12_v: v12_v.map( |opt_float| opt_float ),
+            }
+        }*/
+    }
+    
+    #[derive(Clone, Deserialize, Debug, sqlx::FromRow)]
+    
+    struct ConsumptionMeter {
+        #[serde(alias = "SERIAL")]
+        serial: String,
+        #[serde(with = "pvs6_date_format", alias = "DATATIME")]
+        data_time: Option<DateTime<Utc>>,
+        #[serde(with = "string_to_f64")]
+        freq_hz: Option<f64>,
+        #[serde(with = "string_to_f64")]
+        i1_a: Option<f64>,
+        #[serde(with = "string_to_f64")]
+        i2_a: Option<f64>,
+        #[serde(with = "string_to_f64")]
+        neg_ltea_3phsum_kwh: Option<f64>,
+        #[serde(with = "string_to_f64")]
+        net_ltea_3phsum_kwh: Option<f64>,
+        #[serde(with = "string_to_f64")]
+        p_3phsum_kw: Option<f64>,
+        #[serde(with = "string_to_f64")]
+        p1_kw: Option<f64>,
+        #[serde(with = "string_to_f64")]
+        p2_kw: Option<f64>,
+        #[serde(with = "string_to_f64")]
+        pos_ltea_3phsum_kwh: Option<f64>,
+        #[serde(with = "string_to_f64")]
+        q_3phsum_kvar: Option<f64>,
+        #[serde(with = "string_to_f64")]
+        s_3phsum_kva: Option<f64>,
+        #[serde(with = "string_to_f64")]
+        tot_pf_rto: Option<f64>,
+        #[serde(with = "string_to_f64")]
+        v12_v: Option<f64>,
+        #[serde(with = "string_to_f64")]
+        v1n_v: Option<f64>,
+        #[serde(with = "string_to_f64")]
+        v2n_v: Option<f64>
+    }
+    impl ConsumptionMeter {
+        fn new() -> Self {
+            Self {
+                serial: String::new(),
+                data_time: None,
+                freq_hz: None,
+                i1_a: None,
+                i2_a: None,
+                neg_ltea_3phsum_kwh: None,
+                net_ltea_3phsum_kwh: None,
+                p_3phsum_kw: None,
+                p1_kw: None,
+                p2_kw: None,
+                pos_ltea_3phsum_kwh: None,
+                q_3phsum_kvar: None,
+                s_3phsum_kva: None,
+                tot_pf_rto: None,
+                v12_v: None,
+                v1n_v: None,
+                v2n_v: None,
+            }
+        }
+    
+        fn set_values(
+            serial: String, data_time: Option<DateTime<Utc>>, freq_hz: Option<f64>, i1_a: Option<f64>, i2_a: Option<f64>,
+            neg_ltea_3phsum_kwh: Option<f64>, net_ltea_3phsum_kwh: Option<f64>, p_3phsum_kw: Option<f64>, p1_kw: Option<f64>,
+            p2_kw: Option<f64>, pos_ltea_3phsum_kwh: Option<f64>, q_3phsum_kvar: Option<f64>, s_3phsum_kva: Option<f64>,
+            tot_pf_rto: Option<f64>, v12_v: Option<f64>, v1n_v: Option<f64>, v2n_v: Option<f64>,
+        ) -> Self {
+            Self {
+                serial: serial.to_owned(),
+                data_time: data_time.map( |opt_dt| opt_dt ),
+                freq_hz: freq_hz.map( |opt_float| opt_float ),
+                i1_a: i1_a.map( |opt_float| opt_float ),
+                i2_a: i2_a.map( |opt_float| opt_float ),
+                neg_ltea_3phsum_kwh: neg_ltea_3phsum_kwh.map( |opt_float| opt_float ),
+                net_ltea_3phsum_kwh: net_ltea_3phsum_kwh.map( |opt_float| opt_float ),
+                p_3phsum_kw: p_3phsum_kw.map( |opt_float| opt_float ),
+                p1_kw: p1_kw.map( |opt_float| opt_float ),
+                p2_kw: p2_kw.map( |opt_float| opt_float ),
+                pos_ltea_3phsum_kwh: pos_ltea_3phsum_kwh.map( |opt_float| opt_float ),
+                q_3phsum_kvar: q_3phsum_kvar.map( |opt_float| opt_float ),
+                s_3phsum_kva: s_3phsum_kva.map( |opt_float| opt_float ),
+                tot_pf_rto: tot_pf_rto.map( |opt_float| opt_float ),
+                v12_v: v12_v.map( |opt_float| opt_float ),
+                v1n_v: v1n_v.map( |opt_float| opt_float ),
+                v2n_v: v2n_v.map( |opt_float| opt_float ),
+            }
         }
     }
     
-    fn set_values( 
-        serial: &str, data_time: NaiveDateTime, freq_hz: Option<f64>, i_3phsum_a: Option<f64>, i_mppt1_a: Option<f64>,
-        ltea_3phsum_kwh: Option<f64>, p_3phsum_kw: Option<f64>, p_mppt1_kw: Option<f64>, stat_ind: Option<f64>,
-        t_htsnk_degc: Option<f64>, v_mppt1_v: Option<f64>, vln_3phavg_v: Option<f64>,
-    ) -> Self {
-        Self {
-            serial: serial.to_owned(),
-            data_time: data_time,
-            freq_hz: freq_hz.map( |opt_float| opt_float ),
-            i_3phsum_a: i_3phsum_a.map( |opt_float| opt_float ),
-            i_mppt1_a: i_mppt1_a.map( |opt_float| opt_float ),
-            ltea_3phsum_kwh: ltea_3phsum_kwh.map( |opt_float| opt_float ),
-            p_3phsum_kw: p_3phsum_kw.map( |opt_float| opt_float ),
-            p_mppt1_kw: p_mppt1_kw.map( |opt_float| opt_float ),
-            stat_ind: stat_ind.map( |opt_float| opt_float ),
-            t_htsnk_degc: t_htsnk_degc.map( |opt_float| opt_float ),
-            v_mppt1_v: v_mppt1_v.map( |opt_float| opt_float ),
-            vln_3phavg_v: vln_3phavg_v.map( |opt_float| opt_float ),
+    #[derive(Clone, Deserialize, Debug, sqlx::FromRow)]
+    struct Inverter {
+        #[serde(alias = "SERIAL")]
+        serial: String,
+        #[serde(with = "pvs6_date_format", alias = "DATATIME")]
+        data_time: Option<DateTime<Utc>>,
+        #[serde(with = "string_to_f64")]
+        freq_hz: Option<f64>,
+        #[serde(with = "string_to_f64")]
+        i_3phsum_a: Option<f64>,
+        #[serde(with = "string_to_f64")]
+        i_mppt1_a: Option<f64>,
+        #[serde(with = "string_to_f64")]
+        ltea_3phsum_kwh: Option<f64>,
+        #[serde(with = "string_to_f64")]
+        p_3phsum_kw: Option<f64>,
+        #[serde(with = "string_to_f64")]
+        p_mppt1_kw: Option<f64>,
+        #[serde(with = "string_to_f64")]
+        stat_ind: Option<f64>,
+        #[serde(with = "string_to_f64")]
+        t_htsnk_degc: Option<f64>,
+        #[serde(with = "string_to_f64")]
+        v_mppt1_v: Option<f64>,
+        #[serde(with = "string_to_f64")]
+        vln_3phavg_v: Option<f64>,
+    
+    }
+    
+    impl Inverter {
+        fn new() -> Self {
+            Self {
+                serial: String::new(),
+                data_time: None,
+                freq_hz: None,
+                i_3phsum_a: None,
+                i_mppt1_a: None,
+                ltea_3phsum_kwh: None,
+                p_3phsum_kw: None,
+                p_mppt1_kw: None,
+                stat_ind: None,
+                t_htsnk_degc: None,
+                v_mppt1_v: None,
+                vln_3phavg_v: None,
+            }
+        }
+    /*    
+        fn set_values( 
+            serial: &str, data_time: NaiveDateTime, freq_hz: Option<f64>, i_3phsum_a: Option<f64>, i_mppt1_a: Option<f64>,
+            ltea_3phsum_kwh: Option<f64>, p_3phsum_kw: Option<f64>, p_mppt1_kw: Option<f64>, stat_ind: Option<f64>,
+            t_htsnk_degc: Option<f64>, v_mppt1_v: Option<f64>, vln_3phavg_v: Option<f64>,
+        ) -> Self {
+            Self {
+                serial: serial.to_owned(),
+                data_time: data_time,
+                freq_hz: freq_hz.map( |opt_float| opt_float ),
+                i_3phsum_a: i_3phsum_a.map( |opt_float| opt_float ),
+                i_mppt1_a: i_mppt1_a.map( |opt_float| opt_float ),
+                ltea_3phsum_kwh: ltea_3phsum_kwh.map( |opt_float| opt_float ),
+                p_3phsum_kw: p_3phsum_kw.map( |opt_float| opt_float ),
+                p_mppt1_kw: p_mppt1_kw.map( |opt_float| opt_float ),
+                stat_ind: stat_ind.map( |opt_float| opt_float ),
+                t_htsnk_degc: t_htsnk_degc.map( |opt_float| opt_float ),
+                v_mppt1_v: v_mppt1_v.map( |opt_float| opt_float ),
+                vln_3phavg_v: vln_3phavg_v.map( |opt_float| opt_float ),
+            }
+        }*/
+    } 
+    
+    ////////////
+    ////////////
+    /// MODUELES
+    mod pvs6_date_format {
+        use chrono::{ DateTime, Utc };
+        use serde::{self, Deserialize, Deserializer};
+    
+        const FORMAT: &'static str = "%Y,%m,%d,%H,%M,%S";
+    
+        pub fn deserialize<'de, D>( deserializer: D, ) -> Result<Option<DateTime<Utc>>, D::Error>
+        where
+            D: Deserializer<'de>,
+        {
+            let s = String::deserialize(deserializer)?;
+            Ok( Some( DateTime::parse_from_str( &s, FORMAT ).map_err(serde::de::Error::custom )?.with_timezone(&Utc ) ) )
+    
         }
     }
-} 
-
-#[derive(Clone)] 
-struct ProductionMeter {
-    serial: String,
-    data_time: NaiveDateTime,
-    freq_hz: Option<f64>,
-    i_a: Option<f64>,
-    net_ltea_3phsum_kwh: Option<f64>,
-    p_3phsum_kw: Option<f64>,
-    q_3phsum_kvar: Option<f64>,
-    s_3phsum_kva: Option<f64>,
-    tot_pf_rto: Option<f64>,
-    v12_v: Option<f64>,
-}
-impl ProductionMeter {
-    fn new() -> Self {
-        Self { 
-            serial: String::new(),
-            data_time: NaiveDateTime::new(
-                NaiveDate::from_ymd_opt(2000, 1, 1).unwrap(),  //Planned unwrap.  Want a runtime crash if this doesn't work.  
-                NaiveTime::from_hms_opt(0, 0, 0).unwrap(),       //Planned unwrap.  Want a runtime crash if this doesn't work. 
-            ),
-            freq_hz: None,
-            i_a: None,
-            net_ltea_3phsum_kwh: None,
-            p_3phsum_kw: None,
-            q_3phsum_kvar: None,
-            s_3phsum_kva: None,
-            tot_pf_rto: None,
-            v12_v: None,
+    
+    mod string_to_i32 {
+        use serde::{self, Deserialize, Deserializer};
+        pub fn deserialize<'de, D>( deserializer: D, ) -> Result<Option<i32>, D::Error>
+        where
+            D: Deserializer<'de>,
+        {
+            let s = String::deserialize(deserializer)?;
+            let val = s.parse::<i32>().map_err(serde::de::Error::custom)?;
+            Ok( Some( val ) )
         }
     }
-    fn set_values(
-        serial: &str, data_time: NaiveDateTime, freq_hz: Option<f64>, i_a: Option<f64>, net_ltea_3phsum_kwh: Option<f64>, p_3phsum_kw: Option<f64>,
-        q_3phsum_kvar: Option<f64>, s_3phsum_kva: Option<f64>, tot_pf_rto: Option<f64>, v12_v: Option<f64>,) -> Self {
-        Self {
-            serial: serial.to_owned(),
-            data_time: data_time,
-            freq_hz: freq_hz.map( |opt_float| opt_float ),
-            i_a: i_a.map( |opt_float| opt_float ),
-            net_ltea_3phsum_kwh: net_ltea_3phsum_kwh.map( |opt_float| opt_float ),
-            p_3phsum_kw: p_3phsum_kw.map( |opt_float| opt_float ),
-            q_3phsum_kvar: q_3phsum_kvar.map( |opt_float| opt_float ),
-            s_3phsum_kva: s_3phsum_kva.map( |opt_float| opt_float ),
-            tot_pf_rto: tot_pf_rto.map( |opt_float| opt_float ),
-            v12_v: v12_v.map( |opt_float| opt_float ),
+    
+    mod string_to_u32 {
+        use serde::{self, Deserialize, Deserializer};
+        pub fn deserialize<'de, D>( deserializer: D, ) -> Result<Option<u32>, D::Error>
+        where
+            D: Deserializer<'de>,
+        {
+            let s = String::deserialize(deserializer)?;
+            let val = s.parse::<u32>().map_err(serde::de::Error::custom)?;
+            Ok( Some( val ) )
         }
     }
-}
-
-#[derive(Clone)] 
-struct ConsumptionMeter {
-    serial: String,
-    data_time: NaiveDateTime,
-    freq_hz: Option<f64>,
-    i1_a: Option<f64>,
-    i2_a: Option<f64>,
-    neg_ltea_3phsum_kwh: Option<f64>,
-    net_ltea_3phsum_kwh: Option<f64>,
-    p_3phsum_kw: Option<f64>,
-    p1_kw: Option<f64>,
-    p2_kw: Option<f64>,
-    pos_ltea_3phsum_kwh: Option<f64>,
-    q_3phsum_kvar: Option<f64>,
-    s_3phsum_kva: Option<f64>,
-    tot_pf_rto: Option<f64>,
-    v12_v: Option<f64>,
-    v1n_v: Option<f64>,
-    v2n_v: Option<f64>,
-}
-impl ConsumptionMeter {
-    fn new() -> Self {
-        Self {
-            serial: String::new(),
-            data_time: NaiveDateTime::new(
-                NaiveDate::from_ymd_opt(2000, 1, 1).unwrap(),  //Planned unwrap.  Want a runtime crash if this doesn't work.  
-                NaiveTime::from_hms_opt(0, 0, 0).unwrap(),       //Planned unwrap.  Want a runtime crash if this doesn't work. 
-            ),
-            freq_hz: None,
-            i1_a: None,
-            i2_a: None,
-            neg_ltea_3phsum_kwh: None,
-            net_ltea_3phsum_kwh: None,
-            p_3phsum_kw: None,
-            p1_kw: None,
-            p2_kw: None,
-            pos_ltea_3phsum_kwh: None,
-            q_3phsum_kvar: None,
-            s_3phsum_kva: None,
-            tot_pf_rto: None,
-            v12_v: None,
-            v1n_v: None,
-            v2n_v: None,
+    
+    mod string_to_i64 {
+        use serde::{self, Deserialize, Deserializer};
+        pub fn deserialize<'de, D>( deserializer: D, ) -> Result<Option<i64>, D::Error>
+        where
+            D: Deserializer<'de>,
+        {
+            let s = String::deserialize(deserializer)?;
+            let val = s.parse::<i64>().map_err(serde::de::Error::custom)?;
+            Ok( Some( val ) )
         }
     }
-
-    fn set_values(
-        serial: String, data_time: NaiveDateTime, freq_hz: Option<f64>, i1_a: Option<f64>, i2_a: Option<f64>,
-        neg_ltea_3phsum_kwh: Option<f64>, net_ltea_3phsum_kwh: Option<f64>, p_3phsum_kw: Option<f64>, p1_kw: Option<f64>,
-        p2_kw: Option<f64>, pos_ltea_3phsum_kwh: Option<f64>, q_3phsum_kvar: Option<f64>, s_3phsum_kva: Option<f64>,
-        tot_pf_rto: Option<f64>, v12_v: Option<f64>, v1n_v: Option<f64>, v2n_v: Option<f64>,
-    ) -> Self {
-        Self {
-            serial: serial.to_owned(),
-            data_time: data_time,
-            freq_hz: freq_hz.map( |opt_float| opt_float ),
-            i1_a: i1_a.map( |opt_float| opt_float ),
-            i2_a: i2_a.map( |opt_float| opt_float ),
-            neg_ltea_3phsum_kwh: neg_ltea_3phsum_kwh.map( |opt_float| opt_float ),
-            net_ltea_3phsum_kwh: net_ltea_3phsum_kwh.map( |opt_float| opt_float ),
-            p_3phsum_kw: p_3phsum_kw.map( |opt_float| opt_float ),
-            p1_kw: p1_kw.map( |opt_float| opt_float ),
-            p2_kw: p2_kw.map( |opt_float| opt_float ),
-            pos_ltea_3phsum_kwh: pos_ltea_3phsum_kwh.map( |opt_float| opt_float ),
-            q_3phsum_kvar: q_3phsum_kvar.map( |opt_float| opt_float ),
-            s_3phsum_kva: s_3phsum_kva.map( |opt_float| opt_float ),
-            tot_pf_rto: tot_pf_rto.map( |opt_float| opt_float ),
-            v12_v: v12_v.map( |opt_float| opt_float ),
-            v1n_v: v1n_v.map( |opt_float| opt_float ),
-            v2n_v: v2n_v.map( |opt_float| opt_float ),
+    
+    mod string_to_f64 {
+        use serde::{self, Deserialize, Deserializer};
+        pub fn deserialize<'de, D>( deserializer: D, ) -> Result<Option<f64>, D::Error>
+        where
+            D: Deserializer<'de>,
+        {
+            let s = String::deserialize(deserializer)?;
+            let val = s.parse::<f64>().map_err(serde::de::Error::custom)?;
+            Ok( Some( val ) )
         }
     }
-
-}
-
-#[derive(Clone)] 
-struct Supervisor {
-    serial: String,
-    data_time: NaiveDateTime,
-    dl_comm_err: Option<f64>,
-    dl_cpu_load: Option<f64>,
-    dl_err_count: Option<f64>,
-    dl_flash_avail: Option<f64>,
-    dl_mem_used: Option<f64>,
-    dl_scan_time: Option<f64>,
-    dl_skipped_scans: Option<f64>,
-    dl_untransmitted: Option<f64>,
-    dl_uptime: Option<f64>,
-}
-impl Supervisor {
-    fn new() -> Self {
-        Self {
-            serial: String::new(),
-            data_time: NaiveDateTime::new(
-                NaiveDate::from_ymd_opt(2000, 1, 1).unwrap(),  //Planned unwrap.  Want a runtime crash if this doesn't work.  
-                NaiveTime::from_hms_opt(0, 0, 0).unwrap(),       //Planned unwrap.  Want a runtime crash if this doesn't work. 
-            ),
-            dl_comm_err:  None,
-            dl_cpu_load:  None,
-            dl_err_count:  None,
-            dl_flash_avail:  None,
-            dl_mem_used:  None,
-            dl_scan_time:  None,
-            dl_skipped_scans:  None,
-            dl_untransmitted:  None,
-            dl_uptime:  None,
-        }
-    }
-    fn set_values(
-        serial: String,  data_time: NaiveDateTime,  dl_comm_err: Option<f64>,  dl_cpu_load: Option<f64>,  dl_err_count: Option<f64>,
-        dl_flash_avail: Option<f64>,  dl_mem_used: Option<f64>,  dl_scan_time: Option<f64>,  dl_skipped_scans: Option<f64>,
-        dl_untransmitted: Option<f64>,  dl_uptime: Option<f64>,
-    ) -> Self {  
-        Self {
-            serial: serial.to_owned(),
-            data_time: data_time,
-            dl_comm_err:  dl_comm_err.map( |opt_float| opt_float ),
-            dl_cpu_load:  dl_cpu_load.map( |opt_float| opt_float ),
-            dl_err_count:  dl_err_count.map( |opt_float| opt_float ),
-            dl_flash_avail:  dl_flash_avail.map( |opt_float| opt_float ),
-            dl_mem_used:  dl_mem_used.map( |opt_float| opt_float ),
-            dl_scan_time:  dl_scan_time.map( |opt_float| opt_float ),
-            dl_skipped_scans:  dl_skipped_scans.map( |opt_float| opt_float ),
-            dl_untransmitted:  dl_untransmitted.map( |opt_float| opt_float ),
-            dl_uptime:  dl_uptime.map( |opt_float| opt_float ),
-        }
-    }
-}
-
-struct Pvs6DataPoint {
-    serial: String,
-    data_time: String,
-    parameter: String,
-    data: Option<String>,
-}
-impl Pvs6DataPoint {
-
-    fn new() -> Self {
-        Self {
-            serial: String::new(),
-            data_time: String::new(),
-            parameter: String::new(),
-            data: None,
-        }
-    }
-
-    fn set_values( serial: &str, data_time: &str, parameter: &str, data: Option<&str> ) -> Self {
-        Self {
-            serial: serial.to_owned(),
-            data_time: data_time.to_owned(),
-            parameter: parameter.to_owned(),
-            data: data.map(|s| s.to_owned()),
-        }
-    }
-}
-
-impl Clone for Pvs6DataPoint {
-    fn clone(&self) -> Pvs6DataPoint {
-        Pvs6DataPoint::set_values( &self.serial, &self.data_time, &self.parameter, self.data.as_deref() )
-    }
-}
+    
 
 //#[tokio::main]
 #[tokio::main]
@@ -412,14 +501,9 @@ async fn main() {
     
     log4rs::init_file("log_config.yml", Default::default()).unwrap();   //Need Error Handling here.  What if log doesn't unwrap
 
-    let mut device_ts_data: Vec<Vec<Pvs6DataPoint>> = Vec::new();
+    //let mut device_ts_data: Vec<Vec<Pvs6DataPoint>> = Vec::new();
     let mut last_device_data: Pvs6DevicesResponse = Pvs6DevicesResponse::new();
-    
 
-    ////// Need to rework sql pool so it is before this statement.  This has to come before getting pvs6 data
-    
-    
-    
     //get sql pool and connection
     let result_sql_pool = get_mysql_pool();
     match result_sql_pool {
@@ -435,17 +519,7 @@ async fn main() {
                     Err(_) => warn!("Could not get last data from devices in mysql solar db"),
                   }
 
-                   // Set start time and interval of pvs6 data pulls.  
-                    let offset_dur = chrono::Duration::milliseconds( -250 );
-                    let mut get_pvs6_device_interval = set_interval(PVS6_GET_DEVICES_INTERVAL, PVS6_GET_DEVICES_INTERVAL_UNITS, offset_dur);
-
-                    loop {
-                        get_pvs6_device_interval.tick().await; // Wait until the next tick
-                        // get pvs6 data and upload to mysql solar database
-                        debug!( "Run at: {}", Utc::now().to_string() ); //for loop timing testing
-                        pvs6_to_mysql( &mut device_ts_data, &mut solar_sql_upload_conn, &mut last_device_data).await;
-                        
-                    }    
+                    
                 },
                 Err(sql_conn_err) => {
                     error!("Unable to get solar sql conn. Err: {}", sql_conn_err);
@@ -458,15 +532,32 @@ async fn main() {
             panic!( "Panicing. Unable to get solar sql pool." );
         },
     }
+    
+
+   // Set start time and interval of pvs6 data pulls.  
+   let offset_dur = chrono::Duration::milliseconds( -250 );
+   let mut get_pvs6_device_interval = set_interval(PVS6_GET_DEVICES_INTERVAL, PVS6_GET_DEVICES_INTERVAL_UNITS, offset_dur);
+
+   loop {
+       get_pvs6_device_interval.tick().await; // Wait until the next tick
+       // get pvs6 data and upload to mysql solar database
+       debug!( "Run at: {}", Utc::now().to_string() ); //for loop timing testing
+       pvs6_to_mysql( &mut last_device_data).await;
+       
+   }   
+    
+    
+    
+    
 
     
 }
 
-async fn pvs6_to_mysql( device_ts_data: &mut Vec<Vec<Pvs6DataPoint>>, solar_sql_upload_conn: &mut PooledConn, last_device_data: &mut Pvs6DevicesResponse ) {
+async fn pvs6_to_mysql(  last_device_data: &mut Pvs6DevicesResponse ) {
     let pvs6_result = get_pvs6_device_data().await;
     match pvs6_result {
         Some(pvs6_data) => {
-            process_pvs6_devices_output( pvs6_data, device_ts_data, last_device_data );  //Function needs some error handling and response to determine if we should move to
+            cur_device_data = pvs( pvs6_data,last_device_data );  //Function needs some error handling and response to determine if we should move to
             // mysql upload step.
             import_to_mysql( device_ts_data, solar_sql_upload_conn, last_device_data );
 
@@ -475,207 +566,412 @@ async fn pvs6_to_mysql( device_ts_data: &mut Vec<Vec<Pvs6DataPoint>>, solar_sql_
     };
 }
 
-fn process_pvs6_devices_output(pvs6_data: String, device_ts_data: &mut Vec<Vec<Pvs6DataPoint>>, last_device_data: &mut Pvs6DevicesResponse  ) {
+fn deserialize_pvs6_devices( pvs6_data: String ) -> Option<Pvs6DevicesResponse> {
+    // Function takes pvs6 devices response (from API call <host or ip>/cgi-bin/dl_cgi?Command=DeviceList")
+    // and returns deserialized structure Pvs6DevicesResponse which is a structure of all devices.  Each device is typed
+    // ie Supervisor, Production Meter, Consumption Meter, Inverter.  Inverters are stored as vector of inverters.  Currently
+    // can handle systems with 1 supervisor, 1 production meter, 1 consumption meter and unlimited inverters.
+    // structure stores serial numbers, data_time, and data (fields that change over time).  Structure ready for upload to 
+    // mysql database with exception that data may be old and already uploaded to sql database.  separate function to address that.
+
+    // Function returns Option<Pvs6Response>.  It returns a response if any of the devices are properly deserialized for upload and 
+    // None if none of the devices were properly serialized  
+
     //Regex patterns synced lazy for compile efficiency improvement
     //Unwrapping all Regex expressions.  If it doesn't unwrap, its a bug in the hardcoded expression and needs to be caught at first runtime.
-    static RE_DEVICES: Lazy<Regex> = Lazy::new( || Regex::new(r"\[.*\]").unwrap() );
-    static RE_RESULT: Lazy<Regex> = Lazy::new( || Regex::new(r"\}\],result:succeed").unwrap() );
-    static RE_SERIAL: Lazy<Regex> = Lazy::new( || Regex::new(r"SERIAL:([^,]*)").unwrap() );
-    static RE_DEVICE_TYPE: Lazy<Regex> = Lazy::new( || Regex::new(r"DEVICE_TYPE:([^,]*)").unwrap() );
-    static RE_SUBTYPE: Lazy<Regex> = Lazy::new( || Regex::new(r"subtype:([^,]*)").unwrap() );
-    static RE_DATA_TIME: Lazy<Regex> = Lazy::new( || Regex::new(r"DATATIME:([0-9]{4},[0-9]{2},[0-9]{2},[0-9]{2},[0-9]{2},[0-9]{2})").unwrap() );
-    static RE_PARAMETER: Lazy<Regex> = Lazy::new( || Regex::new(r",([a-z_0-9]*):([^,]*)").unwrap() );
-    static RE_EXCLUDED_PARAMETER: Lazy<Regex> = Lazy::new( || Regex::new(r"interface|subtype|origin|hw_version|slave|panid|ct_scl_fctr").unwrap() );
+    static RE_RESULT: Lazy<Regex> = Lazy::new( || Regex::new(r#""result".*?:.*?"succeed""#).unwrap() );
+    static RE_ALL_DEVICES: Lazy<Regex> = Lazy::new( || Regex::new(r#"\[.*\]"#).unwrap() );
+    static RE_DEVICE: Lazy<Regex> = Lazy::new( || Regex::new(r#"\{.*?\}"#).unwrap() );
+    static RE_DEVICE_TYPE: Lazy<Regex> = Lazy::new( || Regex::new(r#""DEVICE_TYPE".*?:.*?"(.*?)""#).unwrap() );
+    static RE_TYPE: Lazy<Regex> = Lazy::new( || Regex::new(r#""TYPE".*?:.*?"(.*?)""#).unwrap() );
     
-    let mut repeat_flg: bool = false;
     
-    let pvs6_data: String = pvs6_data.chars().filter(|c| !matches!(c, '\"' | '\t' | '\n' | ' ' )).collect::<String>();
-    let mat_result = RE_RESULT.find(&pvs6_data).unwrap();
+    //vector of inverters to hold inverters that are deserialized.
+    let mut type_of_device: DeviceType;
+
+    // declared to hold deserialized values and final return structure
+    let mut cur_device_data: Pvs6DevicesResponse = Pvs6DevicesResponse::new();
+    let mut inverters: Vec<Inverter> = Vec::new();
+    let mut supervisor: Supervisor = Supervisor::new();
+    let mut production_meter: ProductionMeter = ProductionMeter::new();
+    let mut consumption_meter: ConsumptionMeter = ConsumptionMeter::new();
     
-    if ! mat_result.is_empty() {
-        let mat_devices = RE_DEVICES.find(&pvs6_data).unwrap();
+    //Inverter counter for identifying which inverter in the json had errors.  Counts from 0 to last inverter -1.
+    let mut inverter_cnt: i32 = -1;
+
+    // Flags whether any devices successfully deserialized.  True if at least one is successful.
+    let mut flg_device_deserialized = false;
+    
+    //strip out excess tabs '\t', newlines '\n' and space characters. ' '
+    let pvs6_data: String = pvs6_data.chars().filter(|c| !matches!(c, '\t' | '\n' )).collect::<String>();
+
+    // check if json response was "sucess";   
+    if RE_RESULT.is_match(&pvs6_data) {
+        let mat_devices = RE_ALL_DEVICES.find(&pvs6_data).unwrap();
         if ! mat_devices.is_empty() {
-            let devices: &str = mat_devices.as_str();
-            //println!("Devices: {:?}", devices);
-            let mut find_data_time: Option<&str> = None;
-            let mut max_data_time = String::new();
-            let mut data_point: Pvs6DataPoint = Pvs6DataPoint::new();
-            
-            for data_time_cap in RE_DATA_TIME.captures_iter(&devices) {
+            let device_list: &str = mat_devices.as_str();
 
-                if find_data_time.is_none() {
-                    find_data_time = Some( data_time_cap.get(1).unwrap().as_str() );
-                } 
-                else if find_data_time < Some( data_time_cap.get(1).unwrap().as_str() ) {
-                    find_data_time = Some( data_time_cap.get(2).unwrap().as_str() );    
-                }
-            }
+            // Find each indivdual device json and collect into a vector
+            let devices: Vec<&str> = RE_DEVICE.find_iter(device_list).map(|m| m.as_str()).collect();
 
-            match find_data_time {
-                Some(dt) => {
-                    max_data_time = to_sql_timestamp( dt );
-                },
-                None => error!("Couldn't find a max data_time from PVS6 response"),
-            };
-            
-            
-            let mut data_points: Vec<Pvs6DataPoint>= Vec::new();
+            //itterate through each device in list, get device json string, match to correct device type and deserialize
+            for device in devices.iter() {
+                match RE_DEVICE_TYPE.captures(&device) {
+                    Some(device_type_opt) => {
+                        match device_type_opt.get(1) {
+                            Some(device_type) => {
+                                match device_type.as_str() {
+                                    SUPERVISOR => {
+                                        type_of_device = DeviceType::Supervisor;
+                                        let sup_opt: Result<Supervisor> = serde_json::from_str(&device);
+                                        match sup_opt {
+                                            Ok(sup) => {
+                                                supervisor = sup;
+                                                flg_device_deserialized = true;
+                                            },
+                                            Err(sup_eff) => {
+                                                error!("Could not deserialize Supervisor. Err: {}", sup_eff);
+                                                //add error handling
+                                            },
+                                        }
+                                    },
+                                    METER => {
+                                        match RE_TYPE.captures(&device) {
+                                            Some(type_opt) => {
+                                                match type_opt.get(1) {
+                                                    Some(type_d) => {
+                                                        match type_d.as_str() {
+                                                            PRODUCTION_METER => {
+                                                                type_of_device = DeviceType::ProductionMeter;
+                                                                let pm_opt: Result<ProductionMeter> = serde_json::from_str(&device); 
+                                                                match pm_opt {
+                                                                    Ok(pm) => {
+                                                                        production_meter = pm;
+                                                                        flg_device_deserialized = true;
+                                                                    },
+                                                                    Err(pm_eff) => {
+                                                                        error!("Could not deserialize Production Meter. Err: {}", pm_eff);
+                                                                        //add error handling
+                                                                    },
+                                                                }
+                                                            },
+                                                            CONSUMPTION_METER => {
+                                                                type_of_device = DeviceType::ConsumptionMeter;
+                                                                let cm_opt: Result<ConsumptionMeter> = serde_json::from_str(&device); 
+                                                                match cm_opt {
+                                                                    Ok(cm) => {
+                                                                        consumption_meter = cm;
+                                                                        flg_device_deserialized = true;
+                                                                    },
+                                                                    Err(cm_eff) => {
+                                                                        error!("Could not deserialize Consumption Meter. Err: {}", cm_eff);
+                                                                        //add error handling
+                                                                    },
+                                                                }
+                                                            },
+                                                            _ => {
+                                                                error!("Meter did not match an appropriate TYPE");
+                                                                //Add Error Handling that couldn't process data
+                                                            },
+                                                        }
+                                                    },
+                                                    None => {
+                                                        error!("Could not find TYPE of meter.  There was no Regex capture.");
+                                                        //Add Error Handling that couldn't process data
+                                                    },
+                                                }
+                                            },
+                                            None => {
+                                                error!("Could not find TYPE of meter.  There was no Regex match.");
+                                                //Add Error Handling that couldn't process data
+                                            },
+                                        }
+                                    },
+                                    INVERTER => {
+                                        inverter_cnt +=1;
+                                        type_of_device = DeviceType::Inverter;
+                                        let inv_opt: Result<Inverter> = serde_json::from_str(&device);
+                                        match inv_opt {
+                                            Ok(inv) => {
+                                                inverters.push(inv);
+                                                flg_device_deserialized = true;
+                                            },
+                                            Err(inv_eff) => {
+                                                error!("Could not deserialize Inverter. Inverter was #: {} in vector. Err: {}", inverter_cnt, inv_eff);
+                                                //add error handling
+                                            },
+                                        }
+                                    },
+                                    _ => {
+                                        error!("Device did not match an appropriate DEVICE_TYPE. Device type was {}", device_type.as_str())
+                                        //Add Error Handling
+                                    },
 
-            let device_list = devices.split("},{");
-            for device in device_list {
-                repeat_flg = false;
-                //println!("Device: {}", &device);
-                let serial = RE_SERIAL.captures(&device).unwrap().get(1).unwrap().as_str(); //first unwap may cause crash as error
-                let device_type = RE_DEVICE_TYPE.captures(&device).unwrap().get(1).unwrap().as_str();  //first unwap may cause crash as error
-                let data_time = to_sql_timestamp( 
-                    RE_DATA_TIME
-                    .captures(&device)
-                    .unwrap()
-                    .get(1)
-                    .unwrap()
-                    .as_str()
-                );  //first unwap may cause crash as error
-
-                match device_type {
-                    SUPERVISOR => {
-                        if last_device_data.supervisor.data_time == NaiveDateTime::parse_from_str(&data_time, "%Y-%m-%d %H:%M:%S").unwrap() && last_device_data.supervisor.serial == serial {
-                            repeat_flg = true;
-                        }
-                    },
-                    METER => {
-                        match RE_SUBTYPE.captures(&device).unwrap().get(1).unwrap().as_str() {
-                            POWER_METER => {
-                                if last_device_data.prod_meter.data_time == NaiveDateTime::parse_from_str(&data_time, "%Y-%m-%d %H:%M:%S").unwrap() && last_device_data.prod_meter.serial == serial {
-                                    repeat_flg = true;
                                 }
                             },
-                            CONSUMPTION_METER => {
-                                if last_device_data.cons_meter.data_time == NaiveDateTime::parse_from_str(&data_time, "%Y-%m-%d %H:%M:%S").unwrap()  && last_device_data.cons_meter.serial == serial {
-                                    repeat_flg = true;
-                                }
+                            None => {
+                                error!("Could not find DEVICE_TYPE of device.  There was no Regex capture.");
+                                 //Add Error Handling that couldn't process data
                             },
-                            _ => error!("Device did not match an appropriate device type"),
                         }
                     },
-                    INVERTER => {
-                        for inv in last_device_data.inverters.iter() {
-                            if inv.data_time == NaiveDateTime::parse_from_str(&data_time, "%Y-%m-%d %H:%M:%S").unwrap() && inv.serial == serial {
-                                repeat_flg = true;
-                            }
-                        }
+                    None => {
+                        error!("Could not find DEVICE_TYPE of device.  There was no Regex match.");
+                        //Add Error Handling that couldn't process data
                     },
-                    _ => error!("Device did not match an appropriate device type"),
                 }
+            }  //end of for iter on devices json strings
+            
+            //println!("{:#?}",supervisor);
+            
+            cur_device_data = Pvs6DevicesResponse::set_values(
+                supervisor, consumption_meter, production_meter, inverters
+            );
 
-                for caps in RE_PARAMETER.captures_iter(device) {
-                    if ! RE_EXCLUDED_PARAMETER.is_match( caps.get(1).unwrap().as_str() ) {
-                        let parameter = caps.get(1).unwrap().as_str();
-                        let data = caps.get(2).unwrap().as_str();
-                        if repeat_flg {        
-                            data_point = Pvs6DataPoint::set_values( serial, &max_data_time, parameter, None );
-                        } 
-                        else {
-                            data_point = Pvs6DataPoint::set_values( serial, &data_time, parameter, Some(data) );
-                        }
-                    }
-                        data_points.push(data_point.clone());
-                }
-                device_ts_data.push(data_points.clone());
-                data_points.clear();
-                
-            }
-            //for device in device_ts_data.iter() {
-            //    for dp in device.iter() {
-            //        println!("Serial: {} Time: {} Parameter: {} Data: {}", dp.serial, dp.data_time, dp.parameter, dp.data);
-            //    }
-            //}
+
+        } else {
+            error!("Unable to Regex match device list ie [...]");
+            // Add error handling
         }
+    } else {
+        //Response was not successful.  log failed response and skip processing
+        error!("PVS6 JSON responsed Unsucessful.");
+        //Should add error here.
     }
-    //for dp in data_points.iter() {
-    //    println!("Serial:{}  Date: {}  Parameter: {}  Data: {}", dp.serial, dp.data_time, dp.parameter, dp.data);
-    //}
+    
+    if flg_device_deserialized == true {
+        return Some( cur_device_data )
+    } else {
+        return None
+    }
 }
 
-fn to_sql_timestamp(str_timestamp: &str) -> String {
-    let ts_values: Vec<&str> = str_timestamp.split(',').collect();
-    ts_values[0].to_owned() + "-" + ts_values[1] + "-" + ts_values[2] + " " + ts_values[3] + ":" + ts_values[4] + ":" + ts_values[5]
-}
+async fn get_sqlx_solar_pool() -> Option<sqlx::Pool<sqlx::MySql>> {
+    // gets sqlx mysql pool of connections for mysql solar db using local credential file.
+    
+    // /*FOR DB TESTING  - Allows for connection from remote device.  Block out and unblock production line for final use.
+    let mut filepath = String::new(); 
 
-fn get_mysql_pool() -> Result<Pool, Box<dyn std::error::Error>> {
-    let my_login_file_path = PathBuf::from( LOGIN_INFO_LOC );
+    if env::consts::OS == "macos" {
+        filepath = LOGIN_INFO_LOC_MAC_TESTING.to_string();
+    } else {
+        filepath = LOGIN_INFO_LOC.to_string();
+    }
+    println!("{:#?}", filepath);
+    
+    let my_login_file_path = PathBuf::from( filepath );
+
+    //  */FOR DEB TESTING ENDS HERE
+
+    //FOR PRODUCTION
+    //let my_login_file_path = PathBuf::from( LOGIN_INFO_LOC );
 
     match fs::exists(&my_login_file_path) {
         Ok(file_exists) => {
             if file_exists == true {
                 let mysql_client_info = myloginrs_parse("client", Some(&my_login_file_path));
-                let solar_db_opts = OptsBuilder::new()
-                    .ip_or_hostname(Some(&mysql_client_info["host"]))
-                    .db_name(Some("solar"))
-                    .user(Some(&mysql_client_info["user"]))
-                    .pass(Some(&mysql_client_info["password"]));
+                let solar_mysql_url = format!("mysql://{}:{}@{}:3306/solar", &mysql_client_info["user"], &mysql_client_info["password"], &mysql_client_info["host"], );
                 
-                let pool = Pool::new(solar_db_opts);
-                match pool {
-                    Ok(solar_pool) => {
+                let sqlx_solar_pool = MySqlPoolOptions::new()
+                .max_connections(10)
+                .connect(&solar_mysql_url)
+                .await;
+                
+                match sqlx_solar_pool {
+                    Ok(sqlx_solar_pool) => {
                         info!("Pool Created");
-                        return Ok(solar_pool)
+                        return Some(sqlx_solar_pool)
                     },
-                    Err(err_pool) => {
-                        error!("Unable to create pool for mysql db solar. Err: {}", err_pool);
-                        return Err( "Unable to create pool for mysql db solar.".into() )
-                    }
+                    Err(pool_eff) => {
+                        error!("Unable to create pool for mysql db solar. Err: {}", pool_eff);
+                        return None
+                    },
                 }
-   
-            } else {
+            }
+            else {
                 error!("Error: {} Login Credential file does not exist on local client device", LOGIN_INFO_LOC);
-                return Err( "Login Credential file not found on local client device".into() )
-            };
+                return None
+            }
         },
         Err(fp_eff) => {
             error!("Error: Mysql login file exists but can't be accessed.  
             May have incorrect permissions. Err: {}",fp_eff);
-            return Err( "Login Credential file can't be accessed. Potential file permission issues".into() )
+            return None
         }
-        
     }
 }
 
-fn import_to_mysql( device_ts_data: &mut Vec<Vec<Pvs6DataPoint>>, solar_sql_upload_conn: &mut PooledConn, last_device_data: &mut  Pvs6DevicesResponse ) {
+async fn insert_pvs6_data_to_mysql( data: Pvs6DevicesResponse, solar_sql_upload_conn: &sqlx::Pool<sqlx::MySql> ) {
+    // takes data from pvs6 (in Pvs6DeviceResponse Struct) and inserts it into mysql solar db tables for each type of device. 
+    
+    // Future addition - save any data not uploaded to db to a file (one file for each device type) to allow for future uploads once problem identified.
+    
     let mut all_device_success: bool = true;  
-    let mut index_delete: Vec<usize> = Vec::new();  
-    for (index, datapoints) in device_ts_data.iter_mut().enumerate() {
+    
+    const SUP_INSERT_QUERY: &str = r#"
+        INSERT INTO supervisors_data 
+            ( serial, data_time, dl_comm_err, dl_cpu_load, dl_err_count, dl_flash_avail, dl_mem_used, 
+                dl_scan_time, dl_skipped_scans, dl_untransmitted, dl_uptime ) 
+            VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )
+    "#;
+    const PM_INSERT_QUERY: &str = r#"
+        INSERT INTO production_meters_data
+            ( serial, data_time, freq_hz, i_a, net_ltea_3phsum_kwh, 
+                p_3phsum_kw, q_3phsum_kvar, s_3phsum_kva, tot_pf_rto, v12_v )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ? )
+    "#;
 
-        // Now let's insert data to the database
-        let upload_success = solar_sql_upload_conn.exec_batch(
-            r"INSERT INTO pvs6_data (serial, parameter, data_time, data)
-            VALUES (:serial, :parameter, :data_time, :data)",
-            datapoints.iter().map(|dp| params! {
-                "serial" => &dp.serial,
-                "parameter" => &dp.parameter,
-                "data_time" => &dp.data_time,
-                "data" => &dp.data,
-            })
-        );
-        match upload_success {
+    const CM_INSERT_QUERY: &str = r#"
+        INSERT INTO consumption_meters_data
+            ( serial, data_time, freq_hz, i1_a, i2_a, neg_ltea_3phsum_kwh, net_ltea_3phsum_kwh, p_3phsum_kw,
+                p1_kw, p2_kw, pos_ltea_3phsum_kwh, q_3phsum_kvar, s_3phsum_kva, tot_pf_rto, v12_v, v1n_v, v2n_v )
+            VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )
+    "#;
+    const INV_INSERT_QUERY: &str = "
+        INSERT INTO inverters_data
+            ( serial, data_time, freq_hz, i_3phsum_a, i_mppt1_a, ltea_3phsum_kwh, p_3phsum_kw, 
+                p_mppt1_kw, stat_ind, t_htsnk_degc, v_mppt1_v, vln_3phavg_v )
+            VALUE ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )
+    ";
+    
+    //( serial, data_time, freq_hz, i1_a, i2_a, neg_ltea_3phsum_kwh, net_ltea_3phsum_kwh, p_3phsum_kw,
+    //    p1_kw, p2_kw, pos_ltea_3phsum_kwh, q_3phsum_kvar, s_3phsum_kva, tot_pf_rto, v12_v, v1n_v, v2n_v )
+    // Upload Supervisor Data
+    let sup_result = sqlx::query(SUP_INSERT_QUERY)
+        .bind(&data.supervisor.serial)
+        .bind(&data.supervisor.data_time)
+        .bind(&data.supervisor.dl_comm_err)
+        .bind(&data.supervisor.dl_cpu_load)
+        .bind(&data.supervisor.dl_err_count)
+        .bind(&data.supervisor.dl_flash_avail)
+        .bind(&data.supervisor.dl_mem_used)
+        .bind(&data.supervisor.dl_scan_time)
+        .bind(&data.supervisor.dl_skipped_scans)
+        .bind(&data.supervisor.dl_untransmitted)
+        .bind(&data.supervisor.dl_uptime)
+        .execute(solar_sql_upload_conn).await;
+
+    match sup_result {
+        Ok(_) => {
+            debug!(
+                "Supervisor: {} @ {:#?} uploaded to Mysql solar database", 
+                &data.supervisor.serial, format!("{}", &data.supervisor.data_time.unwrap().format("%Y-%m-%d %H:%M:%S")) 
+            );
+        },
+        Err(sup_eff) => {
+            error!(
+                "Supervisor: {} @ {:#?} failed to upload to Mysql solar database. Error: {}", 
+                &data.supervisor.serial, format!("{}", &data.supervisor.data_time.unwrap().format("%Y-%m-%d %H:%M:%S")), sup_eff
+            );
+            all_device_success = false;
+        }, 
+    }
+        //( serial, data_time, freq_hz, i1_a, i2_a, neg_ltea_3phsum_kwh, net_ltea_3phsum_kwh, p_3phsum_kw,
+        //    p1_kw, p2_kw, pos_ltea_3phsum_kwh, q_3phsum_kvar, s_3phsum_kva, tot_pf_rto, v12_v, v1n_v, v2n_v )
+        // Upload Consumption Meter Data
+    let cons_meter_result = sqlx::query(CM_INSERT_QUERY)
+        .bind(&data.cons_meter.serial)
+        .bind(&data.cons_meter.data_time)
+        .bind(&data.cons_meter.freq_hz)
+        .bind(&data.cons_meter.i1_a)
+        .bind(&data.cons_meter.i2_a)
+        .bind(&data.cons_meter.neg_ltea_3phsum_kwh)
+        .bind(&data.cons_meter.net_ltea_3phsum_kwh)
+        .bind(&data.cons_meter.p_3phsum_kw)
+        .bind(&data.cons_meter.p1_kw)
+        .bind(&data.cons_meter.p2_kw)
+        .bind(&data.cons_meter.pos_ltea_3phsum_kwh)
+        .bind(&data.cons_meter.q_3phsum_kvar)
+        .bind(&data.cons_meter.s_3phsum_kva)
+        .bind(&data.cons_meter.tot_pf_rto)
+        .bind(&data.cons_meter.v12_v)
+        .bind(&data.cons_meter.v1n_v)
+        .bind(&data.cons_meter.v2n_v)
+        .execute(solar_sql_upload_conn).await;
+
+    match cons_meter_result {
+        Ok(_) => {
+            debug!(
+            "Consumption Meter: {} @ {:#?} uploaded to Mysql solar database", 
+                &data.cons_meter.serial, format!("{}", &data.cons_meter.data_time.unwrap().format("%Y-%m-%d %H:%M:%S"))
+            );
+        },
+        Err(cons_meter_eff) => {
+            error!(
+                "Consumption Meter: {} @ {:#?} failed to upload to Mysql solar database. Error: {}", 
+                &data.cons_meter.serial, format!("{}", &data.cons_meter.data_time.unwrap().format("%Y-%m-%d %H:%M:%S")), cons_meter_eff
+            );
+            all_device_success = false;
+        }, 
+    }
+
+    //( serial, data_time, freq_hz, i_a, net_ltea_3phsum_kwh, 
+    //    p_3phsum_kw, q_3phsum_kvar, s_3phsum_kva, tot_pf_rto, v12_v )
+    // Upload Production Meter Data
+    let prod_meter_result = sqlx::query(PM_INSERT_QUERY)
+        .bind(&data.prod_meter.serial)
+        .bind(&data.prod_meter.data_time)
+        .bind(&data.prod_meter.freq_hz)
+        .bind(&data.prod_meter.i_a)
+        .bind(&data.prod_meter.net_ltea_3phsum_kwh)
+        .bind(&data.prod_meter.p_3phsum_kw)
+        .bind(&data.prod_meter.q_3phsum_kvar)
+        .bind(&data.prod_meter.s_3phsum_kva)
+        .bind(&data.prod_meter.tot_pf_rto)
+        .bind(&data.prod_meter.v12_v)
+        .execute(solar_sql_upload_conn).await;
+
+    match prod_meter_result {
+        Ok(_) => {
+            debug!(
+            "Production Meter: {} @ {:#?} uploaded to Mysql solar database", 
+                &data.prod_meter.serial, format!("{}", &data.prod_meter.data_time.unwrap().format("%Y-%m-%d %H:%M:%S"))
+            );
+        },
+        Err(prod_meter_eff) => {
+            error!(
+                "Production Meter: {} @ {:#?} failed to upload to Mysql solar database. Error: {}", 
+                &data.prod_meter.serial, format!("{}", &data.prod_meter.data_time.unwrap().format("%Y-%m-%d %H:%M:%S")), prod_meter_eff
+            );
+            all_device_success = false;
+        }, 
+    }
+
+    //( serial, data_time, freq_hz, i_3phsum_a, i_mppt1_a, ltea_3phsum_kwh, p_3phsum_kw, 
+    //p_mppt1_kw, stat_ind, t_htsnk_degc, v_mppt1_v, vln_3phavg_v )
+    // Upload Inverter data
+    for inv in data.inverters.iter() {
+        let inv_result = sqlx::query(INV_INSERT_QUERY)
+            .bind(&inv.serial)
+            .bind(&inv.data_time)
+            .bind(&inv.freq_hz)
+            .bind(&inv.i_3phsum_a)
+            .bind(&inv.i_mppt1_a)
+            .bind(&inv.ltea_3phsum_kwh)
+            .bind(&inv.p_3phsum_kw)
+            .bind(&inv.p_mppt1_kw)
+            .bind(&inv.stat_ind)
+            .bind(&inv.t_htsnk_degc)
+            .bind(&inv.v_mppt1_v)
+            .bind(&inv.vln_3phavg_v)
+            .execute(solar_sql_upload_conn).await;
+
+        match inv_result {
             Ok(_) => {
-                debug!("Device: {} @ {} uploaded to Mysql solar database", datapoints[0].serial, datapoints[0].data_time );
-                //debug!("Index is {}.  Device is: {}", index, datapoints[0].serial);
-                index_delete.push(index);
-
+                debug!(
+                "Inverter: {} @ {} uploaded to Mysql solar database", 
+                    &inv.serial, format!("{}", &inv.data_time.unwrap().format("%Y-%m-%d %H:%M:%S"))
+                );
             },
-            Err(e) => {
-                error!("Device: {} @ {} failed to upload to Mysql solar database. Error: {}", datapoints[0].serial, datapoints[0].data_time, e);
-                //debug!("Index is {}.  Device is: {}", index, datapoints[0].serial);
-                index_delete.push(index);
+            Err(inv_eff) => {
+                error!(
+                    "Inverter: {} @ {:#?} failed to upload to Mysql solar database. Error: {}", 
+                    &inv.serial, format!("{}", &inv.data_time.unwrap().format("%Y-%m-%d %H:%M:%S")), inv_eff
+                );
                 all_device_success = false;
             }, 
         }
     }
-    for dex in index_delete.iter().rev() {
-        debug!("Removed Device: {} @ {}", device_ts_data[*dex][0].serial, device_ts_data[*dex][0].data_time);
-        device_ts_data.remove(*dex);
-    }
-            
     match all_device_success {
         true => {
             info!("All devices uploaded to mysql db solar");
@@ -686,28 +982,101 @@ fn import_to_mysql( device_ts_data: &mut Vec<Vec<Pvs6DataPoint>>, solar_sql_uplo
             //return Err(())
         }
     }
-     
+        
 }
 
-fn round_time_to_sql_timestamp(str_timestamp: &str) -> String {
-    // Rounds time to nearest minute from string timestamp in format: YYYY,MM,dd,HH,mm,ss and outputs in mysql timestamp
-    // format of YYYY-MM-dd hh:mm:ss.  uses naive datetime and assumes datetime is in utc or other non daylight savings time 
-    // changing format.
-    let mut dt = NaiveDateTime::parse_from_str(str_timestamp, "%Y,%m,%d,%H,%M,%S").unwrap();
+async fn get_latest_pvs6_data_from_sql( solar_sql_upload_pool: &sqlx::Pool<sqlx::MySql> ) -> Pvs6DevicesResponse {
+    let mut latest_sql_pvs6_data = Pvs6DevicesResponse::new();
 
-    //let dt = NaiveDate::from_ymd_opt(time[0], time[1], time[2]).unwrap()
-    //.and_hms_milli_opt(time[3], time[4], time[5]).unwrap();
+    let sup = sqlx::query_as::<_, Supervisor>(QUERY_GET_LATEST_SUP_DATA)
+    .fetch_all(solar_sql_upload_pool).await;
 
-    let seconds: i64 = dt.second() as i64;
+    let cm = sqlx::query_as::<_, ConsumptionMeter>(QUERY_GET_LATEST_CM_DATA)
+    .fetch_all(solar_sql_upload_pool).await;
 
-    if seconds >= 30 {
-        // Round up to the next minute
-        dt += chrono::Duration::seconds(60 - seconds);
-    } else {
-        // Round down to the current minute
-        dt -= chrono::Duration::seconds(seconds);
-    }
-    dt.format("%Y-%m-%d %H:%M:%S").to_string()
+    let pm = sqlx::query_as::<_, ProductionMeter>(QUERY_GET_LATEST_PM_DATA)
+    .fetch_all(solar_sql_upload_pool).await;
+
+    let inv = sqlx::query_as::<_, Inverter>(QUERY_GET_LATEST_INV_DATA)
+    .fetch_all(solar_sql_upload_pool).await;
+
+    latest_sql_pvs6_data = Pvs6DevicesResponse::set_values(
+        match sup {
+            Ok(sup_v) => {
+                match sup_v.len().cmp(&1) {
+                    Ordering::Less => {
+                        warn!("solar db did not return latest supervisor data");
+                        Supervisor::new()
+                    },
+                    Ordering::Equal => sup_v[0].clone(),
+                    Ordering::Greater => {
+                        warn!("solar db returned more than one lastest supervisor data.  Took the first ");
+                        sup_v[0].clone()
+                    },
+                }
+            },
+            Err(sup_eff) => {
+                error!("{}",sup_eff);
+                Supervisor::new()
+            },
+        },
+        match cm {
+            Ok(cm_v) => {
+                match cm_v.len().cmp(&1) {
+                    Ordering::Less => {
+                        warn!("solar db did not return latest consumption meter data");
+                        ConsumptionMeter::new()
+                    },
+                    Ordering::Equal => cm_v[0].clone(),
+                    Ordering::Greater => {
+                        warn!("solar db returned more than one lastest consumption meter data.  Took the first ");
+                        cm_v[0].clone()
+                    },
+                }
+            },
+            Err(cm_eff) => {
+                error!("{}",cm_eff);
+                ConsumptionMeter::new()
+            },
+        }, 
+        match pm {
+            Ok(pm_v) => {
+                match pm_v.len().cmp(&1) {
+                    Ordering::Less => {
+                        warn!("solar db did not return latest production meter data");
+                        ProductionMeter::new()
+                    },
+                    Ordering::Equal => pm_v[0].clone(),
+                    Ordering::Greater => {
+                        warn!("solar db returned more than one lastest production meter data.  Took the first ");
+                        pm_v[0].clone()
+                    },
+                }
+            },
+            Err(pm_eff) => {
+                error!("{}",pm_eff);
+                ProductionMeter::new()
+            },
+        }, 
+        match inv {
+            Ok(inv_v) => {
+                match inv_v.len().cmp(&1) {
+                    Ordering::Less => {
+                        warn!("solar db did not return latest inverters data");
+                        Vec::new()
+                    },
+                    Ordering::Equal => inv_v,
+                    Ordering::Greater => inv_v,
+                }
+            },
+            Err(inv_eff) => {
+                error!("{}",inv_eff);
+                Vec::new()
+            },
+        }, 
+    );
+    
+    latest_sql_pvs6_data
 }
 
 fn set_interval(repeat_interval: u64, units: char, offset: Duration) -> Interval {
@@ -807,8 +1176,10 @@ fn set_interval(repeat_interval: u64, units: char, offset: Duration) -> Interval
 }
 
 async fn get_pvs6_device_data( ) -> Option<String> {
-    // Using direct Reqwest::get fn instead of creating client.  PVS6 loses main internet connection and will not upload data when installer port (where we are making request) connection
-    //  remains open.  PVS6 is known to have a bug that causes memory to fill up and crash PVS6 if data is not uploaded.
+    // Using direct Reqwest::get fn instead of creating client.  PVS6 loses main internet connection and 
+    // will not upload data when installer port (where we are making request) connection remains open.
+    //  PVS6 is known to have a bug that causes memory to fill up and crash PVS6 if data is not uploaded.
+
     let pvs6_received = get(URL_DEVICES_API).await;
 
     // If PVS6 responded, check response status.  Else, log error and return none
@@ -879,6 +1250,7 @@ fn get_sql_last_device_data( solar_sql_upload_conn: &mut PooledConn ) -> Result<
                                     inverters.push(inv.clone());
                                     inv_cnt += 1;
                                     debug!( "Inverter Count: {}.  Should be 1", inv_cnt);
+                                    info!("Last inverter data from {} in mysql db solar read from db", inv.serial);
                                 }
                                 if inv_cnt > 1 {
                                     warn!("Query should have returned only one inverter with serial: {}.  {} were returned", s.0, inv_cnt)
@@ -920,13 +1292,15 @@ fn get_sql_last_device_data( solar_sql_upload_conn: &mut PooledConn ) -> Result<
                                                             opt_f64_from_value_double( &cm[14] ),
                                                             opt_f64_from_value_double( &cm[15] ),
                                                             opt_f64_from_value_double( &cm[16] ),
-                                                        )
+                                                        );
+                                                        info!("Last Consumption meter data from {} in mysql db solar read from db", consump_meter.serial);
                                                     },
                                                     None => {
                                                         error!("No consumption meter matching device serial {} found.", s.0);
                                                         return Err( format!("No iconsumption meter matching device serial {} found.", s.0).into() )
                                                     },
-                                                }
+                                                };
+    
                                             },
                                             Err(con_eff) => {
                                                 error!("{}", con_eff);
@@ -946,6 +1320,7 @@ fn get_sql_last_device_data( solar_sql_upload_conn: &mut PooledConn ) -> Result<
                                         match production_res {
                                             Ok(production_meter) => {
                                                 prod_meter = production_meter[0].clone();
+                                                info!("Last production meter data from {} in mysql db solar read from db", prod_meter.serial);
                                                 if production_meter.len() > 1 {
                                                     warn!("Query should have returned only one production meter with serial: {}.  {} were returned", s.0, production_meter.len());
                                                 }
@@ -983,6 +1358,7 @@ fn get_sql_last_device_data( solar_sql_upload_conn: &mut PooledConn ) -> Result<
                         match supervisor_res {
                             Ok(supervisor) => {
                                 sup = supervisor[0].clone();
+                                info!("Last PVS Supervisor data from {} in mysql db solar read from db", sup.serial);
                                 if supervisor.len() > 1 {
                                     warn!("Query should have returned only one supervisor with serial: {}.  {} were returned", s.0, supervisor.len());
                                 }
@@ -999,20 +1375,8 @@ fn get_sql_last_device_data( solar_sql_upload_conn: &mut PooledConn ) -> Result<
                     },
                 }
             }
-        let last_data: Pvs6DevicesResponse = Pvs6DevicesResponse::set_values(sup, consump_meter, prod_meter, inverters);
-        
-        println!("Serial: {} Time: {}", last_data.supervisor.serial, last_data.supervisor.data_time);
-        
-        println!("Serial: {} Time: {}", last_data.cons_meter.serial, last_data.cons_meter.data_time);
-        
-        println!("Serial: {} Time: {}", last_data.prod_meter.serial, last_data.prod_meter.data_time);
-    
-        let mut test_cnt = 1;
-        for inv in last_data.inverters.iter() {
-            println!("#: {} Serial: {} Time: {}",test_cnt, inv.serial, inv.data_time);
-            test_cnt += 1;
-        }
-        return Ok(last_data)
+            let last_data: Pvs6DevicesResponse = Pvs6DevicesResponse::set_values(sup, consump_meter, prod_meter, inverters);
+            return Ok(last_data)
         },
         Err(eff) => {
             error!("{}", eff);
@@ -1032,4 +1396,31 @@ fn opt_f64_from_value_double(v: &Value) -> Option<f64> {
         },
     };
     opt_value
+}
+
+fn update_last_device_data(last_device_data: &mut Pvs6DevicesResponse, device: &DeviceType, datapoint: &Pvs6DataPoint) {
+    match device {
+        DeviceType::Supervisor => {
+            if last_device_data.supervisor.serial != datapoint.serial {
+                error!("Updating Last Data: Device serial numbers should have matched");
+            }
+            else {       
+                last_device_data.supervisor.data_time = NaiveDateTime::parse_from_str(&datapoint.data_time, "%Y-%m-%d %H:%M:%S").unwrap();
+                for ( field_name, field_value ) in last_device_data.supervisor.iter() {
+                    if field_name == datapoint.parameter {
+                        match datapoint.data {
+                            Some(point) => {
+                                let stringy = point.parse::<f64>().unwrap();
+                            },
+                            None => field_value = None,
+                        }
+
+                    }
+                } 
+            }
+        },
+        DeviceType::ConsumptionMeter => {},
+        DeviceType::ProductionMeter => {},
+        DeviceType::Inverter => {},
+    }
 }
