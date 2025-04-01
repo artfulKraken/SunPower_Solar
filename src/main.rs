@@ -61,7 +61,7 @@ Program completes the following actions:
             ( serial, data_time, freq_hz, i_3phsum_a, i_mppt1_a, ltea_3phsum_kwh, p_3phsum_kw, 
                 p_mppt1_kw, stat_ind, t_htsnk_degc, v_mppt1_v, vln_3phavg_v )
             VALUE ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )
-    "#;
+    "#; 
     // sql query to get latest data for each supervisor (serial #) in supervisors_data table
     const QUERY_GET_LATEST_SUP_DATA: &str =
     r#"
@@ -108,13 +108,7 @@ Program completes the following actions:
     "#;
 
 // ENUMS, STRUCTURES AND IMPLEMENTATIONS
-enum DeviceType {
-    Inverter,
-    ConsumptionMeter,
-    ProductionMeter,
-    Supervisor
-}
-    
+
 #[derive(Clone, Debug)] 
 struct Pvs6DevicesResponse {
     supervisor: Supervisor,
@@ -416,22 +410,6 @@ struct Inverter {
 }
 
 impl Inverter {
-    fn new() -> Self {
-        Self {
-            serial: String::new(),
-            data_time: None,
-            freq_hz: None,
-            i_3phsum_a: None,
-            i_mppt1_a: None,
-            ltea_3phsum_kwh: None,
-            p_3phsum_kw: None,
-            p_mppt1_kw: None,
-            stat_ind: None,
-            t_htsnk_degc: None,
-            v_mppt1_v: None,
-            vln_3phavg_v: None,
-        }
-    }   
     fn set_values( 
         serial: &str, data_time: Option<DateTime<Utc>>, freq_hz: Option<f64>, i_3phsum_a: Option<f64>, i_mppt1_a: Option<f64>,
         ltea_3phsum_kwh: Option<f64>, p_3phsum_kw: Option<f64>, p_mppt1_kw: Option<f64>, stat_ind: Option<f64>,
@@ -534,14 +512,14 @@ async fn main() {
     let offset_dur = chrono::Duration::milliseconds( -200 );
     // set the start time and interval used to get pvs6 device data.
     let mut get_pvs6_device_interval = set_interval(PVS6_GET_DEVICES_INTERVAL, PVS6_GET_DEVICES_INTERVAL_UNITS, offset_dur);
-    pvs6_to_mysql( &mut solar_pool ).await;
-    /*loop {
+    
+    loop {
         // Wait until the next tick (start time and interval)
         get_pvs6_device_interval.tick().await; 
         // get pvs6 data and upload to mysql solar database
         debug!( "Run at: {}", Utc::now().to_string() ); //for loop timing testing
         pvs6_to_mysql( &mut solar_pool ).await;
-    }*/
+    }
 }
 
 async fn pvs6_to_mysql(solar_pool: &mut Option<sqlx::Pool<sqlx::MySql>>) {
@@ -579,10 +557,6 @@ fn deserialize_pvs6_devices( pvs6_data: String ) -> Option<Pvs6DevicesResponse> 
     static RE_DEVICE: Lazy<Regex> = Lazy::new( || Regex::new(r#"\{.*?\}"#).unwrap() );
     static RE_DEVICE_TYPE: Lazy<Regex> = Lazy::new( || Regex::new(r#""DEVICE_TYPE".*?:.*?"(.*?)""#).unwrap() );
     static RE_TYPE: Lazy<Regex> = Lazy::new( || Regex::new(r#""TYPE".*?:.*?"(.*?)""#).unwrap() );
-    
-    
-    //vector of inverters to hold inverters that are deserialized.
-    let mut type_of_device: DeviceType;
 
     // declared to hold deserialized values and final return structure
     let mut cur_device_data: Pvs6DevicesResponse = Pvs6DevicesResponse::new();
@@ -617,7 +591,6 @@ fn deserialize_pvs6_devices( pvs6_data: String ) -> Option<Pvs6DevicesResponse> 
                             Some(device_type) => {
                                 match device_type.as_str() {
                                     SUPERVISOR => {
-                                        type_of_device = DeviceType::Supervisor;
                                         let sup_opt: Result<Supervisor> = serde_json::from_str(&device);
                                         match sup_opt {
                                             Ok(sup) => {
@@ -637,7 +610,6 @@ fn deserialize_pvs6_devices( pvs6_data: String ) -> Option<Pvs6DevicesResponse> 
                                                     Some(type_d) => {
                                                         match type_d.as_str() {
                                                             PRODUCTION_METER => {
-                                                                type_of_device = DeviceType::ProductionMeter;
                                                                 let pm_opt: Result<ProductionMeter> = serde_json::from_str(&device); 
                                                                 match pm_opt {
                                                                     Ok(pm) => {
@@ -651,7 +623,6 @@ fn deserialize_pvs6_devices( pvs6_data: String ) -> Option<Pvs6DevicesResponse> 
                                                                 }
                                                             },
                                                             CONSUMPTION_METER => {
-                                                                type_of_device = DeviceType::ConsumptionMeter;
                                                                 let cm_opt: Result<ConsumptionMeter> = serde_json::from_str(&device); 
                                                                 match cm_opt {
                                                                     Ok(cm) => {
@@ -684,7 +655,6 @@ fn deserialize_pvs6_devices( pvs6_data: String ) -> Option<Pvs6DevicesResponse> 
                                     },
                                     INVERTER => {
                                         inverter_cnt +=1;
-                                        type_of_device = DeviceType::Inverter;
                                         let inv_opt: Result<Inverter> = serde_json::from_str(&device);
                                         match inv_opt {
                                             Ok(inv) => {
@@ -806,31 +776,7 @@ async fn insert_pvs6_data_to_mysql( data: Pvs6DevicesResponse, solar_sql_upload_
     
     let mut all_device_success: bool = true;  
     
-    const SUP_INSERT_QUERY: &str = r#"
-        INSERT INTO supervisors_data 
-            ( serial, data_time, dl_comm_err, dl_cpu_load, dl_err_count, dl_flash_avail, dl_mem_used, 
-                dl_scan_time, dl_skipped_scans, dl_untransmitted, dl_uptime ) 
-            VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )
-    "#;
-    const PM_INSERT_QUERY: &str = r#"
-        INSERT INTO production_meters_data
-            ( serial, data_time, freq_hz, i_a, net_ltea_3phsum_kwh, 
-                p_3phsum_kw, q_3phsum_kvar, s_3phsum_kva, tot_pf_rto, v12_v )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ? )
-    "#;
-
-    const CM_INSERT_QUERY: &str = r#"
-        INSERT INTO consumption_meters_data
-            ( serial, data_time, freq_hz, i1_a, i2_a, neg_ltea_3phsum_kwh, net_ltea_3phsum_kwh, p_3phsum_kw,
-                p1_kw, p2_kw, pos_ltea_3phsum_kwh, q_3phsum_kvar, s_3phsum_kva, tot_pf_rto, v12_v, v1n_v, v2n_v )
-            VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )
-    "#;
-    const INV_INSERT_QUERY: &str = "
-        INSERT INTO inverters_data
-            ( serial, data_time, freq_hz, i_3phsum_a, i_mppt1_a, ltea_3phsum_kwh, p_3phsum_kw, 
-                p_mppt1_kw, stat_ind, t_htsnk_degc, v_mppt1_v, vln_3phavg_v )
-            VALUE ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )
-    ";
+    
     
     //( serial, data_time, freq_hz, i1_a, i2_a, neg_ltea_3phsum_kwh, net_ltea_3phsum_kwh, p_3phsum_kw,
     //    p1_kw, p2_kw, pos_ltea_3phsum_kwh, q_3phsum_kvar, s_3phsum_kva, tot_pf_rto, v12_v, v1n_v, v2n_v )
@@ -1023,7 +969,7 @@ async fn insert_pvs6_data_to_mysql( data: Pvs6DevicesResponse, solar_sql_upload_
 }
 
 async fn get_latest_pvs6_data_from_sql( solar_sql_upload_pool: &sqlx::Pool<sqlx::MySql> ) -> Pvs6DevicesResponse {
-    let mut latest_sql_pvs6_data = Pvs6DevicesResponse::new();
+    let latest_sql_pvs6_data: Pvs6DevicesResponse;
 
     let sup = sqlx::query_as::<_, Supervisor>(QUERY_GET_LATEST_SUP_DATA)
     .fetch_all(solar_sql_upload_pool).await;
@@ -1261,9 +1207,9 @@ fn update_pvs6_old_responses (cur_data: Pvs6DevicesResponse, latest_sql_data: &P
     
     let greatest_cur_dt: Option<DateTime<Utc>> = greater_option_dt(&check_dts);
 
-    let mut sup = Supervisor::new();
-    let mut pm = ProductionMeter::new();
-    let mut cm = ConsumptionMeter::new();
+    let sup: Supervisor;
+    let pm: ProductionMeter;
+    let cm: ConsumptionMeter;
     let mut invs: Vec<Inverter> = Vec::new();
     // check if supervisor serial and data_time are same for cur_data and latest_sql_data (ie already in sql)
     // if so, set data_time to greatest current time, set serial to serial and set all other values to None.
