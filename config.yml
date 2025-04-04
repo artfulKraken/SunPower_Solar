@@ -1,0 +1,10 @@
+mysql:
+  ip_host:
+  database: "solar"
+  port: 3306
+
+pvs6:
+  ip_host: "https://solarpi.artfulkraken.com"
+  get_devices:
+    inverval: 5
+    units: 'm'
