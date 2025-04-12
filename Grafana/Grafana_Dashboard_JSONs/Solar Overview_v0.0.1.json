@@ -1,0 +1,1661 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 2,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "mysql",
+        "uid": "degjnnr5hum0wf"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "dark-red",
+                "value": -10
+              },
+              {
+                "color": "semi-dark-red",
+                "value": -8
+              },
+              {
+                "color": "red",
+                "value": -6
+              },
+              {
+                "color": "light-red",
+                "value": -4
+              },
+              {
+                "color": "super-light-red",
+                "value": -2
+              },
+              {
+                "color": "#bef3d1",
+                "value": 0
+              },
+              {
+                "color": "super-light-green",
+                "value": 2
+              },
+              {
+                "color": "light-green",
+                "value": 4
+              },
+              {
+                "color": "green",
+                "value": 6
+              },
+              {
+                "color": "semi-dark-green",
+                "value": 8
+              },
+              {
+                "color": "dark-green",
+                "value": 10
+              }
+            ]
+          },
+          "unit": "kW"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 14,
+        "w": 3,
+        "x": 0,
+        "y": 0
+      },
+      "id": 5,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [],
+          "fields": "/.*/",
+          "values": true
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "pluginVersion": "11.6.0",
+      "targets": [
+        {
+          "dataset": "performance_schema",
+          "datasource": {
+            "type": "mysql",
+            "uid": "degjnnr5hum0wf"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT (-1 * p_3phsum_kw) AS `Net Generation` FROM solar.consumption_meters_data WHERE data_time = (SELECT MAX(data_time) FROM solar.consumption_meters_data)",
+          "refId": "Net_Generation",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        },
+        {
+          "dataset": "performance_schema",
+          "datasource": {
+            "type": "mysql",
+            "uid": "degjnnr5hum0wf"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT p_3phsum_kw AS Production FROM solar.production_meters_data WHERE data_time = (SELECT MAX(data_time) FROM solar.production_meters_data)",
+          "refId": "Power_Production",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        },
+        {
+          "datasource": {
+            "name": "Expression",
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "expression": "-1 * ($Power_Production - $Net_Generation)",
+          "hide": false,
+          "refId": "Usage",
+          "type": "math"
+        }
+      ],
+      "title": "Current Power Production",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "mysql",
+        "uid": "degjnnr5hum0wf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "red",
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": true,
+            "axisColorMode": "text",
+            "axisGridShow": true,
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 0,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "fieldMinMax": false,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "dark-red",
+                "value": -15
+              },
+              {
+                "color": "semi-dark-red",
+                "value": -12
+              },
+              {
+                "color": "red",
+                "value": -9
+              },
+              {
+                "color": "light-red",
+                "value": -6
+              },
+              {
+                "color": "super-light-red",
+                "value": -3
+              },
+              {
+                "color": "super-light-green",
+                "value": 0
+              },
+              {
+                "color": "light-green",
+                "value": 2
+              },
+              {
+                "color": "green",
+                "value": 4
+              },
+              {
+                "color": "semi-dark-green",
+                "value": 6
+              },
+              {
+                "color": "dark-green",
+                "value": 8
+              }
+            ]
+          },
+          "unit": "kwatth"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Energy Production"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "bars"
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 50
+              },
+              {
+                "id": "custom.barWidthFactor",
+                "value": 0.4
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "light-green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Energy Useage"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "bars"
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 50
+              },
+              {
+                "id": "custom.barWidthFactor",
+                "value": 0.4
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#ffca3c",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Net Energy Generation"
+            },
+            "properties": [
+              {
+                "id": "custom.lineWidth",
+                "value": 3
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 9,
+        "x": 3,
+        "y": 0
+      },
+      "id": 3,
+      "options": {
+        "legend": {
+          "calcs": [
+            "sum"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.6.0",
+      "targets": [
+        {
+          "dataset": "solar",
+          "datasource": {
+            "type": "mysql",
+            "uid": "degjnnr5hum0wf"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \n  CONVERT_TZ(  \n    DATE_ADD(\n      DATE_ADD(\n        DATE_ADD(\n          DATE_ADD(\n            MAKEDATE(YEAR( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ), 1),\n            INTERVAL MONTH( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) -1 MONTH\n          ),\n          INTERVAL DAY( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) -1 DAY\n        ),\n        INTERVAL HOUR( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) HOUR\n      ), \n      INTERVAL IF(\n        MINUTE( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) = 0,\n        0,\n        1\n      ) HOUR\n    ),\n    'America/Los_Angeles', 'UTC'\n  ) AS End_Time,\n\tSUM( Nrg_Production ) AS `Energy Production`,\n\t( -1 * (SUM( Nrg_Production ) + SUM( Nrg_Consumption ) ) ) AS `Energy Useage`,\n\t( -1 * SUM( Nrg_Consumption ) ) AS `Net Energy Generation`\nFROM (\n\tSELECT \n\t\tprod.timestamp AS data_time,\n\t\tCOALESCE( prod.net_ltea_3phsum_kwh - LAG( prod.net_ltea_3phsum_kwh ) OVER ( ORDER BY prod.timestamp ASC ), 0 ) AS Nrg_Production,\n\t\tCOALESCE( cons.net_ltea_3phsum_kwh - LAG( cons.net_ltea_3phsum_kwh ) OVER ( ORDER BY cons.timestamp ASC ), 0 ) AS Nrg_Consumption\n\tFROM (\n\t\tSELECT \n\t\t\tFROM_UNIXTIME( ( ROUND( UNIX_TIMESTAMP( data_time ) / 60, 0 ) * 60 ) ) AS 'timestamp',\n\t\t\tnet_ltea_3phsum_kwh\n\t\tFROM solar.production_meters_data\n\t\tWHERE data_time >= \n      CONVERT_TZ(\n        DATE_ADD(\n          DATE_ADD(\n            MAKEDATE(YEAR ( CONVERT_TZ( NOW(), 'UTC', 'America/Los_Angeles' ) ), 1),\n            INTERVAL MONTH( CONVERT_TZ( NOW(), 'UTC', 'America/Los_Angeles' ) ) -1 MONTH \n          ),\n          INTERVAL DAY( CONVERT_TZ( NOW(), 'UTC', 'America/Los_Angeles' ) ) -1 DAY\n        ),\n        'America/Los_Angeles', 'UTC' \n      )\n\t) AS prod\n\tJOIN (\n\t\tSELECT \n\t\t\tFROM_UNIXTIME( ( ROUND( UNIX_TIMESTAMP( data_time ) / 60, 0 ) * 60 ) ) AS 'timestamp',\n\t\t\tnet_ltea_3phsum_kwh\n\t\tFROM solar.consumption_meters_data\n\t) AS cons\n\tON prod.timestamp = cons.timestamp\n) AS prod_cons\nGROUP BY End_Time\nORDER BY End_Time;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "alias": "\"Energy Production\"",
+                "parameters": [
+                  {
+                    "name": "data",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "data_time",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "889898b8-cdef-4012-b456-7195ced6c427",
+                  "properties": {
+                    "field": "parameter",
+                    "fieldSrc": "field",
+                    "operator": "equal",
+                    "value": [
+                      "net_ltea_3phsum_kwh"
+                    ],
+                    "valueError": [
+                      null
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aabb9889-89ab-4cde-b012-3195ced913e4",
+                  "properties": {
+                    "field": "serial",
+                    "fieldSrc": "field",
+                    "operator": "equal",
+                    "value": [
+                      "PVS6M22511526p"
+                    ],
+                    "valueError": [
+                      null
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "8a8a8998-0123-4456-b89a-b195cece165c",
+              "type": "group"
+            },
+            "whereString": "(parameter = 'net_ltea_3phsum_kwh' AND serial = 'PVS6M22511526p')"
+          },
+          "table": "pvs6_data"
+        }
+      ],
+      "timeFrom": "now/d",
+      "title": "Energy Generation and Usage",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "mysql",
+        "uid": "degjnnr5hum0wf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "red",
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisGridShow": true,
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 0,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "fieldMinMax": false,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "dark-red",
+                "value": -15
+              },
+              {
+                "color": "semi-dark-red",
+                "value": -12
+              },
+              {
+                "color": "red",
+                "value": -9
+              },
+              {
+                "color": "light-red",
+                "value": -6
+              },
+              {
+                "color": "super-light-red",
+                "value": -3
+              },
+              {
+                "color": "super-light-green",
+                "value": 0
+              },
+              {
+                "color": "light-green",
+                "value": 2
+              },
+              {
+                "color": "green",
+                "value": 4
+              },
+              {
+                "color": "semi-dark-green",
+                "value": 6
+              },
+              {
+                "color": "dark-green",
+                "value": 8
+              }
+            ]
+          },
+          "unit": "kwatth"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Energy Production"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "bars"
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 50
+              },
+              {
+                "id": "custom.barWidthFactor",
+                "value": 0.4
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "light-green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Energy Useage"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "bars"
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 50
+              },
+              {
+                "id": "custom.barWidthFactor",
+                "value": 0.4
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#ffca3c",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Net Energy Generation"
+            },
+            "properties": [
+              {
+                "id": "custom.lineWidth",
+                "value": 3
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 9,
+        "x": 12,
+        "y": 0
+      },
+      "id": 10,
+      "options": {
+        "legend": {
+          "calcs": [
+            "sum"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.6.0",
+      "targets": [
+        {
+          "dataset": "solar",
+          "datasource": {
+            "type": "mysql",
+            "uid": "degjnnr5hum0wf"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \n  CONVERT_TZ(  \n    DATE_ADD(\n      DATE_ADD(\n        DATE_ADD(\n          DATE_ADD(\n            MAKEDATE(YEAR( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ), 1),\n            INTERVAL MONTH( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) -1 MONTH\n          ),\n          INTERVAL DAY( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) -1 DAY\n        ),\n        INTERVAL HOUR( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) HOUR\n      ), \n      INTERVAL IF(\n        MINUTE( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) = 0,\n        0,\n        1\n      ) HOUR\n    ),\n    'America/Los_Angeles', 'UTC'\n  ) AS End_Time,\n\tSUM( Nrg_Production ) AS `Energy Production`,\n\t( -1 * (SUM( Nrg_Production ) + SUM( Nrg_Consumption ) ) ) AS `Energy Useage`,\n\t( -1 * SUM( Nrg_Consumption ) ) AS `Net Energy Generation`\nFROM (\n\tSELECT \n\t\tprod.timestamp AS data_time,\n\t\tCOALESCE( prod.net_ltea_3phsum_kwh - LAG( prod.net_ltea_3phsum_kwh ) OVER ( ORDER BY prod.timestamp ASC ), 0 ) AS Nrg_Production,\n\t\tCOALESCE( cons.net_ltea_3phsum_kwh - LAG( cons.net_ltea_3phsum_kwh ) OVER ( ORDER BY cons.timestamp ASC ), 0 ) AS Nrg_Consumption\n\tFROM (\n\t\tSELECT \n\t\t\tFROM_UNIXTIME( ( ROUND( UNIX_TIMESTAMP( data_time ) / 60, 0 ) * 60 ) ) AS 'timestamp',\n\t\t\tnet_ltea_3phsum_kwh\n\t\tFROM solar.production_meters_data\n\t\tWHERE data_time >= \n      CONVERT_TZ(\n        DATE_ADD(\n          DATE_ADD(\n            MAKEDATE(YEAR ( CONVERT_TZ( NOW(), 'UTC', 'America/Los_Angeles' ) ), 1),\n            INTERVAL MONTH( CONVERT_TZ( NOW(), 'UTC', 'America/Los_Angeles' ) ) -1 MONTH \n          ),\n          INTERVAL DAY( CONVERT_TZ( NOW(), 'UTC', 'America/Los_Angeles' ) ) -1 DAY\n        ),\n        'America/Los_Angeles', 'UTC' \n      )\n\t) AS prod\n\tJOIN (\n\t\tSELECT \n\t\t\tFROM_UNIXTIME( ( ROUND( UNIX_TIMESTAMP( data_time ) / 60, 0 ) * 60 ) ) AS 'timestamp',\n\t\t\tnet_ltea_3phsum_kwh\n\t\tFROM solar.consumption_meters_data\n\t) AS cons\n\tON prod.timestamp = cons.timestamp\n) AS prod_cons\nGROUP BY End_Time\nORDER BY End_Time;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "alias": "\"Energy Production\"",
+                "parameters": [
+                  {
+                    "name": "data",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "data_time",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "889898b8-cdef-4012-b456-7195ced6c427",
+                  "properties": {
+                    "field": "parameter",
+                    "fieldSrc": "field",
+                    "operator": "equal",
+                    "value": [
+                      "net_ltea_3phsum_kwh"
+                    ],
+                    "valueError": [
+                      null
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aabb9889-89ab-4cde-b012-3195ced913e4",
+                  "properties": {
+                    "field": "serial",
+                    "fieldSrc": "field",
+                    "operator": "equal",
+                    "value": [
+                      "PVS6M22511526p"
+                    ],
+                    "valueError": [
+                      null
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "8a8a8998-0123-4456-b89a-b195cece165c",
+              "type": "group"
+            },
+            "whereString": "(parameter = 'net_ltea_3phsum_kwh' AND serial = 'PVS6M22511526p')"
+          },
+          "table": "pvs6_data"
+        }
+      ],
+      "title": "Today's Energy Generation and Useage",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "mysql",
+        "uid": "degjnnr5hum0wf"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "dark-red",
+                "value": -10
+              },
+              {
+                "color": "semi-dark-red",
+                "value": -8
+              },
+              {
+                "color": "red",
+                "value": -6
+              },
+              {
+                "color": "light-red",
+                "value": -4
+              },
+              {
+                "color": "super-light-red",
+                "value": -2
+              },
+              {
+                "color": "#bef3d1",
+                "value": 0
+              },
+              {
+                "color": "super-light-green",
+                "value": 2
+              },
+              {
+                "color": "light-green",
+                "value": 4
+              },
+              {
+                "color": "green",
+                "value": 6
+              },
+              {
+                "color": "semi-dark-green",
+                "value": 8
+              },
+              {
+                "color": "dark-green",
+                "value": 10
+              }
+            ]
+          },
+          "unit": "kW"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 14,
+        "w": 3,
+        "x": 21,
+        "y": 0
+      },
+      "id": 8,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [],
+          "fields": "/.*/",
+          "values": true
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "pluginVersion": "11.6.0",
+      "targets": [
+        {
+          "dataset": "performance_schema",
+          "datasource": {
+            "type": "mysql",
+            "uid": "degjnnr5hum0wf"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT (-1 * p_3phsum_kw) AS `Net Generation` FROM solar.consumption_meters_data WHERE data_time = (SELECT MAX(data_time) FROM solar.consumption_meters_data)",
+          "refId": "Net_Generation",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        },
+        {
+          "dataset": "performance_schema",
+          "datasource": {
+            "type": "mysql",
+            "uid": "degjnnr5hum0wf"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT p_3phsum_kw AS Production FROM solar.production_meters_data WHERE data_time = (SELECT MAX(data_time) FROM solar.production_meters_data)",
+          "refId": "Power_Production",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        },
+        {
+          "datasource": {
+            "name": "Expression",
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "expression": "-1 * ($Power_Production - $Net_Generation)",
+          "hide": false,
+          "refId": "Usage",
+          "type": "math"
+        }
+      ],
+      "title": "Current Power Production",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "mysql",
+        "uid": "degjnnr5hum0wf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "red",
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": true,
+            "axisColorMode": "text",
+            "axisGridShow": true,
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 0,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "fieldMinMax": false,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "dark-red",
+                "value": -15
+              },
+              {
+                "color": "semi-dark-red",
+                "value": -12
+              },
+              {
+                "color": "red",
+                "value": -9
+              },
+              {
+                "color": "light-red",
+                "value": -6
+              },
+              {
+                "color": "super-light-red",
+                "value": -3
+              },
+              {
+                "color": "super-light-green",
+                "value": 0
+              },
+              {
+                "color": "light-green",
+                "value": 2
+              },
+              {
+                "color": "green",
+                "value": 4
+              },
+              {
+                "color": "semi-dark-green",
+                "value": 6
+              },
+              {
+                "color": "dark-green",
+                "value": 8
+              }
+            ]
+          },
+          "unit": "kwatth"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Production"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "bars"
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 50
+              },
+              {
+                "id": "custom.barWidthFactor",
+                "value": 0.4
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "light-green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Useage"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "bars"
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 50
+              },
+              {
+                "id": "custom.barWidthFactor",
+                "value": 0.4
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#ffca3c",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Net Generation"
+            },
+            "properties": [
+              {
+                "id": "custom.lineWidth",
+                "value": 3
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 9,
+        "x": 3,
+        "y": 7
+      },
+      "hideTimeOverride": false,
+      "id": 9,
+      "options": {
+        "legend": {
+          "calcs": [
+            "sum"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.6.0",
+      "targets": [
+        {
+          "dataset": "solar",
+          "datasource": {
+            "type": "mysql",
+            "uid": "degjnnr5hum0wf"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \n  DATE_ADD(\n    DATE_ADD(\n      DATE_ADD(\n        MAKEDATE(YEAR( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ), 1),\n        INTERVAL MONTH( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) -1 MONTH\n      ),\n      INTERVAL DAY( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) -1 DAY\n    ), \n    INTERVAL IF(\n      HOUR( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) = 0 AND\n        MINUTE( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) = 0,\n      -1,\n      0\n    ) DAY\n  ) AS End_Time,\n\tSUM( Nrg_Production ) AS `Production`,\n\t( -1 * (SUM( Nrg_Production ) + SUM( Nrg_Consumption ) ) ) AS `Useage`,\n\t( -1 * SUM( Nrg_Consumption ) ) AS `Net Generation`\nFROM (\n\tSELECT \n\t\tprod.timestamp AS data_time,\n\t\tCOALESCE( prod.net_ltea_3phsum_kwh - LAG( prod.net_ltea_3phsum_kwh ) OVER ( ORDER BY prod.timestamp ASC ), 0 ) AS Nrg_Production,\n\t\tCOALESCE( cons.net_ltea_3phsum_kwh - LAG( cons.net_ltea_3phsum_kwh ) OVER ( ORDER BY cons.timestamp ASC ), 0 ) AS Nrg_Consumption\n\tFROM (\n\t\tSELECT \n\t\t\tFROM_UNIXTIME( ( ROUND( UNIX_TIMESTAMP( data_time ) / 60, 0 ) * 60 ) ) AS 'timestamp',\n\t\t\tnet_ltea_3phsum_kwh\n\t\tFROM solar.production_meters_data\n\t\tWHERE data_time >= \n      CONVERT_TZ(\n        DATE_ADD(\n          MAKEDATE(YEAR ( CONVERT_TZ( NOW(), 'UTC', 'America/Los_Angeles' ) ), 1),\n          INTERVAL MONTH( CONVERT_TZ( NOW(), 'UTC', 'America/Los_Angeles' ) ) -1 MONTH \n        ),\n        'America/Los_Angeles', 'UTC' \n      )\n\t) AS prod\n\tJOIN (\n\t\tSELECT \n\t\t\tFROM_UNIXTIME( ( ROUND( UNIX_TIMESTAMP( data_time ) / 60, 0 ) * 60 ) ) AS 'timestamp',\n\t\t\tnet_ltea_3phsum_kwh\n\t\tFROM solar.consumption_meters_data\n\t) AS cons\n\tON prod.timestamp = cons.timestamp\n) AS prod_cons\nGROUP BY End_Time\nORDER BY End_Time;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "alias": "\"Energy Production\"",
+                "parameters": [
+                  {
+                    "name": "data",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "data_time",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "889898b8-cdef-4012-b456-7195ced6c427",
+                  "properties": {
+                    "field": "parameter",
+                    "fieldSrc": "field",
+                    "operator": "equal",
+                    "value": [
+                      "net_ltea_3phsum_kwh"
+                    ],
+                    "valueError": [
+                      null
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aabb9889-89ab-4cde-b012-3195ced913e4",
+                  "properties": {
+                    "field": "serial",
+                    "fieldSrc": "field",
+                    "operator": "equal",
+                    "value": [
+                      "PVS6M22511526p"
+                    ],
+                    "valueError": [
+                      null
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "8a8a8998-0123-4456-b89a-b195cece165c",
+              "type": "group"
+            },
+            "whereString": "(parameter = 'net_ltea_3phsum_kwh' AND serial = 'PVS6M22511526p')"
+          },
+          "table": "pvs6_data"
+        }
+      ],
+      "timeFrom": "now/M",
+      "title": "Energy Generation and Useage",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "mysql",
+        "uid": "degjnnr5hum0wf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "red",
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": true,
+            "axisColorMode": "text",
+            "axisGridShow": true,
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 0,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "fieldMinMax": false,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "dark-red",
+                "value": -15
+              },
+              {
+                "color": "semi-dark-red",
+                "value": -12
+              },
+              {
+                "color": "red",
+                "value": -9
+              },
+              {
+                "color": "light-red",
+                "value": -6
+              },
+              {
+                "color": "super-light-red",
+                "value": -3
+              },
+              {
+                "color": "super-light-green",
+                "value": 0
+              },
+              {
+                "color": "light-green",
+                "value": 2
+              },
+              {
+                "color": "green",
+                "value": 4
+              },
+              {
+                "color": "semi-dark-green",
+                "value": 6
+              },
+              {
+                "color": "dark-green",
+                "value": 8
+              }
+            ]
+          },
+          "unit": "kwatth"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Production"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "bars"
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 50
+              },
+              {
+                "id": "custom.barWidthFactor",
+                "value": 0.4
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "light-green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Useage"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "bars"
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 50
+              },
+              {
+                "id": "custom.barWidthFactor",
+                "value": 0.4
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#ffca3c",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Net Generation"
+            },
+            "properties": [
+              {
+                "id": "custom.lineWidth",
+                "value": 3
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 9,
+        "x": 12,
+        "y": 7
+      },
+      "hideTimeOverride": false,
+      "id": 11,
+      "interval": "1m",
+      "maxDataPoints": 12,
+      "options": {
+        "legend": {
+          "calcs": [
+            "sum"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.6.0",
+      "targets": [
+        {
+          "dataset": "solar",
+          "datasource": {
+            "type": "mysql",
+            "uid": "degjnnr5hum0wf"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \n  DATE_ADD(\n    DATE_ADD(\n      MAKEDATE(YEAR( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ), 1),\n      INTERVAL MONTH( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) -1 MONTH\n    ),  \n    INTERVAL IF(\n      DAY( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) = 0 AND\n      HOUR( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) = 0 AND\n        MINUTE( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) = 0,\n      -1,\n      0\n    ) MONTH\n  ) AS End_Time,\n\tSUM( Nrg_Production ) AS `Production`,\n\t( -1 * (SUM( Nrg_Production ) + SUM( Nrg_Consumption ) ) ) AS `Useage`,\n\t( -1 * SUM( Nrg_Consumption ) ) AS `Net Generation`\nFROM (\n\tSELECT \n\t\tprod.timestamp AS data_time,\n\t\tCOALESCE( prod.net_ltea_3phsum_kwh - LAG( prod.net_ltea_3phsum_kwh ) OVER ( ORDER BY prod.timestamp ASC ), 0 ) AS Nrg_Production,\n\t\tCOALESCE( cons.net_ltea_3phsum_kwh - LAG( cons.net_ltea_3phsum_kwh ) OVER ( ORDER BY cons.timestamp ASC ), 0 ) AS Nrg_Consumption\n\tFROM (\n\t\tSELECT \n\t\t\tFROM_UNIXTIME( ( ROUND( UNIX_TIMESTAMP( data_time ) / 60, 0 ) * 60 ) ) AS 'timestamp',\n\t\t\tnet_ltea_3phsum_kwh\n\t\tFROM solar.production_meters_data\n\t\tWHERE data_time >= \n      CONVERT_TZ(\n        MAKEDATE(YEAR ( CONVERT_TZ( NOW(), 'UTC', 'America/Los_Angeles' ) ), 1),\n        'America/Los_Angeles', 'UTC' \n      )\n\t) AS prod\n\tJOIN (\n\t\tSELECT \n\t\t\tFROM_UNIXTIME( ( ROUND( UNIX_TIMESTAMP( data_time ) / 60, 0 ) * 60 ) ) AS 'timestamp',\n\t\t\tnet_ltea_3phsum_kwh\n\t\tFROM solar.consumption_meters_data\n\t) AS cons\n\tON prod.timestamp = cons.timestamp\n) AS prod_cons\nGROUP BY End_Time\nORDER BY End_Time;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "alias": "\"Energy Production\"",
+                "parameters": [
+                  {
+                    "name": "data",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "data_time",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "889898b8-cdef-4012-b456-7195ced6c427",
+                  "properties": {
+                    "field": "parameter",
+                    "fieldSrc": "field",
+                    "operator": "equal",
+                    "value": [
+                      "net_ltea_3phsum_kwh"
+                    ],
+                    "valueError": [
+                      null
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aabb9889-89ab-4cde-b012-3195ced913e4",
+                  "properties": {
+                    "field": "serial",
+                    "fieldSrc": "field",
+                    "operator": "equal",
+                    "value": [
+                      "PVS6M22511526p"
+                    ],
+                    "valueError": [
+                      null
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "8a8a8998-0123-4456-b89a-b195cece165c",
+              "type": "group"
+            },
+            "whereString": "(parameter = 'net_ltea_3phsum_kwh' AND serial = 'PVS6M22511526p')"
+          },
+          "table": "pvs6_data"
+        }
+      ],
+      "timeFrom": "now/y",
+      "timeShift": "now/y",
+      "title": "Energy Generation and Useage",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "mysql",
+        "uid": "degjnnr5hum0wf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 14
+      },
+      "id": 6,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.6.0",
+      "targets": [
+        {
+          "dataset": "solar",
+          "datasource": {
+            "type": "mysql",
+            "uid": "degjnnr5hum0wf"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT dl_untransmitted AS \"Untransmitted Data\", data_time FROM solar.supervisors_data",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "alias": "\"Untransmitted Data\"",
+                "parameters": [
+                  {
+                    "name": "dl_untransmitted",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "data_time",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "table": "supervisors_data"
+        }
+      ],
+      "title": "Untransmitted Data",
+      "type": "timeseries"
+    }
+  ],
+  "preload": false,
+  "refresh": "1m",
+  "schemaVersion": 41,
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-7d",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Daily Overview",
+  "uid": "eegxni6l460hsb",
+  "version": 51
+}

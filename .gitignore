@@ -1,9 +1,8 @@
 /target
-main.rs.bkup
 .DS_Store
-/src/Parameters.txt
-/src/units_table.txt
+/src/main.rs.bkup
+/src/main.rs.old
 /log
 /log/pvs6_rolling.log
-grafana Queries Templates.sql
-/Grafana_Queries
+/log/pvs6_debug_rolling.log
+config.yml

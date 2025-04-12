@@ -1,10 +1,44 @@
-mysql:
-  ip_host:
-  database: "solar"
-  port: 3306
+# Default values shown but commented out
 
+## Pirate Weather config settings
+pirate_wx:
+  # Latitude of location for weather data
+  lat: "33.6489826"
+  # Longitude of location for weather data
+  long: "-117.6220115"
+  # Units for weather data.  Options are "us", "ca", "uk", or "si"
+  units: "us"
+
+  # Interval and units for pirate_wx requests.  Default is every 5 minutes.  Interval can only be positive integers.
+  # Pirate WX has free API call limit of 10000 per month ~= max of every 4.5 minutes
+  # Units options d, h, m, s  (days, hours, minutes, seconds)
+  #interval: 5
+  #interval_unit: "m"  
+
+  # If pirate_wx_api_key_path and pirate_wx_api_key are provided, pirate_wx_api_key is used
+  # Path to API Key
+  api_key_path: "/Users/daveboggs/.pirate_weather_api_key.api"
+  # Pirate WX API key
+  #api_key:
+
+## PVS6 config settings
 pvs6:
-  ip_host: "https://solarpi.artfulkraken.com"
-  get_devices:
-    inverval: 5
-    units: 'm'
+  # IP address or host name of PVS6 host for API calls
+  host: "https://solarpi.artfulkraken.com"
+  # interval and units for how often to make API call.  Interval can only be positive integers  default is 5 minutes
+  # Units options d, h, m, s  (days, hours, minutes, seconds)
+  #get_device_interval: 5
+  #get_device_interval_unit: "m"
+
+## MySql config settings for mysql server and database
+mysql:
+  # path to .cnf file for login credentials.
+  login_info_loc: "/Users/daveboggs/.mylogin.cnf"
+  # mysql .cnf file login_path.  See mysql documentation for details
+  login_path: "client"
+  #host: "localhost"
+  port: "3306"
+  database: "solar"
+  #user:
+  #password:
+  max_connnections: 75

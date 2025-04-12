@@ -1,0 +1,55 @@
+################
+#####   RENAME FILE TO config.yml for use
+################
+# Parameters with default values shown with parameter commented out
+
+## Pirate Weather config settings
+pirate_wx:
+  # Latitude of location for weather data
+  lat: "38.897957"
+  # Longitude of location for weather data
+  long: "-77.036560"
+  # Units for weather data.  Options are "us", "ca", "uk", or "si"
+  units: "us"
+
+  # Interval and units for pirate_wx requests.  Default is every 5 minutes.  Interval can only be positive integers.
+  # Pirate WX has free API call limit of 10000 per month ~= max of every 4.5 minutes
+  # Units options d, h, m, s  (days, hours, minutes, seconds)
+  #interval: 5
+  #interval_unit: "m"
+  # Offset of when interval starts, in miliseconds.  
+  #offset: -200
+
+  # If pirate_wx_api_key_path and pirate_wx_api_key are provided, pirate_wx_api_key is used
+  # Path to API Key
+  api_key_path: "/Path/To/API/key.api"
+  # Pirate WX API key
+  #api_key:
+
+## PVS6 config settings
+pvs6:
+  # IP address or host name of PVS6 host for API calls
+  host: "<<IP ADDRESS OR HOSTNAME>>"
+  # interval and units for how often to make API call.  Interval can only be positive integers  default is 5 minutes
+  # Units options d, h, m, s  (days, hours, minutes, seconds)
+  #get_device_interval: 5
+  #get_device_interval_unit: "m"
+  # Offset of when interval starts, in miliseconds.  
+  #get_device_offset: 0
+
+## MySql config settings for mysql server and database
+# parameter priority:
+# 1. Parameters explicityly included in this file
+# 2. Parameters included in .cnf file at login_info_loc
+# 3. Default parameters (parameters commented )
+mysql:
+  # path to .cnf file for login credentials.
+  login_info_loc: "/Path/To/.cnf"
+  # mysql .cnf file login_path.  See mysql documentation for details
+  login_path: "client"
+  #host: "localhost"
+  port: "3306"
+  database: "solar"
+  #user:
+  #password:
+  #max_connnections: 75
