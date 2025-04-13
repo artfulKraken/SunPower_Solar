@@ -21,7 +21,7 @@ Program completes the following actions:
     use serde_json::Result;
     use config::Config;
 
-    // CONSTANTS
+// CONSTANTS
     const URL_DEVICES_API: &str = "/cgi-bin/dl_cgi?Command=DeviceList";
     const SUPERVISOR: &str = "PVS";
     const METER: &str = "Power Meter";
@@ -966,6 +966,7 @@ async fn pirate_wx_to_mysql(solar_pool: Option<sqlx::Pool<sqlx::MySql>>, pirate_
         }
     }
 }
+
 async fn pvs6_to_mysql(solar_pool: Option<sqlx::Pool<sqlx::MySql>>, pvs6_conf: Pvs6Conf) {
      
     // Set the offset duration of the interval.  For fine tuning timing request.  We want the pvs6 response time for the request (ie the data_time) to be as close to the 
@@ -1713,12 +1714,12 @@ fn update_pvs6_old_responses (cur_data: Pvs6DevicesResponse, latest_sql_data: &P
         for latest_inv in latest_sql_data.inverters.iter() {
             // check if curent inverter serial and latest inverter from solar db are same
             if cur_inv.serial == latest_inv.serial {
-                println!( "cur serial: {}, latest serial: {}.  Same", cur_inv.serial, latest_inv.serial );
+                //println!( "cur serial: {}, latest serial: {}.  Same", cur_inv.serial, latest_inv.serial );
                 inv_found_flg = true;
                 // if date_time also match, data alread in system. 
-                println!( "{}: cur dt: {:#?}, {}: latest dt: {:#?}.", cur_inv.serial, Some(cur_inv.data_time),  latest_inv.serial, Some(latest_inv.data_time) ); 
-                if Some( cur_inv.data_time ) == Some( latest_inv.data_time ) {
-                    println!("They are the same");
+                //println!( "{}: cur dt: {:#?}, {}: latest dt: {:#?}.", cur_inv.serial, Some(cur_inv.data_time),  latest_inv.serial, Some(latest_inv.data_time) ); 
+                if cur_inv.data_time == latest_inv.data_time {
+                    //println!("They are the same");
                     // update date_time to latest current date time and set data to none.  Add to data to be uploaded to system
                     invs.push( Inverter::set_values(&cur_inv.serial, greatest_cur_dt, 
                         None, None, None, None, 
@@ -1728,7 +1729,7 @@ fn update_pvs6_old_responses (cur_data: Pvs6DevicesResponse, latest_sql_data: &P
                 // if date-time are not the same, new data to add to system.
                 else {
                     invs.push(cur_inv.clone());
-                    println!("They are the same");
+                    //println!("They are NOT the same");
                 }
                 // matched cur inverter serial to latest inverter serial.  don't need to keep looping through latest to
                 // to find the match.  break to next current inverter.
@@ -1765,21 +1766,21 @@ fn greater_option_dt( dt_vec: Vec<&Option<DateTime<Utc>>> ) -> Option<DateTime<U
                 
                 if greatest_dt.is_none() && dt.is_some()  {
                     // The item with some is greater than the item with none
-                    println!( "greatest_dt is None: {:#?} and dt is some: {:#?}.", greatest_dt, **dt );
+                    //println!( "greatest_dt is None: {:#?} and dt is some: {:#?}.", greatest_dt, **dt );
                     greatest_dt = **dt;
-                    println!( "greatest_dt is now: {:#?}", greatest_dt );
+                    //println!( "greatest_dt is now: {:#?}", greatest_dt );
                 } 
                 else if greatest_dt.is_some() && dt.is_some() {
-                    println!( "greatest_dt is Some: {:#?} and dt is some: {:#?}.", greatest_dt, **dt );
+                    //println!( "greatest_dt is Some: {:#?} and dt is some: {:#?}.", greatest_dt, **dt );
                     if Some( **dt ) >  Some( greatest_dt ) {
                         println!( "dt is bigger" );
                         // when they both have a value, make dt the greatest if it is bigger than the current greatest
                         greatest_dt = **dt;
-                        println!( "greatest_dt is now: {:#?}", greatest_dt );
+                    //    println!( "greatest_dt is now: {:#?}", greatest_dt );
                     }
                 } else {
-                    println!( "greatest_dt is ?: {:#?} and dt is ?: {:#?}.", greatest_dt, **dt );
-                    println!( "No changes.  greatest_dt is: {:#?}", greatest_dt )
+                    //println!( "greatest_dt is ?: {:#?} and dt is ?: {:#?}.", greatest_dt, **dt );
+                    //println!( "No changes.  greatest_dt is: {:#?}", greatest_dt );
                 }
                 // otherwise, don't make any changes to greatest ie (new item is none, both are none, new item is <= curent greatest)
             }
