@@ -1892,7 +1892,6 @@ async fn insert_pirate_wx_to_mysql(wx: Wx, sql_pool_opt: &Option<sqlx::Pool<sqlx
         
         match daily_wx_result {
             Ok(res) => {
-                println!("{}", res.rows_affected());
                 match res.rows_affected() {
                 0 => warn!("No rows of daily_wx table changed. Row should have been added (1 row affected) or replaced 
                     (2 rows affected).  Response: {:#?}", res),
