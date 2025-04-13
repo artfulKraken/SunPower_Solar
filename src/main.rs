@@ -979,7 +979,7 @@ async fn pvs6_to_mysql(solar_pool: Option<sqlx::Pool<sqlx::MySql>>, pvs6_conf: P
         // Wait until the next tick (start time and interval)
         get_pvs6_device_interval.tick().await; 
         // get pvs6 data and upload to mysql solar database
-        println!( "Run at: {}", Utc::now().to_string() ); //for loop timing testing
+        //println!( "Run at: {}", Utc::now().to_string() ); //for loop timing testing
         debug!( "Run at: {}", Utc::now().to_string() ); //for loop timing testing
         
         
@@ -1760,7 +1760,7 @@ fn greater_option_dt( dt_vec: Vec<&Option<DateTime<Utc>>> ) -> Option<DateTime<U
         Ordering::Greater => {
             // Set first item in vector to the biggest
             greatest_dt = *dt_vec[0]; 
-            println!( "greatest_dt is first item {:#?}", greatest_dt );
+            //println!( "greatest_dt is first item {:#?}", greatest_dt );
             // iterate through vector, skipping first item
             for dt in dt_vec.iter().skip(1) {
                 
@@ -1773,7 +1773,7 @@ fn greater_option_dt( dt_vec: Vec<&Option<DateTime<Utc>>> ) -> Option<DateTime<U
                 else if greatest_dt.is_some() && dt.is_some() {
                     //println!( "greatest_dt is Some: {:#?} and dt is some: {:#?}.", greatest_dt, **dt );
                     if Some( **dt ) >  Some( greatest_dt ) {
-                        println!( "dt is bigger" );
+                        //println!( "dt is bigger" );
                         // when they both have a value, make dt the greatest if it is bigger than the current greatest
                         greatest_dt = **dt;
                     //    println!( "greatest_dt is now: {:#?}", greatest_dt );
