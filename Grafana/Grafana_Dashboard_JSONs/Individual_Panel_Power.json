@@ -1,0 +1,2725 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 1,
+  "links": [
+    {
+      "asDropdown": false,
+      "icon": "external link",
+      "includeVars": false,
+      "keepTime": false,
+      "tags": [
+        "Solar"
+      ],
+      "targetBlank": false,
+      "title": "Solar",
+      "tooltip": "",
+      "type": "dashboards",
+      "url": ""
+    }
+  ],
+  "panels": [
+    {
+      "datasource": {
+        "type": "mysql",
+        "uid": "degjnnr5hum0wf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "green",
+            "mode": "thresholds"
+          },
+          "decimals": 0,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "transparent"
+              },
+              {
+                "color": "super-light-green",
+                "value": 0.075
+              },
+              {
+                "color": "light-green",
+                "value": 0.15
+              },
+              {
+                "color": "green",
+                "value": 0.225
+              },
+              {
+                "color": "semi-dark-green",
+                "value": 0.3
+              },
+              {
+                "color": "dark-green",
+                "value": 0.375
+              }
+            ]
+          },
+          "unit": "kwatt"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Production Power"
+            },
+            "properties": [
+              {
+                "id": "decimals"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "transparent"
+                    },
+                    {
+                      "color": "super-light-green",
+                      "value": 2
+                    },
+                    {
+                      "color": "light-green",
+                      "value": 4
+                    },
+                    {
+                      "color": "green",
+                      "value": 6
+                    },
+                    {
+                      "color": "semi-dark-green",
+                      "value": 8
+                    },
+                    {
+                      "color": "dark-green",
+                      "value": 10
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Consumption Power"
+            },
+            "properties": [
+              {
+                "id": "decimals"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Home Power Usage"
+            },
+            "properties": [
+              {
+                "id": "decimals"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "text"
+                    },
+                    {
+                      "color": "super-light-red",
+                      "value": 0.5
+                    },
+                    {
+                      "color": "light-red",
+                      "value": 3
+                    },
+                    {
+                      "color": "red",
+                      "value": 5
+                    },
+                    {
+                      "color": "semi-dark-red",
+                      "value": 8
+                    },
+                    {
+                      "color": "dark-red",
+                      "value": 12
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Consumption Power Color"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "text"
+                    },
+                    {
+                      "color": "dark-green",
+                      "value": -15
+                    },
+                    {
+                      "color": "red",
+                      "value": 0.0001
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Grid Out Power Color"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green"
+                    },
+                    {
+                      "color": "transparent",
+                      "value": 0
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Grid In Power Color"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "transparent"
+                    },
+                    {
+                      "color": "red",
+                      "value": 0
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 22,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 12,
+      "options": {
+        "infinitePan": false,
+        "inlineEditing": true,
+        "panZoom": false,
+        "root": {
+          "background": {
+            "color": {
+              "fixed": "transparent"
+            },
+            "image": {
+              "field": "",
+              "fixed": "",
+              "mode": "fixed"
+            }
+          },
+          "border": {
+            "color": {
+              "fixed": "dark-blue"
+            },
+            "width": 0
+          },
+          "constraint": {
+            "horizontal": "left",
+            "vertical": "top"
+          },
+          "elements": [
+            {
+              "background": {
+                "color": {
+                  "fixed": "#D9D9D9"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "#000000"
+                },
+                "valign": "middle"
+              },
+              "connections": [],
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "House In Rectangle",
+              "placement": {
+                "height": 160,
+                "left": 601,
+                "top": 387,
+                "width": 240
+              },
+              "type": "rectangle"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                },
+                "image": {
+                  "field": "",
+                  "fixed": "img/bg/House.png",
+                  "mode": "fixed"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "dark-green"
+                },
+                "valign": "middle"
+              },
+              "connections": [],
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "House",
+              "placement": {
+                "height": 871.984375,
+                "left": -12,
+                "top": 0,
+                "width": 1632
+              },
+              "type": "rectangle"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                },
+                "radius": 20,
+                "width": 2
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "#000000"
+                },
+                "valign": "middle"
+              },
+              "connections": [],
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Panel Group 4: 4 Panels",
+              "placement": {
+                "height": 134,
+                "left": 655,
+                "top": 44,
+                "width": 203
+              },
+              "type": "rectangle"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                },
+                "radius": 20,
+                "width": 2
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "#000000"
+                },
+                "valign": "middle"
+              },
+              "connections": [],
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Panel Group 3: 6 Panels",
+              "placement": {
+                "height": 201,
+                "left": 567,
+                "top": 245,
+                "width": 240
+              },
+              "type": "rectangle"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                },
+                "radius": 20,
+                "width": 2
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "#000000"
+                },
+                "valign": "middle"
+              },
+              "connections": [],
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Panel Group 2: 6 Panels",
+              "placement": {
+                "height": 437,
+                "left": 196,
+                "top": 156,
+                "width": 143.984375
+              },
+              "type": "rectangle"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                },
+                "radius": 20,
+                "width": 2
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "#000000"
+                },
+                "valign": "middle"
+              },
+              "connections": [],
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Panel Group 1: 9 Panels",
+              "placement": {
+                "height": 196,
+                "left": 410,
+                "top": 523,
+                "width": 391
+              },
+              "type": "rectangle"
+            },
+            {
+              "background": {
+                "color": {
+                  "field": "E00122250068916 Power",
+                  "fixed": "#D9D9D9"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "#000000"
+                },
+                "size": 20,
+                "text": {
+                  "field": "E00122250068916 Power",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "E00122250068916",
+              "placement": {
+                "height": 47,
+                "left": 196,
+                "rotation": 359.5,
+                "top": 467,
+                "width": 96
+              },
+              "type": "metric-value"
+            },
+            {
+              "background": {
+                "color": {
+                  "field": "E00122250068886 Power",
+                  "fixed": "#D9D9D9"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "#000000"
+                },
+                "size": 20,
+                "text": {
+                  "field": "E00122250068886 Power",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "E00122250068886",
+              "placement": {
+                "height": 89,
+                "left": 631,
+                "rotation": 0,
+                "top": 532,
+                "width": 52
+              },
+              "type": "metric-value"
+            },
+            {
+              "background": {
+                "color": {
+                  "field": "E00122251010882 Power",
+                  "fixed": "#D9D9D9"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "#000000"
+                },
+                "size": 20,
+                "text": {
+                  "field": "E00122251010882 Power",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "valign": "middle"
+              },
+              "connections": [],
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "E00122250068516",
+              "placement": {
+                "height": 52,
+                "left": 218,
+                "top": 233,
+                "width": 89
+              },
+              "type": "metric-value"
+            },
+            {
+              "background": {
+                "color": {
+                  "field": "E00122250068516 Power",
+                  "fixed": "#D9D9D9"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "#000000"
+                },
+                "size": 20,
+                "text": {
+                  "field": "E00122250068516 Power",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "E00122250068516",
+              "placement": {
+                "height": 89,
+                "left": 577,
+                "rotation": 0,
+                "top": 532,
+                "width": 52
+              },
+              "type": "metric-value"
+            },
+            {
+              "background": {
+                "color": {
+                  "field": "E00122250077989 Power",
+                  "fixed": "#D9D9D9"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "#000000"
+                },
+                "size": 20,
+                "text": {
+                  "field": "E00122250077989 Power",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "E00122250077989",
+              "placement": {
+                "height": 89,
+                "left": 522,
+                "rotation": 0,
+                "top": 532,
+                "width": 52
+              },
+              "type": "metric-value"
+            },
+            {
+              "background": {
+                "color": {
+                  "field": "E00122250071017 Power",
+                  "fixed": "#D9D9D9"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "#000000"
+                },
+                "size": 20,
+                "text": {
+                  "field": "E00122250071017 Power",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "E00122250071017",
+              "placement": {
+                "height": 89,
+                "left": 468,
+                "rotation": 0,
+                "top": 532,
+                "width": 52
+              },
+              "type": "metric-value"
+            },
+            {
+              "background": {
+                "color": {
+                  "field": "E00122250084153 Power",
+                  "fixed": "#D9D9D9"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "#000000"
+                },
+                "size": 20,
+                "text": {
+                  "field": "E00122250084153 Power",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "E00122250084153",
+              "placement": {
+                "height": 89,
+                "left": 686,
+                "rotation": 0,
+                "top": 532,
+                "width": 52
+              },
+              "type": "metric-value"
+            },
+            {
+              "background": {
+                "color": {
+                  "field": "E00122250084256 Power",
+                  "fixed": "#D9D9D9"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "#000000"
+                },
+                "size": 20,
+                "text": {
+                  "field": "E00122250084256 Power",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "E00122250084256",
+              "placement": {
+                "height": 89,
+                "left": 740,
+                "rotation": 0,
+                "top": 532,
+                "width": 52
+              },
+              "type": "metric-value"
+            },
+            {
+              "background": {
+                "color": {
+                  "field": "E00122250068917 Power",
+                  "fixed": "#D9D9D9"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "#000000"
+                },
+                "size": 20,
+                "text": {
+                  "field": "E00122250068917 Power",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "E00122250068917",
+              "placement": {
+                "height": 89,
+                "left": 469,
+                "rotation": 0,
+                "top": 624,
+                "width": 51
+              },
+              "type": "metric-value"
+            },
+            {
+              "background": {
+                "color": {
+                  "field": "E00122250068774 Power",
+                  "fixed": "#D9D9D9"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "#000000"
+                },
+                "size": 20,
+                "text": {
+                  "field": "E00122250068774 Power",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "E00122250068774",
+              "placement": {
+                "height": 89,
+                "left": 523,
+                "rotation": 0,
+                "top": 624,
+                "width": 51
+              },
+              "type": "metric-value"
+            },
+            {
+              "background": {
+                "color": {
+                  "field": "E00122251005754 Power",
+                  "fixed": "#D9D9D9"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "#000000"
+                },
+                "size": 20,
+                "text": {
+                  "field": "E00122251005754 Power",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "E00122251005754",
+              "placement": {
+                "height": 89,
+                "left": 414,
+                "rotation": 0,
+                "top": 624,
+                "width": 51
+              },
+              "type": "metric-value"
+            },
+            {
+              "background": {
+                "color": {
+                  "field": "E00122250068776 Power",
+                  "fixed": "#D9D9D9"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "#000000"
+                },
+                "size": 20,
+                "text": {
+                  "field": "E00122250068776 Power",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "E00122250068776",
+              "placement": {
+                "height": 47,
+                "left": 196,
+                "rotation": 359.5,
+                "top": 517,
+                "width": 97
+              },
+              "type": "metric-value"
+            },
+            {
+              "background": {
+                "color": {
+                  "field": "E00122250068780 Power",
+                  "fixed": "#D9D9D9"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "#000000"
+                },
+                "size": 20,
+                "text": {
+                  "field": "E00122250068780 Power",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "E00122250068780",
+              "placement": {
+                "height": 89,
+                "left": 256,
+                "rotation": 359.5,
+                "top": 330,
+                "width": 52
+              },
+              "type": "metric-value"
+            },
+            {
+              "background": {
+                "color": {
+                  "field": "E00122250081238 Power",
+                  "fixed": "#D9D9D9"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "#000000"
+                },
+                "size": 20,
+                "text": {
+                  "field": "E00122250081238 Power",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "E00122250081238",
+              "placement": {
+                "height": 89,
+                "left": 202,
+                "rotation": 359.5,
+                "top": 330,
+                "width": 52
+              },
+              "type": "metric-value"
+            },
+            {
+              "background": {
+                "color": {
+                  "field": "E00122250068698 Power",
+                  "fixed": "#D9D9D9"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "#000000"
+                },
+                "size": 20,
+                "text": {
+                  "field": "E00122250068698 Power",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "valign": "middle"
+              },
+              "connections": [],
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "E00122250068698",
+              "placement": {
+                "height": 89,
+                "left": 629,
+                "rotation": 0,
+                "top": 342,
+                "width": 52
+              },
+              "type": "metric-value"
+            },
+            {
+              "background": {
+                "color": {
+                  "field": "E00122250071869 Power",
+                  "fixed": "#D9D9D9"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "#000000"
+                },
+                "size": 20,
+                "text": {
+                  "field": "E00122250071869 Power",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "E00122250071869",
+              "placement": {
+                "height": 89,
+                "left": 684,
+                "top": 342,
+                "width": 52
+              },
+              "type": "metric-value"
+            },
+            {
+              "background": {
+                "color": {
+                  "field": "E00122250068758 Power",
+                  "fixed": "#D9D9D9"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "#000000"
+                },
+                "size": 20,
+                "text": {
+                  "field": "E00122250068758 Power",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "E00122250068758",
+              "placement": {
+                "height": 89,
+                "left": 738,
+                "top": 250,
+                "width": 52
+              },
+              "type": "metric-value"
+            },
+            {
+              "background": {
+                "color": {
+                  "field": "E00122250068512 Power",
+                  "fixed": "#D9D9D9"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "#000000"
+                },
+                "size": 20,
+                "text": {
+                  "field": "E00122250068512 Power",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "valign": "middle"
+              },
+              "connections": [],
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "E00122250068512",
+              "placement": {
+                "height": 89,
+                "left": 738,
+                "rotation": 0,
+                "top": 342,
+                "width": 52
+              },
+              "type": "metric-value"
+            },
+            {
+              "background": {
+                "color": {
+                  "field": "E00122250068485 Power",
+                  "fixed": "#D9D9D9"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "#000000"
+                },
+                "size": 20,
+                "text": {
+                  "field": "E00122250068485 Power",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "E00122250068485",
+              "placement": {
+                "height": 89,
+                "left": 684,
+                "rotation": 0,
+                "top": 250,
+                "width": 52
+              },
+              "type": "metric-value"
+            },
+            {
+              "background": {
+                "color": {
+                  "field": "E00122250068994 Power",
+                  "fixed": "#D9D9D9"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "#000000"
+                },
+                "size": 20,
+                "text": {
+                  "field": "E00122250068994 Power",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "E00122250068994",
+              "placement": {
+                "height": 89,
+                "left": 575,
+                "rotation": 0,
+                "top": 342,
+                "width": 52
+              },
+              "type": "metric-value"
+            },
+            {
+              "background": {
+                "color": {
+                  "field": "E00122251011493 Power",
+                  "fixed": "#D9D9D9"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "#000000"
+                },
+                "size": 20,
+                "text": {
+                  "field": "E00122251011493 Power",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "E00122251011493",
+              "placement": {
+                "height": 52,
+                "left": 218,
+                "rotation": 0,
+                "top": 178,
+                "width": 89
+              },
+              "type": "metric-value"
+            },
+            {
+              "background": {
+                "color": {
+                  "field": "E00122251015947 Power",
+                  "fixed": "#D9D9D9"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "#000000"
+                },
+                "size": 20,
+                "text": {
+                  "field": "E00122251015947 Power",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "E00122251015947",
+              "placement": {
+                "height": 51,
+                "left": 759,
+                "top": 58,
+                "width": 89
+              },
+              "type": "metric-value"
+            },
+            {
+              "background": {
+                "color": {
+                  "field": "E00122251016232 Power",
+                  "fixed": "#D9D9D9"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "#000000"
+                },
+                "size": 20,
+                "text": {
+                  "field": "E00122251016232 Power",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "valign": "middle"
+              },
+              "connections": [],
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "E00122251016232",
+              "placement": {
+                "height": 51,
+                "left": 759,
+                "rotation": 0,
+                "top": 112,
+                "width": 89
+              },
+              "type": "metric-value"
+            },
+            {
+              "background": {
+                "color": {
+                  "field": "E00122251011515 Power",
+                  "fixed": "#D9D9D9"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "#000000"
+                },
+                "size": 20,
+                "text": {
+                  "field": "E00122251011515 Power",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "E00122251011515",
+              "placement": {
+                "height": 51,
+                "left": 667,
+                "top": 58,
+                "width": 89
+              },
+              "type": "metric-value"
+            },
+            {
+              "background": {
+                "color": {
+                  "field": "E00122251002917 Power",
+                  "fixed": "#D9D9D9"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "#000000"
+                },
+                "size": 20,
+                "text": {
+                  "field": "E00122251002917 Power",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "E00122251002917",
+              "placement": {
+                "height": 51,
+                "left": 667,
+                "rotation": 0,
+                "top": 112,
+                "width": 89
+              },
+              "type": "metric-value"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                },
+                "width": 0
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "#000000"
+                },
+                "valign": "middle"
+              },
+              "connections": [],
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Weather Background ellipse",
+              "placement": {
+                "height": 182,
+                "left": 895,
+                "rotation": 0,
+                "top": 0,
+                "width": 167
+              },
+              "type": "ellipse"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "fill": {
+                  "fixed": "yellow"
+                },
+                "path": {
+                  "field": "icon",
+                  "fixed": "https://wsgrafana.artfulkraken.com/icons/wx-clear-day.svg",
+                  "mode": "field"
+                }
+              },
+              "connections": [
+                {
+                  "color": {
+                    "fixed": "yellow"
+                  },
+                  "direction": "none",
+                  "lineStyle": {
+                    "animate": true,
+                    "style": "dashed"
+                  },
+                  "path": "straight",
+                  "size": {
+                    "fixed": 2,
+                    "max": 10,
+                    "min": 1
+                  },
+                  "source": {
+                    "x": 1,
+                    "y": 0
+                  },
+                  "sourceOriginal": {
+                    "x": 1956,
+                    "y": 330
+                  },
+                  "target": {
+                    "x": 1,
+                    "y": 0
+                  },
+                  "targetName": "Weather Background ellipse",
+                  "targetOriginal": {
+                    "x": 2151,
+                    "y": 514
+                  }
+                },
+                {
+                  "color": {
+                    "fixed": "yellow"
+                  },
+                  "direction": "none",
+                  "lineStyle": {
+                    "animate": true,
+                    "style": "dashed"
+                  },
+                  "path": "straight",
+                  "size": {
+                    "fixed": 2,
+                    "max": 10,
+                    "min": 1
+                  },
+                  "source": {
+                    "x": 0.92,
+                    "y": 0.38
+                  },
+                  "sourceOriginal": {
+                    "x": 2073,
+                    "y": 492
+                  },
+                  "target": {
+                    "x": 0.92,
+                    "y": 0.38
+                  },
+                  "targetName": "Weather Background ellipse",
+                  "targetOriginal": {
+                    "x": 2150,
+                    "y": 471
+                  }
+                },
+                {
+                  "color": {
+                    "fixed": "yellow"
+                  },
+                  "direction": "none",
+                  "lineStyle": {
+                    "animate": true,
+                    "style": "dashed"
+                  },
+                  "path": "straight",
+                  "size": {
+                    "fixed": 2,
+                    "max": 10,
+                    "min": 1
+                  },
+                  "source": {
+                    "x": 0.71,
+                    "y": 0.71
+                  },
+                  "sourceOriginal": {
+                    "x": 2073,
+                    "y": 467
+                  },
+                  "target": {
+                    "x": 0.71,
+                    "y": 0.71
+                  },
+                  "targetName": "Weather Background ellipse",
+                  "targetOriginal": {
+                    "x": 2153,
+                    "y": 401
+                  }
+                },
+                {
+                  "color": {
+                    "fixed": "yellow"
+                  },
+                  "direction": "none",
+                  "lineStyle": {
+                    "animate": true,
+                    "style": "dashed"
+                  },
+                  "path": "straight",
+                  "size": {
+                    "fixed": 2,
+                    "max": 10,
+                    "min": 1
+                  },
+                  "source": {
+                    "x": 0.38,
+                    "y": 0.92
+                  },
+                  "sourceOriginal": {
+                    "x": 1938,
+                    "y": 104
+                  },
+                  "target": {
+                    "x": 0.38,
+                    "y": 0.92
+                  },
+                  "targetName": "Weather Background ellipse",
+                  "targetOriginal": {
+                    "x": 2104,
+                    "y": 400
+                  }
+                },
+                {
+                  "color": {
+                    "fixed": "yellow"
+                  },
+                  "direction": "none",
+                  "lineStyle": {
+                    "animate": true,
+                    "style": "dashed"
+                  },
+                  "path": "straight",
+                  "size": {
+                    "fixed": 2,
+                    "max": 10,
+                    "min": 1
+                  },
+                  "source": {
+                    "x": 0,
+                    "y": 1
+                  },
+                  "sourceOriginal": {
+                    "x": 2073,
+                    "y": 97
+                  },
+                  "target": {
+                    "x": 0,
+                    "y": 1
+                  },
+                  "targetName": "Weather Background ellipse",
+                  "targetOriginal": {
+                    "x": 2044,
+                    "y": 397
+                  }
+                },
+                {
+                  "color": {
+                    "fixed": "yellow"
+                  },
+                  "direction": "none",
+                  "lineStyle": {
+                    "animate": true,
+                    "style": "dashed"
+                  },
+                  "path": "straight",
+                  "size": {
+                    "fixed": 2,
+                    "max": 10,
+                    "min": 1
+                  },
+                  "source": {
+                    "x": -0.38,
+                    "y": 0.92
+                  },
+                  "sourceOriginal": {
+                    "x": 2398,
+                    "y": 204
+                  },
+                  "target": {
+                    "x": -0.38,
+                    "y": 0.92
+                  },
+                  "targetName": "Weather Background ellipse",
+                  "targetOriginal": {
+                    "x": 1961,
+                    "y": 392
+                  }
+                },
+                {
+                  "color": {
+                    "fixed": "yellow"
+                  },
+                  "direction": "none",
+                  "lineStyle": {
+                    "animate": true,
+                    "style": "dashed"
+                  },
+                  "path": "straight",
+                  "size": {
+                    "fixed": 2,
+                    "max": 10,
+                    "min": 1
+                  },
+                  "source": {
+                    "x": -0.71,
+                    "y": 0.71
+                  },
+                  "sourceOriginal": {
+                    "x": 1503,
+                    "y": 253
+                  },
+                  "target": {
+                    "x": -0.71,
+                    "y": 0.71
+                  },
+                  "targetName": "Weather Background ellipse",
+                  "targetOriginal": {
+                    "x": 1362,
+                    "y": 465
+                  }
+                },
+                {
+                  "color": {
+                    "fixed": "yellow"
+                  },
+                  "direction": "none",
+                  "lineStyle": {
+                    "animate": true,
+                    "style": "dashed"
+                  },
+                  "path": "straight",
+                  "size": {
+                    "fixed": 2,
+                    "max": 10,
+                    "min": 1
+                  },
+                  "source": {
+                    "x": -0.92,
+                    "y": 0.38
+                  },
+                  "sourceOriginal": {
+                    "x": 1756,
+                    "y": 367
+                  },
+                  "target": {
+                    "x": -0.92,
+                    "y": 0.38
+                  },
+                  "targetName": "Weather Background ellipse",
+                  "targetOriginal": {
+                    "x": 1365,
+                    "y": 528
+                  }
+                },
+                {
+                  "color": {
+                    "fixed": "yellow"
+                  },
+                  "direction": "none",
+                  "lineStyle": {
+                    "animate": true,
+                    "style": "dashed"
+                  },
+                  "path": "straight",
+                  "size": {
+                    "fixed": 2,
+                    "max": 10,
+                    "min": 1
+                  },
+                  "source": {
+                    "x": -1,
+                    "y": 0
+                  },
+                  "sourceOriginal": {
+                    "x": 1756,
+                    "y": 392
+                  },
+                  "target": {
+                    "x": -1,
+                    "y": 0
+                  },
+                  "targetName": "Weather Background ellipse",
+                  "targetOriginal": {
+                    "x": 1367,
+                    "y": 591
+                  }
+                },
+                {
+                  "color": {
+                    "fixed": "yellow"
+                  },
+                  "direction": "none",
+                  "lineStyle": {
+                    "animate": true,
+                    "style": "dashed"
+                  },
+                  "path": "straight",
+                  "size": {
+                    "fixed": 2,
+                    "max": 10,
+                    "min": 1
+                  },
+                  "source": {
+                    "x": -0.92,
+                    "y": -0.38
+                  },
+                  "sourceOriginal": {
+                    "x": 1747,
+                    "y": 616
+                  },
+                  "target": {
+                    "x": -0.92,
+                    "y": -0.38
+                  },
+                  "targetName": "Weather Background ellipse",
+                  "targetOriginal": {
+                    "x": 1367,
+                    "y": 654
+                  }
+                },
+                {
+                  "color": {
+                    "fixed": "yellow"
+                  },
+                  "direction": "none",
+                  "lineStyle": {
+                    "animate": true,
+                    "style": "dashed"
+                  },
+                  "path": "straight",
+                  "size": {
+                    "fixed": 2,
+                    "max": 10,
+                    "min": 1
+                  },
+                  "source": {
+                    "x": -0.71,
+                    "y": -0.71
+                  },
+                  "sourceOriginal": {
+                    "x": 2124,
+                    "y": 245
+                  },
+                  "target": {
+                    "x": -0.71,
+                    "y": -0.71
+                  },
+                  "targetName": "Weather Background ellipse",
+                  "targetOriginal": {
+                    "x": 1830,
+                    "y": 546
+                  }
+                },
+                {
+                  "color": {
+                    "fixed": "yellow"
+                  },
+                  "direction": "none",
+                  "lineStyle": {
+                    "animate": true,
+                    "style": "dashed"
+                  },
+                  "path": "straight",
+                  "size": {
+                    "fixed": 2,
+                    "max": 10,
+                    "min": 1
+                  },
+                  "source": {
+                    "x": -0.38,
+                    "y": -0.92
+                  },
+                  "sourceOriginal": {
+                    "x": 2149,
+                    "y": 245
+                  },
+                  "target": {
+                    "x": -0.38,
+                    "y": -0.92
+                  },
+                  "targetName": "Weather Background ellipse",
+                  "targetOriginal": {
+                    "x": 2177,
+                    "y": 675
+                  }
+                },
+                {
+                  "color": {
+                    "fixed": "yellow"
+                  },
+                  "direction": "none",
+                  "lineStyle": {
+                    "animate": true,
+                    "style": "dashed"
+                  },
+                  "path": "straight",
+                  "size": {
+                    "fixed": 2,
+                    "max": 10,
+                    "min": 1
+                  },
+                  "source": {
+                    "x": 0,
+                    "y": -1
+                  },
+                  "sourceOriginal": {
+                    "x": 1940,
+                    "y": 158
+                  },
+                  "target": {
+                    "x": 0,
+                    "y": -1
+                  },
+                  "targetName": "Weather Background ellipse",
+                  "targetOriginal": {
+                    "x": 1808,
+                    "y": 508
+                  }
+                },
+                {
+                  "color": {
+                    "fixed": "yellow"
+                  },
+                  "direction": "none",
+                  "lineStyle": {
+                    "animate": true,
+                    "style": "dashed"
+                  },
+                  "path": "straight",
+                  "size": {
+                    "fixed": 2,
+                    "max": 10,
+                    "min": 1
+                  },
+                  "source": {
+                    "x": 0.38,
+                    "y": -0.92
+                  },
+                  "sourceOriginal": {
+                    "x": 2199,
+                    "y": 245
+                  },
+                  "target": {
+                    "x": 0.38,
+                    "y": -0.92
+                  },
+                  "targetName": "Weather Background ellipse",
+                  "targetOriginal": {
+                    "x": 1867,
+                    "y": 512
+                  }
+                },
+                {
+                  "color": {
+                    "fixed": "yellow"
+                  },
+                  "direction": "none",
+                  "lineStyle": {
+                    "animate": true,
+                    "style": "dashed"
+                  },
+                  "path": "straight",
+                  "size": {
+                    "fixed": 2,
+                    "max": 10,
+                    "min": 1
+                  },
+                  "source": {
+                    "x": 0.71,
+                    "y": -0.71
+                  },
+                  "sourceOriginal": {
+                    "x": 1868,
+                    "y": 330
+                  },
+                  "target": {
+                    "x": 0.71,
+                    "y": -0.71
+                  },
+                  "targetName": "Weather Background ellipse",
+                  "targetOriginal": {
+                    "x": 2157,
+                    "y": 648
+                  }
+                },
+                {
+                  "color": {
+                    "fixed": "yellow"
+                  },
+                  "direction": "none",
+                  "lineStyle": {
+                    "animate": true,
+                    "style": "dashed"
+                  },
+                  "path": "straight",
+                  "size": {
+                    "fixed": 2,
+                    "max": 10,
+                    "min": 1
+                  },
+                  "source": {
+                    "x": 0.92,
+                    "y": -0.38
+                  },
+                  "sourceOriginal": {
+                    "x": 2073,
+                    "y": 542
+                  },
+                  "target": {
+                    "x": 0.92,
+                    "y": -0.38
+                  },
+                  "targetName": "Weather Background ellipse",
+                  "targetOriginal": {
+                    "x": 2154,
+                    "y": 590
+                  }
+                }
+              ],
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "weather icon",
+              "placement": {
+                "height": 100,
+                "left": 929,
+                "top": 41,
+                "width": 100
+              },
+              "type": "icon"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "#000000"
+                },
+                "valign": "middle"
+              },
+              "connections": [
+                {
+                  "color": {
+                    "field": "Grid In Power Color",
+                    "fixed": "red"
+                  },
+                  "direction": "none",
+                  "lineStyle": {
+                    "animate": true,
+                    "style": "dashed"
+                  },
+                  "path": "straight",
+                  "radius": {
+                    "fixed": 90,
+                    "max": 200,
+                    "min": 0
+                  },
+                  "size": {
+                    "field": "Consumption Power Flow",
+                    "max": 10,
+                    "min": 1
+                  },
+                  "source": {
+                    "x": -0.5,
+                    "y": -1
+                  },
+                  "sourceOriginal": {
+                    "x": 1854,
+                    "y": 507
+                  },
+                  "target": {
+                    "x": 0.5,
+                    "y": 1
+                  },
+                  "targetName": "Grid Power",
+                  "targetOriginal": {
+                    "x": 1132,
+                    "y": 369
+                  }
+                }
+              ],
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Grid Rectangle",
+              "placement": {
+                "height": 72,
+                "left": 1099,
+                "rotation": 0,
+                "top": 295,
+                "width": 115
+              },
+              "type": "rectangle"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "green"
+                },
+                "radius": 15,
+                "width": 3
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "green"
+                },
+                "size": 20,
+                "text": {
+                  "field": "Production Power",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "valign": "middle"
+              },
+              "connections": [
+                {
+                  "color": {
+                    "fixed": "green"
+                  },
+                  "direction": "none",
+                  "lineStyle": {
+                    "animate": true,
+                    "style": "dashed"
+                  },
+                  "path": "straight",
+                  "radius": {
+                    "fixed": 20,
+                    "max": 200,
+                    "min": 0
+                  },
+                  "size": {
+                    "field": "Production Power Flow",
+                    "fixed": 8,
+                    "max": 10,
+                    "min": 1
+                  },
+                  "source": {
+                    "x": 1,
+                    "y": 0
+                  },
+                  "sourceOriginal": {
+                    "x": 684,
+                    "y": 761
+                  },
+                  "target": {
+                    "x": 0,
+                    "y": -1
+                  },
+                  "targetName": "Electric Panel Rectangle",
+                  "targetOriginal": {
+                    "x": 996,
+                    "y": 712
+                  },
+                  "vertices": [
+                    {
+                      "x": 1,
+                      "y": 0
+                    }
+                  ]
+                }
+              ],
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Production Power",
+              "placement": {
+                "height": 50,
+                "left": 559,
+                "rotation": 0,
+                "top": 736,
+                "width": 125
+              },
+              "type": "metric-value"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "field": "Consumption Power Color",
+                  "fixed": "dark-green"
+                },
+                "radius": 15,
+                "width": 3
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "field": "Consumption Power Color",
+                  "fixed": "#000000"
+                },
+                "size": 20,
+                "text": {
+                  "field": "Consumption Power",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "valign": "middle"
+              },
+              "connections": [
+                {
+                  "color": {
+                    "field": "Grid In Power Color",
+                    "fixed": "red"
+                  },
+                  "direction": "none",
+                  "lineStyle": {
+                    "animate": true,
+                    "style": "dashed"
+                  },
+                  "path": "straight",
+                  "radius": {
+                    "fixed": 90,
+                    "max": 200,
+                    "min": 0
+                  },
+                  "size": {
+                    "field": "Consumption Power Flow",
+                    "max": 10,
+                    "min": 1
+                  },
+                  "source": {
+                    "x": 0.5,
+                    "y": -1
+                  },
+                  "sourceOriginal": {
+                    "x": 1073,
+                    "y": 446
+                  },
+                  "target": {
+                    "x": 1,
+                    "y": 0.5
+                  },
+                  "targetName": "Electric Panel Rectangle",
+                  "targetOriginal": {
+                    "x": 1122,
+                    "y": 706
+                  },
+                  "vertices": [
+                    {
+                      "x": 1.1428571428571428,
+                      "y": 0.5692307692307692
+                    }
+                  ]
+                },
+                {
+                  "color": {
+                    "field": "Grid Out Power Color",
+                    "fixed": "green"
+                  },
+                  "direction": "none",
+                  "lineStyle": {
+                    "animate": true,
+                    "style": "dashed"
+                  },
+                  "path": "straight",
+                  "size": {
+                    "fixed": "Consumption Power Flow",
+                    "max": 10,
+                    "min": 1
+                  },
+                  "source": {
+                    "x": 0.5,
+                    "y": 1
+                  },
+                  "sourceOriginal": {
+                    "x": 1129,
+                    "y": 400
+                  },
+                  "target": {
+                    "x": -0.5,
+                    "y": -1
+                  },
+                  "targetName": "Grid Rectangle",
+                  "targetOriginal": {
+                    "x": 1194,
+                    "y": 424.5
+                  }
+                }
+              ],
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Grid Power",
+              "placement": {
+                "height": 46,
+                "left": 1044,
+                "rotation": 0,
+                "top": 400,
+                "width": 112
+              },
+              "type": "metric-value"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "#000000"
+                },
+                "valign": "middle"
+              },
+              "connections": [
+                {
+                  "color": {
+                    "fixed": "red"
+                  },
+                  "direction": "none",
+                  "lineStyle": {
+                    "animate": true,
+                    "style": "dashed"
+                  },
+                  "path": "straight",
+                  "radius": {
+                    "fixed": 20,
+                    "max": 200,
+                    "min": 0
+                  },
+                  "size": {
+                    "field": "Home Usage Power Flow",
+                    "fixed": 2,
+                    "max": 10,
+                    "min": 1
+                  },
+                  "source": {
+                    "x": 0.75,
+                    "y": 1
+                  },
+                  "sourceOriginal": {
+                    "x": 1054.5,
+                    "y": 553
+                  },
+                  "target": {
+                    "x": 1,
+                    "y": 0
+                  },
+                  "targetName": "Home Usage",
+                  "targetOriginal": {
+                    "x": 1037,
+                    "y": 505.5
+                  },
+                  "vertices": [
+                    {
+                      "x": -1.5714285714285714,
+                      "y": 0.9473684210526315
+                    }
+                  ]
+                },
+                {
+                  "color": {
+                    "field": "Grid Out Power Color",
+                    "fixed": "green"
+                  },
+                  "direction": "none",
+                  "lineStyle": {
+                    "animate": true,
+                    "style": "dashed"
+                  },
+                  "path": "straight",
+                  "radius": {
+                    "fixed": 20,
+                    "max": 200,
+                    "min": 0
+                  },
+                  "size": {
+                    "field": "Consumption Power Flow",
+                    "max": 10,
+                    "min": 1
+                  },
+                  "source": {
+                    "x": 1,
+                    "y": 0.5
+                  },
+                  "sourceOriginal": {
+                    "x": 1114,
+                    "y": 593
+                  },
+                  "target": {
+                    "x": 0.5,
+                    "y": -1
+                  },
+                  "targetName": "Grid Power",
+                  "targetOriginal": {
+                    "x": 1026,
+                    "y": 558
+                  },
+                  "vertices": [
+                    {
+                      "x": -0.14772727272727273,
+                      "y": 0
+                    }
+                  ]
+                }
+              ],
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Electric Panel Rectangle",
+              "placement": {
+                "height": 160,
+                "left": 880,
+                "top": 553,
+                "width": 234
+              },
+              "type": "rectangle"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "red"
+                },
+                "radius": 10,
+                "width": 3
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "red"
+                },
+                "size": 20,
+                "text": {
+                  "field": "Home Power Usage",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "valign": "middle"
+              },
+              "connections": [
+                {
+                  "color": {
+                    "fixed": "red"
+                  },
+                  "direction": "none",
+                  "lineStyle": {
+                    "animate": true,
+                    "style": "dashed"
+                  },
+                  "path": "straight",
+                  "radius": {
+                    "fixed": 20,
+                    "max": 200,
+                    "min": 0
+                  },
+                  "size": {
+                    "field": "Home Usage Power Flow",
+                    "fixed": 2,
+                    "max": 10,
+                    "min": 1
+                  },
+                  "source": {
+                    "x": -1,
+                    "y": 0
+                  },
+                  "sourceOriginal": {
+                    "x": 922,
+                    "y": 508.9921875
+                  },
+                  "target": {
+                    "x": 1,
+                    "y": -0.53
+                  },
+                  "targetName": "House In Rectangle",
+                  "targetOriginal": {
+                    "x": 844,
+                    "y": 501.5
+                  }
+                }
+              ],
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Home Usage",
+              "placement": {
+                "height": 45.9921875,
+                "left": 938,
+                "rotation": 0,
+                "top": 486,
+                "width": 117
+              },
+              "type": "metric-value"
+            }
+          ],
+          "name": "Element 1743856680688",
+          "oneClickMode": "off",
+          "placement": {
+            "height": 100,
+            "left": 0,
+            "rotation": 0,
+            "top": 0,
+            "width": 100
+          },
+          "type": "frame"
+        },
+        "showAdvancedTypes": true
+      },
+      "pluginVersion": "11.6.0",
+      "targets": [
+        {
+          "dataset": "performance_schema",
+          "datasource": {
+            "type": "mysql",
+            "uid": "degjnnr5hum0wf"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT\n  p.`Panel Group 1`,\n  CASE\n    WHEN p.`Panel Group 1` > 0 Then 1\n    WHEN p.`Panel Group 1` > 0.0625 Then 2\n    WHEN p.`Panel Group 1` > 0.125 Then 3\n    WHEN p.`Panel Group 1` > 0.25 Then 4\n    WHEN p.`Panel Group 1` > 0.5 Then 5\n    WHEN p.`Panel Group 1` > 1.0 Then 6\n    WHEN p.`Panel Group 1` > 2.0 Then 7\n    WHEN p.`Panel Group 1` > 4.0 Then 8\n    WHEN p.`Panel Group 1` > 8.0 Then 9\n    WHEN p.`Panel Group 1` > 16.0 Then 10\n  END as `Panel Group 1 Flow`,\n  p.`E00122250068774 Power`,\n  p.`E00122250068886 Power`,\n  p.`E00122250068917 Power`,\n  p.`E00122250071017 Power`,\n  p.`E00122250077989 Power`,\n  p.`E00122250084153 Power`,\n  p.`E00122250084256 Power`,\n  p.`E00122251005754 Power`,\n  p.`E00122250068516 Power`,\n  p.`Panel Group 2`,\n  CASE\n    WHEN p.`Panel Group 2` > 0 Then 1\n    WHEN p.`Panel Group 2` > 0.0625 Then 2\n    WHEN p.`Panel Group 2` > 0.125 Then 3\n    WHEN p.`Panel Group 2` > 0.25 Then 4\n    WHEN p.`Panel Group 2` > 0.5 Then 5\n    WHEN p.`Panel Group 2` > 1.0 Then 6\n    WHEN p.`Panel Group 2` > 2.0 Then 7\n    WHEN p.`Panel Group 2` > 4.0 Then 8\n    WHEN p.`Panel Group 2` > 8.0 Then 9\n    WHEN p.`Panel Group 2` > 16.0 Then 10\n  END as `Panel Group 2 Flow`,\n  p.`E00122251010882 Power`,\n  p.`E00122250081238 Power`,\n  p.`E00122250068780 Power`,\n  p.`E00122250068776 Power`,\n  p.`E00122251011493 Power`,\n  p.`E00122250068916 Power`,\n  p.`Panel Group 3`,\n  CASE\n    WHEN p.`Panel Group 3` > 0 Then 1\n    WHEN p.`Panel Group 3` > 0.0625 Then 2\n    WHEN p.`Panel Group 3` > 0.125 Then 3\n    WHEN p.`Panel Group 3` > 0.25 Then 4\n    WHEN p.`Panel Group 3` > 0.5 Then 5\n    WHEN p.`Panel Group 3` > 1.0 Then 6\n    WHEN p.`Panel Group 3` > 2.0 Then 7\n    WHEN p.`Panel Group 3` > 4.0 Then 8\n    WHEN p.`Panel Group 3` > 8.0 Then 9\n    WHEN p.`Panel Group 3` > 16.0 Then 10\n  END as `Panel Group 3 Flow`,\n  p.`E00122250068994 Power`,\n  p.`E00122250068485 Power`,\n  p.`E00122250068512 Power`,\n  p.`E00122250068758 Power`,\n  p.`E00122250068698 Power`,\n  p.`E00122250071869 Power`,\n  p.`Panel Group 4`,\n  CASE\n    WHEN p.`Panel Group 4` > 0 Then 1\n    WHEN p.`Panel Group 4` > 0.0625 Then 2\n    WHEN p.`Panel Group 4` > 0.125 Then 3\n    WHEN p.`Panel Group 4` > 0.25 Then 4\n    WHEN p.`Panel Group 4` > 0.5 Then 5\n    WHEN p.`Panel Group 4` > 1.0 Then 6\n    WHEN p.`Panel Group 4` > 2.0 Then 7\n    WHEN p.`Panel Group 4` > 4.0 Then 8\n    WHEN p.`Panel Group 4` > 8.0 Then 9\n    WHEN p.`Panel Group 4` > 16.0 Then 10\n  END as `Panel Group 4 Flow`,\n  p.`E00122251011515 Power`,\n  p.`E00122251015947 Power`,\n  p.`E00122251016232 Power`,\n  p.`E00122251002917 Power`\nFROM (\n  SELECT\n    -- Panel Group 1\n    (\n      IFNULL( AVG( CASE WHEN serial = 'E00122250068774' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250068886' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250068917' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250071017' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250077989' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250084153' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250084256' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122251005754' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250068516' THEN p_3phsum_kw ELSE NULL END ), 0 )\n    ) AS `Panel Group 1`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250068774' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250068774 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250068886' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250068886 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250068917' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250068917 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250071017' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250071017 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250077989' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250077989 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250084153' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250084153 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250084256' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250084256 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122251005754' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122251005754 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250068516' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250068516 Power`,\n    -- Panel Group 2\n    (\n      IFNULL( AVG( CASE WHEN serial = 'E00122251010882' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250081238' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250068780' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250068776' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122251011493' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250068916' THEN p_3phsum_kw ELSE NULL END ), 0 )\n    ) AS `Panel Group 2`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122251010882' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122251010882 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250081238' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250081238 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250068780' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250068780 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250068776' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250068776 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122251011493' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122251011493 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250068916' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250068916 Power`,\n    -- Panel Group 3\n    (\n      IFNULL( AVG( CASE WHEN serial = 'E00122250068994' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250068485' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250068512' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250068758' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250068698' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250071869' THEN p_3phsum_kw ELSE NULL END ), 0 )\n    ) AS `Panel Group 3`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250068994' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250068994 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250068485' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250068485 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250068512' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250068512 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250068758' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250068758 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250068698' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250068698 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250071869' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250071869 Power`,\n    -- Panel Group 4\n    (\n      IFNULL( AVG( CASE WHEN serial = 'E00122251011515' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122251015947' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122251016232' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122251002917' THEN p_3phsum_kw ELSE NULL END ), 0 )\n    ) AS `Panel Group 4`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122251011515' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122251011515 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122251015947' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122251015947 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122251016232' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122251016232 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122251002917' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122251002917 Power`\n  FROM\n    solar.inverters_data\n  WHERE\n    data_time >= DATE_ADD( now(), INTERVAL -30 MINUTE )\n  ORDER BY data_time DESC\n  LIMIT 1\n) AS p;",
+          "refId": "Inverters",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        },
+        {
+          "dataset": "solar",
+          "datasource": {
+            "type": "mysql",
+            "uid": "degjnnr5hum0wf"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT\n  prod.p_3phsum_kw AS `Production Power`,\n  CASE\n    WHEN prod.p_3phsum_kw > 0 Then 1\n    WHEN prod.p_3phsum_kw > 0.0625 Then 2\n    WHEN prod.p_3phsum_kw > 0.125 Then 3\n    WHEN prod.p_3phsum_kw > 0.25 Then 4\n    WHEN prod.p_3phsum_kw > 0.5 Then 5\n    WHEN prod.p_3phsum_kw > 1.0 Then 6\n    WHEN prod.p_3phsum_kw > 2.0 Then 7\n    WHEN prod.p_3phsum_kw > 4.0 Then 8\n    WHEN prod.p_3phsum_kw > 8.0 Then 9\n    WHEN prod.p_3phsum_kw > 16.0 Then 10\n  END AS `Production Power Flow`,\n  ABS( cons.p_3phsum_kw ) AS `Consumption Power`,\n  CASE\n    WHEN ABS( cons.p_3phsum_kw ) > 0 Then 1\n    WHEN ABS( cons.p_3phsum_kw ) > 0.0625 Then 2\n    WHEN ABS( cons.p_3phsum_kw ) > 0.125 Then 3\n    WHEN ABS( cons.p_3phsum_kw ) > 0.25 Then 4\n    WHEN ABS( cons.p_3phsum_kw ) > 0.5 Then 5\n    WHEN ABS( cons.p_3phsum_kw ) > 1.0 Then 6\n    WHEN ABS( cons.p_3phsum_kw ) > 2.0 Then 7\n    WHEN ABS( cons.p_3phsum_kw ) > 4.0 Then 8\n    WHEN ABS( cons.p_3phsum_kw ) > 8.0 Then 9\n    WHEN ABS( cons.p_3phsum_kw ) > 16.0 Then 10\n  END AS `Consumption Power Flow`,\n  cons.p_3phsum_kw AS `Consumption Power Color`,\n  cons.p_3phsum_kw AS `Grid Out Power Color`,\n  cons.p_3phsum_kw AS `Grid In Power Color`,\n  ( prod.p_3phsum_kw + cons.p_3phsum_kw ) AS `Home Power Usage`,\n  CASE\n    WHEN ( prod.p_3phsum_kw + cons.p_3phsum_kw ) > 0 Then 1\n    WHEN ( prod.p_3phsum_kw + cons.p_3phsum_kw ) > 0.0625 Then 2\n    WHEN ( prod.p_3phsum_kw + cons.p_3phsum_kw ) > 0.125 Then 3\n    WHEN ( prod.p_3phsum_kw + cons.p_3phsum_kw ) > 0.25 Then 4\n    WHEN ( prod.p_3phsum_kw + cons.p_3phsum_kw ) > 0.5 Then 5\n    WHEN ( prod.p_3phsum_kw + cons.p_3phsum_kw ) > 1.0 Then 6\n    WHEN ( prod.p_3phsum_kw + cons.p_3phsum_kw ) > 2.0 Then 7\n    WHEN ( prod.p_3phsum_kw + cons.p_3phsum_kw ) > 4.0 Then 8\n    WHEN ( prod.p_3phsum_kw + cons.p_3phsum_kw ) > 8.0 Then 9\n    WHEN ( prod.p_3phsum_kw + cons.p_3phsum_kw ) > 16.0 Then 10\n  END AS `Home Usage Power Flow`\nFROM ( \n  SELECT \n    p_3phsum_kw,\n    data_time\n  FROM \n    solar.production_meters_data \n  WHERE \n    data_time >= DATE_ADD( NOW(), INTERVAL -30 MINUTE )\n) AS prod\nJOIN (\n  SELECT\n    p_3phsum_kw,\n    data_time\n  FROM\n    solar.consumption_meters_data\n) AS cons\nON prod.data_time = cons.data_time\nORDER BY prod.data_time DESC\nLIMIT 1;\n",
+          "refId": "Current_Total_Power",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "p_3phsum_kw",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "table": "production_meters_data"
+        },
+        {
+          "dataset": "performance_schema",
+          "datasource": {
+            "type": "mysql",
+            "uid": "degjnnr5hum0wf"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT \n  c.time, c.summary, CONCAT( \"https://wsgrafana.artfulkraken.com/icons/wx-\", c.icon, \".svg\" ) AS icon, c.nearestStormDistance, c.nearestStormBearing, c.precipIntensity, c.precipProbability, \n  c.precipIntensityError, c.precipType, c.temperature, c.apparentTemperature, c.dewPoint, c.humidity, c.pressure, \n  c.windSpeed, c.windGust, c.windBearing, c.cloudCover, c.uvIndex, c.visibility, c.ozone, c.smoke, c.fireIndex, \n  c.feelsLike, c.currentDayIce, c.currentDayLiquid, c.currentDaySnow,\n  d.sunriseTime, d.dawnTime, d.sunsetTime, d.duskTime, d.moonPhase, d.precipAccumulation, d.temperatureMin, \n  d.temperatureMinTime, d.temperatureMax, d.temperatureMaxTime\nFROM ( \n  SELECT \n    solar.current_wx.*,\n    DATE(CONVERT_TZ( solar.current_wx.time, 'UTC', 'America/Los_Angeles' )) AS cur_date\n  FROM solar.current_wx\n  WHERE \n    time = ( SELECT MAX(time) FROM solar.current_wx )\n) AS c\nJOIN (\n  SELECT \n    solar.daily_wx.*,\n    DATE(solar.daily_wx.time) AS daily_date\n  FROM\n    solar.daily_wx\n) AS d\nON cur_date = daily_date;",
+          "refId": "Weather",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Current Power",
+      "type": "canvas"
+    }
+  ],
+  "preload": false,
+  "refresh": "1m",
+  "schemaVersion": 41,
+  "tags": [
+    "Solar"
+  ],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now/d+0h",
+    "to": "now"
+  },
+  "timepicker": {
+    "hidden": true
+  },
+  "timezone": "browser",
+  "title": "Inverter Power kW",
+  "uid": "degjozpi2jp4we",
+  "version": 111
+}

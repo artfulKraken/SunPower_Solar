@@ -1,0 +1,3443 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 2,
+  "links": [
+    {
+      "asDropdown": false,
+      "icon": "external link",
+      "includeVars": false,
+      "keepTime": false,
+      "tags": [
+        "Solar"
+      ],
+      "targetBlank": false,
+      "title": "Solar",
+      "tooltip": "",
+      "type": "dashboards",
+      "url": ""
+    }
+  ],
+  "panels": [
+    {
+      "datasource": {
+        "type": "mysql",
+        "uid": "degjnnr5hum0wf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "transparent"
+              },
+              {
+                "color": "red",
+                "value": -1e+28
+              },
+              {
+                "color": "green",
+                "value": 1e-7
+              }
+            ]
+          },
+          "unit": "kwatth"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 3,
+        "x": 0,
+        "y": 0
+      },
+      "id": 12,
+      "options": {
+        "infinitePan": false,
+        "inlineEditing": false,
+        "panZoom": false,
+        "root": {
+          "background": {
+            "color": {
+              "fixed": "transparent"
+            }
+          },
+          "border": {
+            "color": {
+              "fixed": "dark-green"
+            }
+          },
+          "constraint": {
+            "horizontal": "left",
+            "vertical": "top"
+          },
+          "elements": [
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                },
+                "width": 0
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "#000000"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Panel Size",
+              "placement": {
+                "height": 254,
+                "left": 0,
+                "rotation": 0,
+                "top": 0,
+                "width": 334
+              },
+              "type": "rectangle"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                },
+                "width": 0
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "#000000"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Element 11",
+              "placement": {
+                "height": 234,
+                "left": 10,
+                "rotation": 0,
+                "top": 10,
+                "width": 314
+              },
+              "type": "rectangle"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "text"
+                },
+                "size": 16,
+                "text": {
+                  "fixed": "Production"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Element 7",
+              "placement": {
+                "height": 27,
+                "left": 9,
+                "rotation": 0,
+                "top": 62,
+                "width": 156
+              },
+              "type": "text"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "rgb(204, 204, 220)"
+                },
+                "size": 20,
+                "text": {
+                  "fixed": "Net Generation"
+                },
+                "valign": "middle"
+              },
+              "connections": [],
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Element 8",
+              "placement": {
+                "height": 26,
+                "left": 11,
+                "rotation": 0,
+                "top": 142,
+                "width": 314
+              },
+              "type": "text"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "field": "Net Generation",
+                  "fixed": "#000000"
+                },
+                "size": 36,
+                "text": {
+                  "field": "Net Generation",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Element 3",
+              "placement": {
+                "height": 63,
+                "left": 11,
+                "rotation": 0,
+                "top": 165,
+                "width": 314
+              },
+              "type": "metric-value"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "field": "Production",
+                  "fixed": "#000000"
+                },
+                "size": 24,
+                "text": {
+                  "field": "Production",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Element 1",
+              "placement": {
+                "height": 40,
+                "left": 9,
+                "rotation": 0,
+                "top": 87,
+                "width": 156
+              },
+              "type": "metric-value"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "field": "Usage",
+                  "fixed": "#000000"
+                },
+                "size": 24,
+                "text": {
+                  "field": "Usage",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Element 2",
+              "placement": {
+                "height": 40,
+                "left": 168,
+                "rotation": 0,
+                "top": 87,
+                "width": 156
+              },
+              "type": "metric-value"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "text"
+                },
+                "size": 16,
+                "text": {
+                  "fixed": "Usage"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Element 10",
+              "placement": {
+                "height": 27,
+                "left": 168,
+                "rotation": 0,
+                "top": 62,
+                "width": 156
+              },
+              "type": "text"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "rgb(204, 204, 220)"
+                },
+                "size": 20,
+                "text": {
+                  "fixed": "Today's Energy"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Element 9",
+              "placement": {
+                "height": 40,
+                "left": 10,
+                "rotation": 0,
+                "top": 10,
+                "width": 314
+              },
+              "type": "text"
+            }
+          ],
+          "name": "Element 1744835814908",
+          "placement": {
+            "height": 100,
+            "left": 0,
+            "rotation": 0,
+            "top": 0,
+            "width": 100
+          },
+          "type": "frame"
+        },
+        "showAdvancedTypes": true
+      },
+      "pluginVersion": "11.6.0",
+      "targets": [
+        {
+          "dataset": "solar",
+          "datasource": {
+            "type": "mysql",
+            "uid": "degjnnr5hum0wf"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  SUM(w.`Production`) AS Production,\n  SUM(w.`Useage`) AS `Usage`,\n  SUM(w.`Net Generation`) AS `Net Generation`\nFROM (\n  SELECT \n    DATE_ADD(\n      DATE_ADD(\n        DATE_ADD(\n          MAKEDATE(YEAR( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ), 1),\n          INTERVAL MONTH( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) -1 MONTH\n        ),\n        INTERVAL DAY( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) -1 DAY\n      ), \n      INTERVAL IF(\n        HOUR( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) = 0 AND\n          MINUTE( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) = 0,\n        -1,\n        0\n      ) DAY\n    ) AS End_Time,\n    SUM( Nrg_Production ) AS `Production`,\n    ( -1 * (SUM( Nrg_Production ) + SUM( Nrg_Consumption ) ) ) AS `Useage`,\n    ( -1 * SUM( Nrg_Consumption ) ) AS `Net Generation`\n  FROM (\n    SELECT \n      prod.timestamp AS data_time,\n      COALESCE( prod.net_ltea_3phsum_kwh - LAG( prod.net_ltea_3phsum_kwh ) OVER ( ORDER BY prod.timestamp ASC ), 0 ) AS Nrg_Production,\n      COALESCE( cons.net_ltea_3phsum_kwh - LAG( cons.net_ltea_3phsum_kwh ) OVER ( ORDER BY cons.timestamp ASC ), 0 ) AS Nrg_Consumption\n    FROM (\n      SELECT \n        FROM_UNIXTIME( ( ROUND( UNIX_TIMESTAMP( data_time ) / 60, 0 ) * 60 ) ) AS 'timestamp',\n        net_ltea_3phsum_kwh\n      FROM solar.production_meters_data\n      WHERE data_time >= \n        CONVERT_TZ(\n          DATE_ADD(\n            MAKEDATE(YEAR ( CONVERT_TZ( NOW(), 'UTC', 'America/Los_Angeles' ) ), 1),\n            INTERVAL MONTH( CONVERT_TZ( NOW(), 'UTC', 'America/Los_Angeles' ) ) -1 MONTH \n          ),\n          'America/Los_Angeles', 'UTC' \n        )\n    ) AS prod\n    JOIN (\n      SELECT \n        FROM_UNIXTIME( ( ROUND( UNIX_TIMESTAMP( data_time ) / 60, 0 ) * 60 ) ) AS 'timestamp',\n        net_ltea_3phsum_kwh\n      FROM solar.consumption_meters_data\n    ) AS cons\n    ON prod.timestamp = cons.timestamp\n  ) AS prod_cons\n  GROUP BY End_Time\n  ORDER BY End_Time\n) AS w;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "",
+      "type": "canvas"
+    },
+    {
+      "datasource": {
+        "type": "mysql",
+        "uid": "degjnnr5hum0wf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "red",
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": true,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 0,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "fieldMinMax": false,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "dark-red",
+                "value": -15
+              },
+              {
+                "color": "semi-dark-red",
+                "value": -12
+              },
+              {
+                "color": "red",
+                "value": -9
+              },
+              {
+                "color": "light-red",
+                "value": -6
+              },
+              {
+                "color": "super-light-red",
+                "value": -3
+              },
+              {
+                "color": "super-light-green",
+                "value": 0
+              },
+              {
+                "color": "light-green",
+                "value": 2
+              },
+              {
+                "color": "green",
+                "value": 4
+              },
+              {
+                "color": "semi-dark-green",
+                "value": 6
+              },
+              {
+                "color": "dark-green",
+                "value": 8
+              }
+            ]
+          },
+          "unit": "kwatth"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Energy Production"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "bars"
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 50
+              },
+              {
+                "id": "custom.barWidthFactor",
+                "value": 0.4
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "light-green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Energy Useage"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "bars"
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 50
+              },
+              {
+                "id": "custom.barWidthFactor",
+                "value": 0.4
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#ffca3c",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Cummulative Net Energy Generation"
+            },
+            "properties": [
+              {
+                "id": "custom.lineWidth",
+                "value": 3
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 51
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 25
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              },
+              {
+                "id": "custom.axisColorMode",
+                "value": "series"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Net Energy Generation"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.pointSize",
+                "value": 7
+              },
+              {
+                "id": "custom.stacking",
+                "value": {
+                  "group": "A",
+                  "mode": "none"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Total Energy Production"
+            },
+            "properties": []
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 9,
+        "x": 3,
+        "y": 0
+      },
+      "id": 3,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.6.0",
+      "targets": [
+        {
+          "dataset": "solar",
+          "datasource": {
+            "type": "mysql",
+            "uid": "degjnnr5hum0wf"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  SUM( w.`Net Energy Generation`) OVER ( ORDER BY w.End_Time) AS `Cummulative Net Energy Generation`,\n  w.End_Time AS `End Time`,\n  w.`Energy Production`,\n  w.`Energy Useage`,\n  w.`Net Energy Generation`\nFROM (\n  SELECT \n    CONVERT_TZ(  \n      DATE_ADD(\n        DATE_ADD(\n          DATE_ADD(\n            DATE_ADD(\n              MAKEDATE(YEAR( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ), 1),\n              INTERVAL MONTH( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) -1 MONTH\n            ),\n            INTERVAL DAY( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) -1 DAY\n          ),\n          INTERVAL HOUR( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) HOUR\n        ), \n        INTERVAL IF(\n          MINUTE( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) = 0,\n          0,\n          1\n        ) HOUR\n      ),\n      'America/Los_Angeles', 'UTC'\n    ) AS End_Time,\n    SUM( Nrg_Production ) AS `Energy Production`,\n    ( -1 * (SUM( Nrg_Production ) + SUM( Nrg_Consumption ) ) ) AS `Energy Useage`,\n    ( -1 * SUM( Nrg_Consumption ) ) AS `Net Energy Generation`\n  FROM (\n    SELECT \n      prod.timestamp AS data_time,\n      COALESCE( prod.net_ltea_3phsum_kwh - LAG( prod.net_ltea_3phsum_kwh ) OVER ( ORDER BY prod.timestamp ASC ), 0 ) AS Nrg_Production,\n      COALESCE( cons.net_ltea_3phsum_kwh - LAG( cons.net_ltea_3phsum_kwh ) OVER ( ORDER BY cons.timestamp ASC ), 0 ) AS Nrg_Consumption\n    FROM (\n      SELECT \n        FROM_UNIXTIME( ( ROUND( UNIX_TIMESTAMP( data_time ) / 60, 0 ) * 60 ) ) AS 'timestamp',\n        net_ltea_3phsum_kwh\n      FROM solar.production_meters_data\n      WHERE data_time >= \n        CONVERT_TZ(\n          DATE_ADD(\n            DATE_ADD(\n              MAKEDATE(YEAR ( CONVERT_TZ( NOW(), 'UTC', 'America/Los_Angeles' ) ), 1),\n              INTERVAL MONTH( CONVERT_TZ( NOW(), 'UTC', 'America/Los_Angeles' ) ) -1 MONTH \n            ),\n            INTERVAL DAY( CONVERT_TZ( NOW(), 'UTC', 'America/Los_Angeles' ) ) -1 DAY\n          ),\n          'America/Los_Angeles', 'UTC' \n        )\n    ) AS prod\n    JOIN (\n      SELECT \n        FROM_UNIXTIME( ( ROUND( UNIX_TIMESTAMP( data_time ) / 60, 0 ) * 60 ) ) AS 'timestamp',\n        net_ltea_3phsum_kwh\n      FROM solar.consumption_meters_data\n    ) AS cons\n    ON prod.timestamp = cons.timestamp\n  ) AS prod_cons\n  GROUP BY End_Time\n  ORDER BY End_Time\n) AS w;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "alias": "\"Energy Production\"",
+                "parameters": [
+                  {
+                    "name": "data",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "data_time",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "889898b8-cdef-4012-b456-7195ced6c427",
+                  "properties": {
+                    "field": "parameter",
+                    "fieldSrc": "field",
+                    "operator": "equal",
+                    "value": [
+                      "net_ltea_3phsum_kwh"
+                    ],
+                    "valueError": [
+                      null
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aabb9889-89ab-4cde-b012-3195ced913e4",
+                  "properties": {
+                    "field": "serial",
+                    "fieldSrc": "field",
+                    "operator": "equal",
+                    "value": [
+                      "PVS6M22511526p"
+                    ],
+                    "valueError": [
+                      null
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "8a8a8998-0123-4456-b89a-b195cece165c",
+              "type": "group"
+            },
+            "whereString": "(parameter = 'net_ltea_3phsum_kwh' AND serial = 'PVS6M22511526p')"
+          },
+          "table": "pvs6_data"
+        }
+      ],
+      "timeFrom": "now/d",
+      "title": "Energy Generation and Usage",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "mysql",
+        "uid": "degjnnr5hum0wf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "red",
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisGridShow": true,
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 0,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "fieldMinMax": false,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "dark-red",
+                "value": -15
+              },
+              {
+                "color": "semi-dark-red",
+                "value": -12
+              },
+              {
+                "color": "red",
+                "value": -9
+              },
+              {
+                "color": "light-red",
+                "value": -6
+              },
+              {
+                "color": "super-light-red",
+                "value": -3
+              },
+              {
+                "color": "super-light-green",
+                "value": 0
+              },
+              {
+                "color": "light-green",
+                "value": 2
+              },
+              {
+                "color": "green",
+                "value": 4
+              },
+              {
+                "color": "semi-dark-green",
+                "value": 6
+              },
+              {
+                "color": "dark-green",
+                "value": 8
+              }
+            ]
+          },
+          "unit": "kwatth"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Energy Production"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "bars"
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 50
+              },
+              {
+                "id": "custom.barWidthFactor",
+                "value": 0.4
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "light-green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Energy Useage"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "bars"
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 50
+              },
+              {
+                "id": "custom.barWidthFactor",
+                "value": 0.4
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#ffca3c",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Net Energy Generation"
+            },
+            "properties": [
+              {
+                "id": "custom.lineWidth",
+                "value": 3
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 9,
+        "x": 12,
+        "y": 0
+      },
+      "id": 10,
+      "options": {
+        "legend": {
+          "calcs": [
+            "sum"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.6.0",
+      "targets": [
+        {
+          "dataset": "solar",
+          "datasource": {
+            "type": "mysql",
+            "uid": "degjnnr5hum0wf"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \n  CONVERT_TZ(  \n    DATE_ADD(\n      DATE_ADD(\n        DATE_ADD(\n          DATE_ADD(\n            MAKEDATE(YEAR( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ), 1),\n            INTERVAL MONTH( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) -1 MONTH\n          ),\n          INTERVAL DAY( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) -1 DAY\n        ),\n        INTERVAL HOUR( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) HOUR\n      ), \n      INTERVAL IF(\n        MINUTE( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) = 0,\n        0,\n        1\n      ) HOUR\n    ),\n    'America/Los_Angeles', 'UTC'\n  ) AS End_Time,\n\tSUM( Nrg_Production ) AS `Energy Production`,\n\t( -1 * (SUM( Nrg_Production ) + SUM( Nrg_Consumption ) ) ) AS `Energy Useage`,\n\t( -1 * SUM( Nrg_Consumption ) ) AS `Net Energy Generation`\nFROM (\n\tSELECT \n\t\tprod.timestamp AS data_time,\n\t\tCOALESCE( prod.net_ltea_3phsum_kwh - LAG( prod.net_ltea_3phsum_kwh ) OVER ( ORDER BY prod.timestamp ASC ), 0 ) AS Nrg_Production,\n\t\tCOALESCE( cons.net_ltea_3phsum_kwh - LAG( cons.net_ltea_3phsum_kwh ) OVER ( ORDER BY cons.timestamp ASC ), 0 ) AS Nrg_Consumption\n\tFROM (\n\t\tSELECT \n\t\t\tFROM_UNIXTIME( ( ROUND( UNIX_TIMESTAMP( data_time ) / 60, 0 ) * 60 ) ) AS 'timestamp',\n\t\t\tnet_ltea_3phsum_kwh\n\t\tFROM solar.production_meters_data\n\t\tWHERE data_time >= \n      CONVERT_TZ(\n        DATE_ADD(\n          DATE_ADD(\n            MAKEDATE(YEAR ( CONVERT_TZ( NOW(), 'UTC', 'America/Los_Angeles' ) ), 1),\n            INTERVAL MONTH( CONVERT_TZ( NOW(), 'UTC', 'America/Los_Angeles' ) ) -1 MONTH \n          ),\n          INTERVAL DAY( CONVERT_TZ( NOW(), 'UTC', 'America/Los_Angeles' ) ) -1 DAY\n        ),\n        'America/Los_Angeles', 'UTC' \n      )\n\t) AS prod\n\tJOIN (\n\t\tSELECT \n\t\t\tFROM_UNIXTIME( ( ROUND( UNIX_TIMESTAMP( data_time ) / 60, 0 ) * 60 ) ) AS 'timestamp',\n\t\t\tnet_ltea_3phsum_kwh\n\t\tFROM solar.consumption_meters_data\n\t) AS cons\n\tON prod.timestamp = cons.timestamp\n) AS prod_cons\nGROUP BY End_Time\nORDER BY End_Time;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "alias": "\"Energy Production\"",
+                "parameters": [
+                  {
+                    "name": "data",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "data_time",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "889898b8-cdef-4012-b456-7195ced6c427",
+                  "properties": {
+                    "field": "parameter",
+                    "fieldSrc": "field",
+                    "operator": "equal",
+                    "value": [
+                      "net_ltea_3phsum_kwh"
+                    ],
+                    "valueError": [
+                      null
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aabb9889-89ab-4cde-b012-3195ced913e4",
+                  "properties": {
+                    "field": "serial",
+                    "fieldSrc": "field",
+                    "operator": "equal",
+                    "value": [
+                      "PVS6M22511526p"
+                    ],
+                    "valueError": [
+                      null
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "8a8a8998-0123-4456-b89a-b195cece165c",
+              "type": "group"
+            },
+            "whereString": "(parameter = 'net_ltea_3phsum_kwh' AND serial = 'PVS6M22511526p')"
+          },
+          "table": "pvs6_data"
+        }
+      ],
+      "title": "Today's Energy Generation and Useage",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "mysql",
+        "uid": "degjnnr5hum0wf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "transparent"
+              },
+              {
+                "color": "red",
+                "value": -100
+              },
+              {
+                "color": "green",
+                "value": 1e-7
+              }
+            ]
+          },
+          "unit": "kwatth"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 3,
+        "x": 21,
+        "y": 0
+      },
+      "id": 17,
+      "options": {
+        "infinitePan": false,
+        "inlineEditing": false,
+        "panZoom": false,
+        "root": {
+          "background": {
+            "color": {
+              "fixed": "transparent"
+            }
+          },
+          "border": {
+            "color": {
+              "fixed": "dark-green"
+            }
+          },
+          "constraint": {
+            "horizontal": "left",
+            "vertical": "top"
+          },
+          "elements": [
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                },
+                "width": 0
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "#000000"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Panel Size",
+              "placement": {
+                "height": 254,
+                "left": 0,
+                "rotation": 0,
+                "top": 0,
+                "width": 334
+              },
+              "type": "rectangle"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                },
+                "width": 0
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "#000000"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Element 11",
+              "placement": {
+                "height": 234,
+                "left": 10,
+                "rotation": 0,
+                "top": 10,
+                "width": 314
+              },
+              "type": "rectangle"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "text"
+                },
+                "size": 16,
+                "text": {
+                  "fixed": "Production"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Element 7",
+              "placement": {
+                "height": 27,
+                "left": 9,
+                "rotation": 0,
+                "top": 62,
+                "width": 156
+              },
+              "type": "text"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "rgb(204, 204, 220)"
+                },
+                "size": 20,
+                "text": {
+                  "fixed": "Net Generation"
+                },
+                "valign": "middle"
+              },
+              "connections": [],
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Element 8",
+              "placement": {
+                "height": 26,
+                "left": 11,
+                "rotation": 0,
+                "top": 142,
+                "width": 314
+              },
+              "type": "text"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "field": "Net Generation",
+                  "fixed": "#000000"
+                },
+                "size": 36,
+                "text": {
+                  "field": "Net Generation",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Element 3",
+              "placement": {
+                "height": 63,
+                "left": 11,
+                "rotation": 0,
+                "top": 165,
+                "width": 314
+              },
+              "type": "metric-value"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "field": "Production",
+                  "fixed": "#000000"
+                },
+                "size": 24,
+                "text": {
+                  "field": "Production",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Element 1",
+              "placement": {
+                "height": 40,
+                "left": 9,
+                "rotation": 0,
+                "top": 87,
+                "width": 156
+              },
+              "type": "metric-value"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "field": "Usage",
+                  "fixed": "#000000"
+                },
+                "size": 24,
+                "text": {
+                  "field": "Usage",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Element 2",
+              "placement": {
+                "height": 40,
+                "left": 168,
+                "rotation": 0,
+                "top": 87,
+                "width": 156
+              },
+              "type": "metric-value"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "text"
+                },
+                "size": 16,
+                "text": {
+                  "fixed": "Usage"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Element 10",
+              "placement": {
+                "height": 27,
+                "left": 168,
+                "rotation": 0,
+                "top": 62,
+                "width": 156
+              },
+              "type": "text"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "rgb(204, 204, 220)"
+                },
+                "size": 20,
+                "text": {
+                  "fixed": "Current Week Energy"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Element 9",
+              "placement": {
+                "height": 40,
+                "left": 10,
+                "rotation": 0,
+                "top": 10,
+                "width": 314
+              },
+              "type": "text"
+            }
+          ],
+          "name": "Element 1744835814908",
+          "placement": {
+            "height": 100,
+            "left": 0,
+            "rotation": 0,
+            "top": 0,
+            "width": 100
+          },
+          "type": "frame"
+        },
+        "showAdvancedTypes": true
+      },
+      "pluginVersion": "11.6.0",
+      "targets": [
+        {
+          "dataset": "solar",
+          "datasource": {
+            "type": "mysql",
+            "uid": "degjnnr5hum0wf"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  SUM(w.`Energy Production`) AS Production,\n  SUM(w.`Energy Useage`) AS `Usage`,\n  SUM(w.`Net Energy Generation`) AS `Net Generation`\nFROM (\n  SELECT \n    CONVERT_TZ(  \n      DATE_ADD(\n        DATE_ADD(\n          DATE_ADD(\n            DATE_ADD(\n              MAKEDATE(YEAR( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ), 1),\n              INTERVAL MONTH( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) -1 MONTH\n            ),\n            INTERVAL DAY( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) -1 DAY\n          ),\n          INTERVAL HOUR( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) HOUR\n        ), \n        INTERVAL IF(\n          MINUTE( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) = 0,\n          0,\n          1\n        ) HOUR\n      ),\n      'America/Los_Angeles', 'UTC'\n    ) AS End_Time,\n    SUM( Nrg_Production ) AS `Energy Production`,\n    ( -1 * (SUM( Nrg_Production ) + SUM( Nrg_Consumption ) ) ) AS `Energy Useage`,\n    ( -1 * SUM( Nrg_Consumption ) ) AS `Net Energy Generation`\n  FROM (\n    SELECT \n      prod.timestamp AS data_time,\n      COALESCE( prod.net_ltea_3phsum_kwh - LAG( prod.net_ltea_3phsum_kwh ) OVER ( ORDER BY prod.timestamp ASC ), 0 ) AS Nrg_Production,\n      COALESCE( cons.net_ltea_3phsum_kwh - LAG( cons.net_ltea_3phsum_kwh ) OVER ( ORDER BY cons.timestamp ASC ), 0 ) AS Nrg_Consumption\n    FROM (\n      SELECT \n        FROM_UNIXTIME( ( ROUND( UNIX_TIMESTAMP( data_time ) / 60, 0 ) * 60 ) ) AS 'timestamp',\n        net_ltea_3phsum_kwh\n      FROM solar.production_meters_data\n      WHERE data_time >= \n        CONVERT_TZ(\n          DATE_ADD(\n            DATE_ADD(\n              MAKEDATE(YEAR ( CONVERT_TZ( NOW(), 'UTC', 'America/Los_Angeles' ) ), 1),\n              INTERVAL MONTH( CONVERT_TZ( NOW(), 'UTC', 'America/Los_Angeles' ) ) -1 MONTH \n            ),\n            INTERVAL DAY( CONVERT_TZ( NOW(), 'UTC', 'America/Los_Angeles' ) ) -1 DAY\n          ),\n          'America/Los_Angeles', 'UTC' \n        )\n    ) AS prod\n    JOIN (\n      SELECT \n        FROM_UNIXTIME( ( ROUND( UNIX_TIMESTAMP( data_time ) / 60, 0 ) * 60 ) ) AS 'timestamp',\n        net_ltea_3phsum_kwh\n      FROM solar.consumption_meters_data\n    ) AS cons\n    ON prod.timestamp = cons.timestamp\n  ) AS prod_cons\n  GROUP BY End_Time\n  ORDER BY End_Time\n) AS w;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "",
+      "type": "canvas"
+    },
+    {
+      "datasource": {
+        "type": "mysql",
+        "uid": "degjnnr5hum0wf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "transparent"
+              },
+              {
+                "color": "red",
+                "value": -1e+27
+              },
+              {
+                "color": "green",
+                "value": 1e-7
+              }
+            ]
+          },
+          "unit": "kwatth"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 3,
+        "x": 0,
+        "y": 7
+      },
+      "id": 16,
+      "options": {
+        "infinitePan": false,
+        "inlineEditing": false,
+        "panZoom": false,
+        "root": {
+          "background": {
+            "color": {
+              "fixed": "transparent"
+            }
+          },
+          "border": {
+            "color": {
+              "fixed": "dark-green"
+            }
+          },
+          "constraint": {
+            "horizontal": "left",
+            "vertical": "top"
+          },
+          "elements": [
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                },
+                "width": 0
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "#000000"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Panel Size",
+              "placement": {
+                "height": 254,
+                "left": 0,
+                "rotation": 0,
+                "top": 0,
+                "width": 334
+              },
+              "type": "rectangle"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                },
+                "width": 0
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "#000000"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Element 11",
+              "placement": {
+                "height": 234,
+                "left": 10,
+                "rotation": 0,
+                "top": 10,
+                "width": 314
+              },
+              "type": "rectangle"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "text"
+                },
+                "size": 16,
+                "text": {
+                  "fixed": "Production"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Element 7",
+              "placement": {
+                "height": 27,
+                "left": 9,
+                "rotation": 0,
+                "top": 62,
+                "width": 156
+              },
+              "type": "text"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "rgb(204, 204, 220)"
+                },
+                "size": 20,
+                "text": {
+                  "fixed": "Net Generation"
+                },
+                "valign": "middle"
+              },
+              "connections": [],
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Element 8",
+              "placement": {
+                "height": 26,
+                "left": 11,
+                "rotation": 0,
+                "top": 142,
+                "width": 314
+              },
+              "type": "text"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "field": "Net Generation",
+                  "fixed": "#000000"
+                },
+                "size": 36,
+                "text": {
+                  "field": "Net Generation",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Element 3",
+              "placement": {
+                "height": 63,
+                "left": 11,
+                "rotation": 0,
+                "top": 165,
+                "width": 314
+              },
+              "type": "metric-value"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "field": "Production",
+                  "fixed": "#000000"
+                },
+                "size": 24,
+                "text": {
+                  "field": "Production",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Element 1",
+              "placement": {
+                "height": 40,
+                "left": 9,
+                "rotation": 0,
+                "top": 87,
+                "width": 156
+              },
+              "type": "metric-value"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "field": "Usage",
+                  "fixed": "#000000"
+                },
+                "size": 24,
+                "text": {
+                  "field": "Usage",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Element 2",
+              "placement": {
+                "height": 40,
+                "left": 168,
+                "rotation": 0,
+                "top": 87,
+                "width": 156
+              },
+              "type": "metric-value"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "text"
+                },
+                "size": 16,
+                "text": {
+                  "fixed": "Usage"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Element 10",
+              "placement": {
+                "height": 27,
+                "left": 168,
+                "rotation": 0,
+                "top": 62,
+                "width": 156
+              },
+              "type": "text"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "rgb(204, 204, 220)"
+                },
+                "size": 20,
+                "text": {
+                  "fixed": "Current Month Energy"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Element 9",
+              "placement": {
+                "height": 40,
+                "left": 10,
+                "rotation": 0,
+                "top": 10,
+                "width": 314
+              },
+              "type": "text"
+            }
+          ],
+          "name": "Element 1744835814908",
+          "placement": {
+            "height": 100,
+            "left": 0,
+            "rotation": 0,
+            "top": 0,
+            "width": 100
+          },
+          "type": "frame"
+        },
+        "showAdvancedTypes": true
+      },
+      "pluginVersion": "11.6.0",
+      "targets": [
+        {
+          "dataset": "solar",
+          "datasource": {
+            "type": "mysql",
+            "uid": "degjnnr5hum0wf"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  SUM(w.`Production`) AS `Production`,\n  SUM(w.`Useage`) AS `Usage`,\n  SUM(w.`Net Generation`) AS `Net Generation`\nFROM (\n  SELECT \n    DATE_ADD(\n      DATE_ADD(\n        DATE_ADD(\n          MAKEDATE(YEAR( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ), 1),\n          INTERVAL MONTH( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) -1 MONTH\n        ),\n        INTERVAL DAY( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) -1 DAY\n      ), \n      INTERVAL IF(\n        HOUR( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) = 0 AND\n          MINUTE( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) = 0,\n        -1,\n        0\n      ) DAY\n    ) AS End_Time,\n    SUM( Nrg_Production ) AS `Production`,\n    ( -1 * (SUM( Nrg_Production ) + SUM( Nrg_Consumption ) ) ) AS `Useage`,\n    ( -1 * SUM( Nrg_Consumption ) ) AS `Net Generation`\n  FROM (\n    SELECT \n      prod.timestamp AS data_time,\n      COALESCE( prod.net_ltea_3phsum_kwh - LAG( prod.net_ltea_3phsum_kwh ) OVER ( ORDER BY prod.timestamp ASC ), 0 ) AS Nrg_Production,\n      COALESCE( cons.net_ltea_3phsum_kwh - LAG( cons.net_ltea_3phsum_kwh ) OVER ( ORDER BY cons.timestamp ASC ), 0 ) AS Nrg_Consumption\n    FROM (\n      SELECT \n        FROM_UNIXTIME( ( ROUND( UNIX_TIMESTAMP( data_time ) / 60, 0 ) * 60 ) ) AS 'timestamp',\n        net_ltea_3phsum_kwh\n      FROM solar.production_meters_data\n      WHERE data_time >= \n        CONVERT_TZ(\n          DATE_ADD(\n            MAKEDATE(YEAR ( CONVERT_TZ( NOW(), 'UTC', 'America/Los_Angeles' ) ), 1),\n            INTERVAL MONTH( CONVERT_TZ( NOW(), 'UTC', 'America/Los_Angeles' ) ) -1 MONTH \n          ),\n          'America/Los_Angeles', 'UTC' \n        )\n    ) AS prod\n    JOIN (\n      SELECT \n        FROM_UNIXTIME( ( ROUND( UNIX_TIMESTAMP( data_time ) / 60, 0 ) * 60 ) ) AS 'timestamp',\n        net_ltea_3phsum_kwh\n      FROM solar.consumption_meters_data\n    ) AS cons\n    ON prod.timestamp = cons.timestamp\n  ) AS prod_cons\n  GROUP BY End_Time\n  ORDER BY End_Time\n) AS w;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "timeFrom": "now/M",
+      "title": "",
+      "type": "canvas"
+    },
+    {
+      "datasource": {
+        "type": "mysql",
+        "uid": "degjnnr5hum0wf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "red",
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": true,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 0,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "fieldMinMax": false,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "dark-red",
+                "value": -15
+              },
+              {
+                "color": "semi-dark-red",
+                "value": -12
+              },
+              {
+                "color": "red",
+                "value": -9
+              },
+              {
+                "color": "light-red",
+                "value": -6
+              },
+              {
+                "color": "super-light-red",
+                "value": -3
+              },
+              {
+                "color": "super-light-green",
+                "value": 0
+              },
+              {
+                "color": "light-green",
+                "value": 2
+              },
+              {
+                "color": "green",
+                "value": 4
+              },
+              {
+                "color": "semi-dark-green",
+                "value": 6
+              },
+              {
+                "color": "dark-green",
+                "value": 8
+              }
+            ]
+          },
+          "unit": "kwatth"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Production"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "bars"
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 50
+              },
+              {
+                "id": "custom.barWidthFactor",
+                "value": 0.4
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "light-green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Useage"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "bars"
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 50
+              },
+              {
+                "id": "custom.barWidthFactor",
+                "value": 0.4
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#ffca3c",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Cumm. Net Generation"
+            },
+            "properties": [
+              {
+                "id": "custom.lineWidth",
+                "value": 3
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 51
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 25
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              },
+              {
+                "id": "custom.axisColorMode",
+                "value": "series"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Net Generation"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.pointSize",
+                "value": 7
+              },
+              {
+                "id": "custom.stacking",
+                "value": {
+                  "group": "A",
+                  "mode": "none"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Total Energy Production"
+            },
+            "properties": []
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 9,
+        "x": 3,
+        "y": 7
+      },
+      "id": 14,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.6.0",
+      "targets": [
+        {
+          "dataset": "solar",
+          "datasource": {
+            "type": "mysql",
+            "uid": "degjnnr5hum0wf"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  SUM( w.`Net Generation`) OVER ( ORDER BY w.End_Time) AS `Cumm. Net Generation`,\n  w.End_Time AS `End Time`,\n  w.`Production`,\n  w.`Useage`,\n  w.`Net Generation`\nFROM (\n  SELECT \n    DATE_ADD(\n      DATE_ADD(\n        DATE_ADD(\n          MAKEDATE(YEAR( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ), 1),\n          INTERVAL MONTH( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) -1 MONTH\n        ),\n        INTERVAL DAY( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) -1 DAY\n      ), \n      INTERVAL IF(\n        HOUR( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) = 0 AND\n          MINUTE( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) = 0,\n        -1,\n        0\n      ) DAY\n    ) AS End_Time,\n    SUM( Nrg_Production ) AS `Production`,\n    ( -1 * (SUM( Nrg_Production ) + SUM( Nrg_Consumption ) ) ) AS `Useage`,\n    ( -1 * SUM( Nrg_Consumption ) ) AS `Net Generation`\n  FROM (\n    SELECT \n      prod.timestamp AS data_time,\n      COALESCE( prod.net_ltea_3phsum_kwh - LAG( prod.net_ltea_3phsum_kwh ) OVER ( ORDER BY prod.timestamp ASC ), 0 ) AS Nrg_Production,\n      COALESCE( cons.net_ltea_3phsum_kwh - LAG( cons.net_ltea_3phsum_kwh ) OVER ( ORDER BY cons.timestamp ASC ), 0 ) AS Nrg_Consumption\n    FROM (\n      SELECT \n        FROM_UNIXTIME( ( ROUND( UNIX_TIMESTAMP( data_time ) / 60, 0 ) * 60 ) ) AS 'timestamp',\n        net_ltea_3phsum_kwh\n      FROM solar.production_meters_data\n      WHERE data_time >= \n        CONVERT_TZ(\n          DATE_ADD(\n            MAKEDATE(YEAR ( CONVERT_TZ( NOW(), 'UTC', 'America/Los_Angeles' ) ), 1),\n            INTERVAL MONTH( CONVERT_TZ( NOW(), 'UTC', 'America/Los_Angeles' ) ) -1 MONTH \n          ),\n          'America/Los_Angeles', 'UTC' \n        )\n    ) AS prod\n    JOIN (\n      SELECT \n        FROM_UNIXTIME( ( ROUND( UNIX_TIMESTAMP( data_time ) / 60, 0 ) * 60 ) ) AS 'timestamp',\n        net_ltea_3phsum_kwh\n      FROM solar.consumption_meters_data\n    ) AS cons\n    ON prod.timestamp = cons.timestamp\n  ) AS prod_cons\n  GROUP BY End_Time\n  ORDER BY End_Time\n) AS w;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "alias": "\"Energy Production\"",
+                "parameters": [
+                  {
+                    "name": "data",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "data_time",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "889898b8-cdef-4012-b456-7195ced6c427",
+                  "properties": {
+                    "field": "parameter",
+                    "fieldSrc": "field",
+                    "operator": "equal",
+                    "value": [
+                      "net_ltea_3phsum_kwh"
+                    ],
+                    "valueError": [
+                      null
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aabb9889-89ab-4cde-b012-3195ced913e4",
+                  "properties": {
+                    "field": "serial",
+                    "fieldSrc": "field",
+                    "operator": "equal",
+                    "value": [
+                      "PVS6M22511526p"
+                    ],
+                    "valueError": [
+                      null
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "8a8a8998-0123-4456-b89a-b195cece165c",
+              "type": "group"
+            },
+            "whereString": "(parameter = 'net_ltea_3phsum_kwh' AND serial = 'PVS6M22511526p')"
+          },
+          "table": "pvs6_data"
+        }
+      ],
+      "timeFrom": "now/M",
+      "title": "Energy Generation and Usage",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "mysql",
+        "uid": "degjnnr5hum0wf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "red",
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": true,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 0,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "fieldMinMax": false,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "dark-red",
+                "value": -15
+              },
+              {
+                "color": "semi-dark-red",
+                "value": -12
+              },
+              {
+                "color": "red",
+                "value": -9
+              },
+              {
+                "color": "light-red",
+                "value": -6
+              },
+              {
+                "color": "super-light-red",
+                "value": -3
+              },
+              {
+                "color": "super-light-green",
+                "value": 0
+              },
+              {
+                "color": "light-green",
+                "value": 2
+              },
+              {
+                "color": "green",
+                "value": 4
+              },
+              {
+                "color": "semi-dark-green",
+                "value": 6
+              },
+              {
+                "color": "dark-green",
+                "value": 8
+              }
+            ]
+          },
+          "unit": "kwatth"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Production"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "bars"
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 50
+              },
+              {
+                "id": "custom.barWidthFactor",
+                "value": 0.4
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "light-green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Useage"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "bars"
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 50
+              },
+              {
+                "id": "custom.barWidthFactor",
+                "value": 0.4
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#ffca3c",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Cumm. Net Generation"
+            },
+            "properties": [
+              {
+                "id": "custom.lineWidth",
+                "value": 3
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 51
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 25
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              },
+              {
+                "id": "custom.axisColorMode",
+                "value": "series"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Net Generation"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.pointSize",
+                "value": 7
+              },
+              {
+                "id": "custom.stacking",
+                "value": {
+                  "group": "A",
+                  "mode": "none"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Total Energy Production"
+            },
+            "properties": []
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 9,
+        "x": 12,
+        "y": 7
+      },
+      "id": 15,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.6.0",
+      "targets": [
+        {
+          "dataset": "solar",
+          "datasource": {
+            "type": "mysql",
+            "uid": "degjnnr5hum0wf"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  SUM( w.`Net Generation`) OVER ( ORDER BY w.End_Time) AS `Cumm. Net Generation`,\n  w.End_Time AS `End Time`,\n  w.`Production`,\n  w.`Useage`,\n  w.`Net Generation`\nFROM (\n\tSELECT \n\t\tDATE_ADD(\n\t\t\tDATE_ADD(\n\t\t\t\tMAKEDATE(YEAR( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ), 1),\n\t\t\t\tINTERVAL MONTH( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) -1 MONTH\n\t\t\t),  \n\t\t\tINTERVAL IF(\n\t\t\t\tDAY( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) = 0 AND\n\t\t\t\tHOUR( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) = 0 AND\n\t\t\t\t\tMINUTE( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) = 0,\n\t\t\t\t-1,\n\t\t\t\t0\n\t\t\t) MONTH\n\t\t) AS End_Time,\n\t\tSUM( Nrg_Production ) AS `Production`,\n\t\t( -1 * (SUM( Nrg_Production ) + SUM( Nrg_Consumption ) ) ) AS `Useage`,\n\t\t( -1 * SUM( Nrg_Consumption ) ) AS `Net Generation`\n\tFROM (\n\t\tSELECT \n\t\t\tprod.timestamp AS data_time,\n\t\t\tCOALESCE( prod.net_ltea_3phsum_kwh - LAG( prod.net_ltea_3phsum_kwh ) OVER ( ORDER BY prod.timestamp ASC ), 0 ) AS Nrg_Production,\n\t\t\tCOALESCE( cons.net_ltea_3phsum_kwh - LAG( cons.net_ltea_3phsum_kwh ) OVER ( ORDER BY cons.timestamp ASC ), 0 ) AS Nrg_Consumption\n\t\tFROM (\n\t\t\tSELECT \n\t\t\t\tFROM_UNIXTIME( ( ROUND( UNIX_TIMESTAMP( data_time ) / 60, 0 ) * 60 ) ) AS 'timestamp',\n\t\t\t\tnet_ltea_3phsum_kwh\n\t\t\tFROM solar.production_meters_data\n\t\t\tWHERE data_time >= \n\t\t\t\tCONVERT_TZ(\n\t\t\t\t\tMAKEDATE(YEAR ( CONVERT_TZ( NOW(), 'UTC', 'America/Los_Angeles' ) ), 1),\n\t\t\t\t\t'America/Los_Angeles', 'UTC' \n\t\t\t\t)\n\t\t) AS prod\n\t\tJOIN (\n\t\t\tSELECT \n\t\t\t\tFROM_UNIXTIME( ( ROUND( UNIX_TIMESTAMP( data_time ) / 60, 0 ) * 60 ) ) AS 'timestamp',\n\t\t\t\tnet_ltea_3phsum_kwh\n\t\t\tFROM solar.consumption_meters_data\n\t\t) AS cons\n\t\tON prod.timestamp = cons.timestamp\n\t) AS prod_cons\n\tGROUP BY End_Time\n\tORDER BY End_Time\n) AS w;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "alias": "\"Energy Production\"",
+                "parameters": [
+                  {
+                    "name": "data",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "data_time",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "889898b8-cdef-4012-b456-7195ced6c427",
+                  "properties": {
+                    "field": "parameter",
+                    "fieldSrc": "field",
+                    "operator": "equal",
+                    "value": [
+                      "net_ltea_3phsum_kwh"
+                    ],
+                    "valueError": [
+                      null
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aabb9889-89ab-4cde-b012-3195ced913e4",
+                  "properties": {
+                    "field": "serial",
+                    "fieldSrc": "field",
+                    "operator": "equal",
+                    "value": [
+                      "PVS6M22511526p"
+                    ],
+                    "valueError": [
+                      null
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "8a8a8998-0123-4456-b89a-b195cece165c",
+              "type": "group"
+            },
+            "whereString": "(parameter = 'net_ltea_3phsum_kwh' AND serial = 'PVS6M22511526p')"
+          },
+          "table": "pvs6_data"
+        }
+      ],
+      "timeFrom": "now/y",
+      "title": "Energy Generation and Usage",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "mysql",
+        "uid": "degjnnr5hum0wf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "transparent"
+              },
+              {
+                "color": "red",
+                "value": -100000000000000000000
+              },
+              {
+                "color": "green",
+                "value": 1e-7
+              }
+            ]
+          },
+          "unit": "kwatth"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 3,
+        "x": 21,
+        "y": 7
+      },
+      "id": 18,
+      "options": {
+        "infinitePan": false,
+        "inlineEditing": false,
+        "panZoom": false,
+        "root": {
+          "background": {
+            "color": {
+              "fixed": "transparent"
+            }
+          },
+          "border": {
+            "color": {
+              "fixed": "dark-green"
+            }
+          },
+          "constraint": {
+            "horizontal": "left",
+            "vertical": "top"
+          },
+          "elements": [
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                },
+                "width": 0
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "#000000"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Panel Size",
+              "placement": {
+                "height": 254,
+                "left": 0,
+                "rotation": 0,
+                "top": 0,
+                "width": 334
+              },
+              "type": "rectangle"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                },
+                "width": 0
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "#000000"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Element 11",
+              "placement": {
+                "height": 234,
+                "left": 10,
+                "rotation": 0,
+                "top": 10,
+                "width": 314
+              },
+              "type": "rectangle"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "text"
+                },
+                "size": 16,
+                "text": {
+                  "fixed": "Production"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Element 7",
+              "placement": {
+                "height": 27,
+                "left": 9,
+                "rotation": 0,
+                "top": 62,
+                "width": 156
+              },
+              "type": "text"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "rgb(204, 204, 220)"
+                },
+                "size": 20,
+                "text": {
+                  "fixed": "Net Generation"
+                },
+                "valign": "middle"
+              },
+              "connections": [],
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Element 8",
+              "placement": {
+                "height": 26,
+                "left": 11,
+                "rotation": 0,
+                "top": 142,
+                "width": 314
+              },
+              "type": "text"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "field": "Net Generation",
+                  "fixed": "#000000"
+                },
+                "size": 36,
+                "text": {
+                  "field": "Net Generation",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Element 3",
+              "placement": {
+                "height": 63,
+                "left": 11,
+                "rotation": 0,
+                "top": 165,
+                "width": 314
+              },
+              "type": "metric-value"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "field": "Production",
+                  "fixed": "#000000"
+                },
+                "size": 24,
+                "text": {
+                  "field": "Production",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Element 1",
+              "placement": {
+                "height": 40,
+                "left": 9,
+                "rotation": 0,
+                "top": 87,
+                "width": 156
+              },
+              "type": "metric-value"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "field": "Usage",
+                  "fixed": "#000000"
+                },
+                "size": 24,
+                "text": {
+                  "field": "Usage",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Element 2",
+              "placement": {
+                "height": 40,
+                "left": 168,
+                "rotation": 0,
+                "top": 87,
+                "width": 156
+              },
+              "type": "metric-value"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "text"
+                },
+                "size": 16,
+                "text": {
+                  "fixed": "Usage"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Element 10",
+              "placement": {
+                "height": 27,
+                "left": 168,
+                "rotation": 0,
+                "top": 62,
+                "width": 156
+              },
+              "type": "text"
+            },
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "rgb(204, 204, 220)"
+                },
+                "size": 20,
+                "text": {
+                  "fixed": "Current Year Energy"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "links": [],
+              "name": "Element 9",
+              "placement": {
+                "height": 40,
+                "left": 10,
+                "rotation": 0,
+                "top": 10,
+                "width": 314
+              },
+              "type": "text"
+            }
+          ],
+          "name": "Element 1744835814908",
+          "placement": {
+            "height": 100,
+            "left": 0,
+            "rotation": 0,
+            "top": 0,
+            "width": 100
+          },
+          "type": "frame"
+        },
+        "showAdvancedTypes": true
+      },
+      "pluginVersion": "11.6.0",
+      "targets": [
+        {
+          "dataset": "solar",
+          "datasource": {
+            "type": "mysql",
+            "uid": "degjnnr5hum0wf"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  SUM(w.`Production`) AS Production,\n  SUM(w.`Useage`) AS `Usage`,\n  SUM(w.`Net Generation`) AS `Net Generation`\nFROM (\n\tSELECT \n\t\tDATE_ADD(\n\t\t\tDATE_ADD(\n\t\t\t\tMAKEDATE(YEAR( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ), 1),\n\t\t\t\tINTERVAL MONTH( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) -1 MONTH\n\t\t\t),  \n\t\t\tINTERVAL IF(\n\t\t\t\tDAY( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) = 0 AND\n\t\t\t\tHOUR( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) = 0 AND\n\t\t\t\t\tMINUTE( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) = 0,\n\t\t\t\t-1,\n\t\t\t\t0\n\t\t\t) MONTH\n\t\t) AS End_Time,\n\t\tSUM( Nrg_Production ) AS `Production`,\n\t\t( -1 * (SUM( Nrg_Production ) + SUM( Nrg_Consumption ) ) ) AS `Useage`,\n\t\t( -1 * SUM( Nrg_Consumption ) ) AS `Net Generation`\n\tFROM (\n\t\tSELECT \n\t\t\tprod.timestamp AS data_time,\n\t\t\tCOALESCE( prod.net_ltea_3phsum_kwh - LAG( prod.net_ltea_3phsum_kwh ) OVER ( ORDER BY prod.timestamp ASC ), 0 ) AS Nrg_Production,\n\t\t\tCOALESCE( cons.net_ltea_3phsum_kwh - LAG( cons.net_ltea_3phsum_kwh ) OVER ( ORDER BY cons.timestamp ASC ), 0 ) AS Nrg_Consumption\n\t\tFROM (\n\t\t\tSELECT \n\t\t\t\tFROM_UNIXTIME( ( ROUND( UNIX_TIMESTAMP( data_time ) / 60, 0 ) * 60 ) ) AS 'timestamp',\n\t\t\t\tnet_ltea_3phsum_kwh\n\t\t\tFROM solar.production_meters_data\n\t\t\tWHERE data_time >= \n\t\t\t\tCONVERT_TZ(\n\t\t\t\t\tMAKEDATE(YEAR ( CONVERT_TZ( NOW(), 'UTC', 'America/Los_Angeles' ) ), 1),\n\t\t\t\t\t'America/Los_Angeles', 'UTC' \n\t\t\t\t)\n\t\t) AS prod\n\t\tJOIN (\n\t\t\tSELECT \n\t\t\t\tFROM_UNIXTIME( ( ROUND( UNIX_TIMESTAMP( data_time ) / 60, 0 ) * 60 ) ) AS 'timestamp',\n\t\t\t\tnet_ltea_3phsum_kwh\n\t\t\tFROM solar.consumption_meters_data\n\t\t) AS cons\n\t\tON prod.timestamp = cons.timestamp\n\t) AS prod_cons\n\tGROUP BY End_Time\n\tORDER BY End_Time\n) AS w;\n",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "",
+      "type": "canvas"
+    },
+    {
+      "datasource": {
+        "type": "mysql",
+        "uid": "degjnnr5hum0wf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 9,
+        "x": 3,
+        "y": 14
+      },
+      "id": 6,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.6.0",
+      "targets": [
+        {
+          "dataset": "solar",
+          "datasource": {
+            "type": "mysql",
+            "uid": "degjnnr5hum0wf"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT dl_untransmitted AS \"Untransmitted Data\", data_time FROM solar.supervisors_data",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "alias": "\"Untransmitted Data\"",
+                "parameters": [
+                  {
+                    "name": "dl_untransmitted",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "data_time",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "table": "supervisors_data"
+        }
+      ],
+      "timeFrom": "28d",
+      "title": "Untransmitted Data",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "mysql",
+        "uid": "degjnnr5hum0wf"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "dark-red",
+                "value": -10
+              },
+              {
+                "color": "semi-dark-red",
+                "value": -8
+              },
+              {
+                "color": "red",
+                "value": -6
+              },
+              {
+                "color": "light-red",
+                "value": -4
+              },
+              {
+                "color": "super-light-red",
+                "value": -2
+              },
+              {
+                "color": "#bef3d1",
+                "value": 0
+              },
+              {
+                "color": "super-light-green",
+                "value": 2
+              },
+              {
+                "color": "light-green",
+                "value": 4
+              },
+              {
+                "color": "green",
+                "value": 6
+              },
+              {
+                "color": "semi-dark-green",
+                "value": 8
+              },
+              {
+                "color": "dark-green",
+                "value": 10
+              }
+            ]
+          },
+          "unit": "kW"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 9,
+        "x": 12,
+        "y": 14
+      },
+      "id": 5,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "vertical",
+        "reduceOptions": {
+          "calcs": [],
+          "fields": "/.*/",
+          "values": true
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "pluginVersion": "11.6.0",
+      "targets": [
+        {
+          "dataset": "performance_schema",
+          "datasource": {
+            "type": "mysql",
+            "uid": "degjnnr5hum0wf"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT (-1 * p_3phsum_kw) AS `Net Generation` FROM solar.consumption_meters_data WHERE data_time = (SELECT MAX(data_time) FROM solar.consumption_meters_data)",
+          "refId": "Net_Generation",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        },
+        {
+          "dataset": "performance_schema",
+          "datasource": {
+            "type": "mysql",
+            "uid": "degjnnr5hum0wf"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT p_3phsum_kw AS Production FROM solar.production_meters_data WHERE data_time = (SELECT MAX(data_time) FROM solar.production_meters_data)",
+          "refId": "Power_Production",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        },
+        {
+          "datasource": {
+            "name": "Expression",
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "expression": "-1 * ($Power_Production - $Net_Generation)",
+          "hide": false,
+          "refId": "Usage",
+          "type": "math"
+        }
+      ],
+      "title": "Current Power Production",
+      "type": "gauge"
+    }
+  ],
+  "preload": false,
+  "refresh": "1m",
+  "schemaVersion": 41,
+  "tags": [
+    "Solar"
+  ],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-7d",
+    "to": "now"
+  },
+  "timepicker": {
+    "hidden": true
+  },
+  "timezone": "browser",
+  "title": "Daily Overview",
+  "uid": "eegxni6l460hsb",
+  "version": 75
+}
