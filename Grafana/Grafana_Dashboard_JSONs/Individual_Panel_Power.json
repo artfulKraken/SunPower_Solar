@@ -98,24 +98,8 @@
                       "color": "transparent"
                     },
                     {
-                      "color": "super-light-green",
-                      "value": 2
-                    },
-                    {
-                      "color": "light-green",
-                      "value": 4
-                    },
-                    {
                       "color": "green",
-                      "value": 6
-                    },
-                    {
-                      "color": "semi-dark-green",
-                      "value": 8
-                    },
-                    {
-                      "color": "dark-green",
-                      "value": 10
+                      "value": 0.025
                     }
                   ]
                 }
@@ -242,6 +226,213 @@
                     {
                       "color": "red",
                       "value": 0
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "PG2 Solid Color"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green"
+                    },
+                    {
+                      "color": "transparent",
+                      "value": 0.025
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "PG2 Flow Color"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "transparent"
+                    },
+                    {
+                      "color": "green",
+                      "value": 0.025
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Production Power Solid Color"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green"
+                    },
+                    {
+                      "color": "transparent",
+                      "value": 0.025
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "PG4 Flow Color"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "transparent"
+                    },
+                    {
+                      "color": "green",
+                      "value": 0.025
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "PG4 Solid Color"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green"
+                    },
+                    {
+                      "color": "transparent",
+                      "value": 0.025
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "PG3 Flow Color"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "transparent"
+                    },
+                    {
+                      "color": "green",
+                      "value": 0.025
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "PG3 Solid Color"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green"
+                    },
+                    {
+                      "color": "transparent",
+                      "value": 0.025
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "PG1 Flow Color"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "transparent"
+                    },
+                    {
+                      "color": "green",
+                      "value": 0.025
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "PG1 Solid Color"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green"
+                    },
+                    {
+                      "color": "transparent",
+                      "value": 0.025
                     }
                   ]
                 }
@@ -374,7 +565,103 @@
                 },
                 "valign": "middle"
               },
-              "connections": [],
+              "connections": [
+                {
+                  "color": {
+                    "field": "PG4 Flow Color"
+                  },
+                  "direction": "none",
+                  "lineStyle": {
+                    "animate": true,
+                    "style": "dashed"
+                  },
+                  "path": "straight",
+                  "radius": {
+                    "fixed": 20,
+                    "max": 200,
+                    "min": 0
+                  },
+                  "size": {
+                    "field": "Consumption Power Flow",
+                    "max": 10,
+                    "min": 1
+                  },
+                  "source": {
+                    "x": -1,
+                    "y": -0.5
+                  },
+                  "sourceOriginal": {
+                    "x": 655,
+                    "y": 111
+                  },
+                  "target": {
+                    "x": -1,
+                    "y": -0.2
+                  },
+                  "targetName": "Production Power",
+                  "targetOriginal": {
+                    "x": 560,
+                    "y": 767
+                  },
+                  "vertices": [
+                    {
+                      "x": 3.1789473684210527,
+                      "y": 0.051067073170731704
+                    },
+                    {
+                      "x": 3.1789473684210527,
+                      "y": 0.9984756097560976
+                    }
+                  ]
+                },
+                {
+                  "color": {
+                    "field": "PG4 Solid Color"
+                  },
+                  "direction": "none",
+                  "lineStyle": {
+                    "style": "solid"
+                  },
+                  "path": "straight",
+                  "radius": {
+                    "fixed": 20,
+                    "max": 200,
+                    "min": 0
+                  },
+                  "size": {
+                    "field": "Consumption Power Flow",
+                    "max": 10,
+                    "min": 1
+                  },
+                  "source": {
+                    "x": -1,
+                    "y": -0.5
+                  },
+                  "sourceOriginal": {
+                    "x": 655,
+                    "y": 111
+                  },
+                  "target": {
+                    "x": -1,
+                    "y": -0.2
+                  },
+                  "targetName": "Production Power",
+                  "targetOriginal": {
+                    "x": 560,
+                    "y": 767
+                  },
+                  "vertices": [
+                    {
+                      "x": 3.1789473684210527,
+                      "y": 0.051067073170731704
+                    },
+                    {
+                      "x": 3.1789473684210527,
+                      "y": 0.9984756097560976
+                    }
+                  ]
+                }
+              ],
               "constraint": {
                 "horizontal": "left",
                 "vertical": "top"
@@ -409,7 +696,103 @@
                 },
                 "valign": "middle"
               },
-              "connections": [],
+              "connections": [
+                {
+                  "color": {
+                    "field": "PG3 Flow Color"
+                  },
+                  "direction": "none",
+                  "lineStyle": {
+                    "animate": true,
+                    "style": "dashed"
+                  },
+                  "path": "straight",
+                  "radius": {
+                    "fixed": 20,
+                    "max": 200,
+                    "min": 0
+                  },
+                  "size": {
+                    "field": "Consumption Power Flow",
+                    "max": 10,
+                    "min": 1
+                  },
+                  "source": {
+                    "x": -1,
+                    "y": 0
+                  },
+                  "sourceOriginal": {
+                    "x": 567,
+                    "y": 345.5
+                  },
+                  "target": {
+                    "x": -1,
+                    "y": 0.2
+                  },
+                  "targetName": "Production Power",
+                  "targetOriginal": {
+                    "x": 559,
+                    "y": 742
+                  },
+                  "vertices": [
+                    {
+                      "x": 24.75,
+                      "y": 0
+                    },
+                    {
+                      "x": 24.75,
+                      "y": 1.0353089533417403
+                    }
+                  ]
+                },
+                {
+                  "color": {
+                    "field": "PG3 Solid Color"
+                  },
+                  "direction": "none",
+                  "lineStyle": {
+                    "style": "solid"
+                  },
+                  "path": "straight",
+                  "radius": {
+                    "fixed": 20,
+                    "max": 200,
+                    "min": 0
+                  },
+                  "size": {
+                    "field": "Consumption Power Flow",
+                    "max": 10,
+                    "min": 1
+                  },
+                  "source": {
+                    "x": -1,
+                    "y": 0
+                  },
+                  "sourceOriginal": {
+                    "x": 567,
+                    "y": 345.5
+                  },
+                  "target": {
+                    "x": -1,
+                    "y": 0.2
+                  },
+                  "targetName": "Production Power",
+                  "targetOriginal": {
+                    "x": 559,
+                    "y": 742
+                  },
+                  "vertices": [
+                    {
+                      "x": 24.75,
+                      "y": 0
+                    },
+                    {
+                      "x": 24.75,
+                      "y": 1.0353089533417403
+                    }
+                  ]
+                }
+              ],
               "constraint": {
                 "horizontal": "left",
                 "vertical": "top"
@@ -444,7 +827,97 @@
                 },
                 "valign": "middle"
               },
-              "connections": [],
+              "connections": [
+                {
+                  "color": {
+                    "field": "PG2 Flow Color",
+                    "fixed": "green"
+                  },
+                  "direction": "none",
+                  "lineStyle": {
+                    "animate": true,
+                    "style": "dashed"
+                  },
+                  "path": "straight",
+                  "radius": {
+                    "fixed": 20,
+                    "max": 200,
+                    "min": 0
+                  },
+                  "size": {
+                    "field": "Consumption Power Flow",
+                    "max": 10,
+                    "min": 1
+                  },
+                  "source": {
+                    "x": 0,
+                    "y": -1
+                  },
+                  "sourceOriginal": {
+                    "x": 231.9921875,
+                    "y": 593
+                  },
+                  "target": {
+                    "x": -1,
+                    "y": -0.6
+                  },
+                  "targetName": "Production Power",
+                  "targetOriginal": {
+                    "x": 549,
+                    "y": 777
+                  },
+                  "vertices": [
+                    {
+                      "x": 0.1,
+                      "y": 1
+                    }
+                  ]
+                },
+                {
+                  "color": {
+                    "field": "PG2 Solid Color",
+                    "fixed": "green"
+                  },
+                  "direction": "none",
+                  "lineStyle": {
+                    "style": "solid"
+                  },
+                  "path": "straight",
+                  "radius": {
+                    "fixed": 20,
+                    "max": 200,
+                    "min": 0
+                  },
+                  "size": {
+                    "field": "Consumption Power Flow",
+                    "max": 10,
+                    "min": 1
+                  },
+                  "source": {
+                    "x": 0,
+                    "y": -1
+                  },
+                  "sourceOriginal": {
+                    "x": 231.9921875,
+                    "y": 593
+                  },
+                  "target": {
+                    "x": -1,
+                    "y": -0.6
+                  },
+                  "targetName": "Production Power",
+                  "targetOriginal": {
+                    "x": 538,
+                    "y": 791
+                  },
+                  "vertices": [
+                    {
+                      "x": 0.11764405524777247,
+                      "y": 0.9242424242424242
+                    }
+                  ]
+                }
+              ],
               "constraint": {
                 "horizontal": "left",
                 "vertical": "top"
@@ -479,7 +952,95 @@
                 },
                 "valign": "middle"
               },
-              "connections": [],
+              "connections": [
+                {
+                  "color": {
+                    "field": "PG1 Flow Color"
+                  },
+                  "direction": "none",
+                  "lineStyle": {
+                    "animate": true,
+                    "style": "dashed"
+                  },
+                  "path": "straight",
+                  "radius": {
+                    "fixed": 20,
+                    "max": 200,
+                    "min": 0
+                  },
+                  "size": {
+                    "field": "Consumption Power Flow",
+                    "max": 10,
+                    "min": 1
+                  },
+                  "source": {
+                    "x": -0.75,
+                    "y": -1
+                  },
+                  "sourceOriginal": {
+                    "x": 458.875,
+                    "y": 719
+                  },
+                  "target": {
+                    "x": -1,
+                    "y": 0.6
+                  },
+                  "targetName": "Production Power",
+                  "targetOriginal": {
+                    "x": 559,
+                    "y": 746
+                  },
+                  "vertices": [
+                    {
+                      "x": 0.02119850187265917,
+                      "y": 1
+                    }
+                  ]
+                },
+                {
+                  "color": {
+                    "field": "PG1 Solid Color"
+                  },
+                  "direction": "none",
+                  "lineStyle": {
+                    "style": "solid"
+                  },
+                  "path": "straight",
+                  "radius": {
+                    "fixed": 20,
+                    "max": 200,
+                    "min": 0
+                  },
+                  "size": {
+                    "field": "Consumption Power Flow",
+                    "max": 10,
+                    "min": 1
+                  },
+                  "source": {
+                    "x": -0.75,
+                    "y": -1
+                  },
+                  "sourceOriginal": {
+                    "x": 458.875,
+                    "y": 719
+                  },
+                  "target": {
+                    "x": -1,
+                    "y": 0.6
+                  },
+                  "targetName": "Production Power",
+                  "targetOriginal": {
+                    "x": 559,
+                    "y": 746
+                  },
+                  "vertices": [
+                    {
+                      "x": 0.02119850187265917,
+                      "y": 1
+                    }
+                  ]
+                }
+              ],
               "constraint": {
                 "horizontal": "left",
                 "vertical": "top"
@@ -2196,12 +2757,57 @@
               "connections": [
                 {
                   "color": {
+                    "field": "Production Power",
                     "fixed": "green"
                   },
                   "direction": "none",
                   "lineStyle": {
                     "animate": true,
                     "style": "dashed"
+                  },
+                  "path": "straight",
+                  "radius": {
+                    "fixed": 20,
+                    "max": 200,
+                    "min": 0
+                  },
+                  "size": {
+                    "field": "Production Power Flow",
+                    "fixed": 8,
+                    "max": 10,
+                    "min": 1
+                  },
+                  "source": {
+                    "x": 1,
+                    "y": 0
+                  },
+                  "sourceOriginal": {
+                    "x": 684,
+                    "y": 761
+                  },
+                  "target": {
+                    "x": 0,
+                    "y": -1
+                  },
+                  "targetName": "Electric Panel Rectangle",
+                  "targetOriginal": {
+                    "x": 996,
+                    "y": 712
+                  },
+                  "vertices": [
+                    {
+                      "x": 1,
+                      "y": 0
+                    }
+                  ]
+                },
+                {
+                  "color": {
+                    "field": "Production Power Solid Color"
+                  },
+                  "direction": "none",
+                  "lineStyle": {
+                    "style": "solid"
                   },
                   "path": "straight",
                   "radius": {
@@ -2611,7 +3217,7 @@
           "format": "table",
           "hide": false,
           "rawQuery": true,
-          "rawSql": "SELECT\n  p.`Panel Group 1`,\n  CASE\n    WHEN p.`Panel Group 1` > 0 Then 1\n    WHEN p.`Panel Group 1` > 0.0625 Then 2\n    WHEN p.`Panel Group 1` > 0.125 Then 3\n    WHEN p.`Panel Group 1` > 0.25 Then 4\n    WHEN p.`Panel Group 1` > 0.5 Then 5\n    WHEN p.`Panel Group 1` > 1.0 Then 6\n    WHEN p.`Panel Group 1` > 2.0 Then 7\n    WHEN p.`Panel Group 1` > 4.0 Then 8\n    WHEN p.`Panel Group 1` > 8.0 Then 9\n    WHEN p.`Panel Group 1` > 16.0 Then 10\n  END as `Panel Group 1 Flow`,\n  p.`E00122250068774 Power`,\n  p.`E00122250068886 Power`,\n  p.`E00122250068917 Power`,\n  p.`E00122250071017 Power`,\n  p.`E00122250077989 Power`,\n  p.`E00122250084153 Power`,\n  p.`E00122250084256 Power`,\n  p.`E00122251005754 Power`,\n  p.`E00122250068516 Power`,\n  p.`Panel Group 2`,\n  CASE\n    WHEN p.`Panel Group 2` > 0 Then 1\n    WHEN p.`Panel Group 2` > 0.0625 Then 2\n    WHEN p.`Panel Group 2` > 0.125 Then 3\n    WHEN p.`Panel Group 2` > 0.25 Then 4\n    WHEN p.`Panel Group 2` > 0.5 Then 5\n    WHEN p.`Panel Group 2` > 1.0 Then 6\n    WHEN p.`Panel Group 2` > 2.0 Then 7\n    WHEN p.`Panel Group 2` > 4.0 Then 8\n    WHEN p.`Panel Group 2` > 8.0 Then 9\n    WHEN p.`Panel Group 2` > 16.0 Then 10\n  END as `Panel Group 2 Flow`,\n  p.`E00122251010882 Power`,\n  p.`E00122250081238 Power`,\n  p.`E00122250068780 Power`,\n  p.`E00122250068776 Power`,\n  p.`E00122251011493 Power`,\n  p.`E00122250068916 Power`,\n  p.`Panel Group 3`,\n  CASE\n    WHEN p.`Panel Group 3` > 0 Then 1\n    WHEN p.`Panel Group 3` > 0.0625 Then 2\n    WHEN p.`Panel Group 3` > 0.125 Then 3\n    WHEN p.`Panel Group 3` > 0.25 Then 4\n    WHEN p.`Panel Group 3` > 0.5 Then 5\n    WHEN p.`Panel Group 3` > 1.0 Then 6\n    WHEN p.`Panel Group 3` > 2.0 Then 7\n    WHEN p.`Panel Group 3` > 4.0 Then 8\n    WHEN p.`Panel Group 3` > 8.0 Then 9\n    WHEN p.`Panel Group 3` > 16.0 Then 10\n  END as `Panel Group 3 Flow`,\n  p.`E00122250068994 Power`,\n  p.`E00122250068485 Power`,\n  p.`E00122250068512 Power`,\n  p.`E00122250068758 Power`,\n  p.`E00122250068698 Power`,\n  p.`E00122250071869 Power`,\n  p.`Panel Group 4`,\n  CASE\n    WHEN p.`Panel Group 4` > 0 Then 1\n    WHEN p.`Panel Group 4` > 0.0625 Then 2\n    WHEN p.`Panel Group 4` > 0.125 Then 3\n    WHEN p.`Panel Group 4` > 0.25 Then 4\n    WHEN p.`Panel Group 4` > 0.5 Then 5\n    WHEN p.`Panel Group 4` > 1.0 Then 6\n    WHEN p.`Panel Group 4` > 2.0 Then 7\n    WHEN p.`Panel Group 4` > 4.0 Then 8\n    WHEN p.`Panel Group 4` > 8.0 Then 9\n    WHEN p.`Panel Group 4` > 16.0 Then 10\n  END as `Panel Group 4 Flow`,\n  p.`E00122251011515 Power`,\n  p.`E00122251015947 Power`,\n  p.`E00122251016232 Power`,\n  p.`E00122251002917 Power`\nFROM (\n  SELECT\n    -- Panel Group 1\n    (\n      IFNULL( AVG( CASE WHEN serial = 'E00122250068774' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250068886' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250068917' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250071017' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250077989' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250084153' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250084256' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122251005754' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250068516' THEN p_3phsum_kw ELSE NULL END ), 0 )\n    ) AS `Panel Group 1`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250068774' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250068774 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250068886' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250068886 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250068917' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250068917 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250071017' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250071017 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250077989' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250077989 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250084153' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250084153 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250084256' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250084256 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122251005754' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122251005754 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250068516' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250068516 Power`,\n    -- Panel Group 2\n    (\n      IFNULL( AVG( CASE WHEN serial = 'E00122251010882' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250081238' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250068780' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250068776' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122251011493' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250068916' THEN p_3phsum_kw ELSE NULL END ), 0 )\n    ) AS `Panel Group 2`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122251010882' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122251010882 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250081238' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250081238 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250068780' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250068780 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250068776' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250068776 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122251011493' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122251011493 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250068916' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250068916 Power`,\n    -- Panel Group 3\n    (\n      IFNULL( AVG( CASE WHEN serial = 'E00122250068994' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250068485' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250068512' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250068758' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250068698' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250071869' THEN p_3phsum_kw ELSE NULL END ), 0 )\n    ) AS `Panel Group 3`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250068994' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250068994 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250068485' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250068485 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250068512' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250068512 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250068758' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250068758 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250068698' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250068698 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250071869' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250071869 Power`,\n    -- Panel Group 4\n    (\n      IFNULL( AVG( CASE WHEN serial = 'E00122251011515' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122251015947' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122251016232' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122251002917' THEN p_3phsum_kw ELSE NULL END ), 0 )\n    ) AS `Panel Group 4`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122251011515' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122251011515 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122251015947' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122251015947 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122251016232' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122251016232 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122251002917' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122251002917 Power`\n  FROM\n    solar.inverters_data\n  WHERE\n    data_time >= DATE_ADD( now(), INTERVAL -30 MINUTE )\n  ORDER BY data_time DESC\n  LIMIT 1\n) AS p;",
+          "rawSql": "SELECT\n  p.`Panel Group 1` AS `PG1 Flow Color`,\n  p.`Panel Group 1` AS `PG1 Solid Color`,\n  CASE\n    WHEN p.`Panel Group 1` > 0 Then 1\n    WHEN p.`Panel Group 1` > 0.0625 Then 2\n    WHEN p.`Panel Group 1` > 0.125 Then 3\n    WHEN p.`Panel Group 1` > 0.25 Then 4\n    WHEN p.`Panel Group 1` > 0.5 Then 5\n    WHEN p.`Panel Group 1` > 1.0 Then 6\n    WHEN p.`Panel Group 1` > 2.0 Then 7\n    WHEN p.`Panel Group 1` > 4.0 Then 8\n    WHEN p.`Panel Group 1` > 8.0 Then 9\n    WHEN p.`Panel Group 1` > 16.0 Then 10\n  END as `Panel Group 1 Flow`,\n  p.`E00122250068774 Power`,\n  p.`E00122250068886 Power`,\n  p.`E00122250068917 Power`,\n  p.`E00122250071017 Power`,\n  p.`E00122250077989 Power`,\n  p.`E00122250084153 Power`,\n  p.`E00122250084256 Power`,\n  p.`E00122251005754 Power`,\n  p.`E00122250068516 Power`,\n  p.`Panel Group 2` AS `PG2 Flow Color`,\n  p.`Panel Group 2` AS `PG2 Solid Color`,\n  CASE\n    WHEN p.`Panel Group 2` > 0 Then 1\n    WHEN p.`Panel Group 2` > 0.0625 Then 2\n    WHEN p.`Panel Group 2` > 0.125 Then 3\n    WHEN p.`Panel Group 2` > 0.25 Then 4\n    WHEN p.`Panel Group 2` > 0.5 Then 5\n    WHEN p.`Panel Group 2` > 1.0 Then 6\n    WHEN p.`Panel Group 2` > 2.0 Then 7\n    WHEN p.`Panel Group 2` > 4.0 Then 8\n    WHEN p.`Panel Group 2` > 8.0 Then 9\n    WHEN p.`Panel Group 2` > 16.0 Then 10\n  END as `Panel Group 2 Flow`,\n  p.`E00122251010882 Power`,\n  p.`E00122250081238 Power`,\n  p.`E00122250068780 Power`,\n  p.`E00122250068776 Power`,\n  p.`E00122251011493 Power`,\n  p.`E00122250068916 Power`,\n  p.`Panel Group 3` AS `PG3 Flow Color`,\n  p.`Panel Group 3` AS `PG3 Solid Color`,\n  CASE\n    WHEN p.`Panel Group 3` > 0 Then 1\n    WHEN p.`Panel Group 3` > 0.0625 Then 2\n    WHEN p.`Panel Group 3` > 0.125 Then 3\n    WHEN p.`Panel Group 3` > 0.25 Then 4\n    WHEN p.`Panel Group 3` > 0.5 Then 5\n    WHEN p.`Panel Group 3` > 1.0 Then 6\n    WHEN p.`Panel Group 3` > 2.0 Then 7\n    WHEN p.`Panel Group 3` > 4.0 Then 8\n    WHEN p.`Panel Group 3` > 8.0 Then 9\n    WHEN p.`Panel Group 3` > 16.0 Then 10\n  END as `Panel Group 3 Flow`,\n  p.`E00122250068994 Power`,\n  p.`E00122250068485 Power`,\n  p.`E00122250068512 Power`,\n  p.`E00122250068758 Power`,\n  p.`E00122250068698 Power`,\n  p.`E00122250071869 Power`,\n  p.`Panel Group 4` AS `PG4 Flow Color`,\n  p.`Panel Group 4` AS `PG4 Solid Color`,\n  CASE\n    WHEN p.`Panel Group 4` > 0 Then 1\n    WHEN p.`Panel Group 4` > 0.0625 Then 2\n    WHEN p.`Panel Group 4` > 0.125 Then 3\n    WHEN p.`Panel Group 4` > 0.25 Then 4\n    WHEN p.`Panel Group 4` > 0.5 Then 5\n    WHEN p.`Panel Group 4` > 1.0 Then 6\n    WHEN p.`Panel Group 4` > 2.0 Then 7\n    WHEN p.`Panel Group 4` > 4.0 Then 8\n    WHEN p.`Panel Group 4` > 8.0 Then 9\n    WHEN p.`Panel Group 4` > 16.0 Then 10\n  END as `Panel Group 4 Flow`,\n  p.`E00122251011515 Power`,\n  p.`E00122251015947 Power`,\n  p.`E00122251016232 Power`,\n  p.`E00122251002917 Power`\nFROM (\n  SELECT\n    -- Panel Group 1\n    (\n      IFNULL( AVG( CASE WHEN serial = 'E00122250068774' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250068886' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250068917' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250071017' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250077989' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250084153' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250084256' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122251005754' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250068516' THEN p_3phsum_kw ELSE NULL END ), 0 )\n    ) AS `Panel Group 1`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250068774' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250068774 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250068886' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250068886 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250068917' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250068917 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250071017' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250071017 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250077989' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250077989 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250084153' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250084153 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250084256' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250084256 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122251005754' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122251005754 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250068516' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250068516 Power`,\n    -- Panel Group 2\n    (\n      IFNULL( AVG( CASE WHEN serial = 'E00122251010882' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250081238' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250068780' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250068776' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122251011493' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250068916' THEN p_3phsum_kw ELSE NULL END ), 0 )\n    ) AS `Panel Group 2`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122251010882' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122251010882 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250081238' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250081238 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250068780' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250068780 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250068776' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250068776 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122251011493' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122251011493 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250068916' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250068916 Power`,\n    -- Panel Group 3\n    (\n      IFNULL( AVG( CASE WHEN serial = 'E00122250068994' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250068485' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250068512' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250068758' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250068698' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122250071869' THEN p_3phsum_kw ELSE NULL END ), 0 )\n    ) AS `Panel Group 3`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250068994' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250068994 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250068485' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250068485 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250068512' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250068512 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250068758' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250068758 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250068698' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250068698 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122250071869' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122250071869 Power`,\n    -- Panel Group 4\n    (\n      IFNULL( AVG( CASE WHEN serial = 'E00122251011515' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122251015947' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122251016232' THEN p_3phsum_kw ELSE NULL END ), 0 ) +\n      IFNULL( AVG( CASE WHEN serial = 'E00122251002917' THEN p_3phsum_kw ELSE NULL END ), 0 )\n    ) AS `Panel Group 4`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122251011515' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122251011515 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122251015947' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122251015947 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122251016232' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122251016232 Power`,\n    IFNULL( AVG( CASE WHEN serial = 'E00122251002917' THEN p_3phsum_kw ELSE NULL END ), 0 ) AS `E00122251002917 Power`\n  FROM\n    solar.inverters_data\n  WHERE\n    data_time >= DATE_ADD( now(), INTERVAL -30 MINUTE )\n  ORDER BY data_time DESC\n  LIMIT 1\n) AS p;",
           "refId": "Inverters",
           "sql": {
             "columns": [
@@ -2641,7 +3247,7 @@
           "format": "table",
           "hide": false,
           "rawQuery": true,
-          "rawSql": "SELECT\n  prod.p_3phsum_kw AS `Production Power`,\n  CASE\n    WHEN prod.p_3phsum_kw > 0 Then 1\n    WHEN prod.p_3phsum_kw > 0.0625 Then 2\n    WHEN prod.p_3phsum_kw > 0.125 Then 3\n    WHEN prod.p_3phsum_kw > 0.25 Then 4\n    WHEN prod.p_3phsum_kw > 0.5 Then 5\n    WHEN prod.p_3phsum_kw > 1.0 Then 6\n    WHEN prod.p_3phsum_kw > 2.0 Then 7\n    WHEN prod.p_3phsum_kw > 4.0 Then 8\n    WHEN prod.p_3phsum_kw > 8.0 Then 9\n    WHEN prod.p_3phsum_kw > 16.0 Then 10\n  END AS `Production Power Flow`,\n  ABS( cons.p_3phsum_kw ) AS `Consumption Power`,\n  CASE\n    WHEN ABS( cons.p_3phsum_kw ) > 0 Then 1\n    WHEN ABS( cons.p_3phsum_kw ) > 0.0625 Then 2\n    WHEN ABS( cons.p_3phsum_kw ) > 0.125 Then 3\n    WHEN ABS( cons.p_3phsum_kw ) > 0.25 Then 4\n    WHEN ABS( cons.p_3phsum_kw ) > 0.5 Then 5\n    WHEN ABS( cons.p_3phsum_kw ) > 1.0 Then 6\n    WHEN ABS( cons.p_3phsum_kw ) > 2.0 Then 7\n    WHEN ABS( cons.p_3phsum_kw ) > 4.0 Then 8\n    WHEN ABS( cons.p_3phsum_kw ) > 8.0 Then 9\n    WHEN ABS( cons.p_3phsum_kw ) > 16.0 Then 10\n  END AS `Consumption Power Flow`,\n  cons.p_3phsum_kw AS `Consumption Power Color`,\n  cons.p_3phsum_kw AS `Grid Out Power Color`,\n  cons.p_3phsum_kw AS `Grid In Power Color`,\n  ( prod.p_3phsum_kw + cons.p_3phsum_kw ) AS `Home Power Usage`,\n  CASE\n    WHEN ( prod.p_3phsum_kw + cons.p_3phsum_kw ) > 0 Then 1\n    WHEN ( prod.p_3phsum_kw + cons.p_3phsum_kw ) > 0.0625 Then 2\n    WHEN ( prod.p_3phsum_kw + cons.p_3phsum_kw ) > 0.125 Then 3\n    WHEN ( prod.p_3phsum_kw + cons.p_3phsum_kw ) > 0.25 Then 4\n    WHEN ( prod.p_3phsum_kw + cons.p_3phsum_kw ) > 0.5 Then 5\n    WHEN ( prod.p_3phsum_kw + cons.p_3phsum_kw ) > 1.0 Then 6\n    WHEN ( prod.p_3phsum_kw + cons.p_3phsum_kw ) > 2.0 Then 7\n    WHEN ( prod.p_3phsum_kw + cons.p_3phsum_kw ) > 4.0 Then 8\n    WHEN ( prod.p_3phsum_kw + cons.p_3phsum_kw ) > 8.0 Then 9\n    WHEN ( prod.p_3phsum_kw + cons.p_3phsum_kw ) > 16.0 Then 10\n  END AS `Home Usage Power Flow`\nFROM ( \n  SELECT \n    p_3phsum_kw,\n    data_time\n  FROM \n    solar.production_meters_data \n  WHERE \n    data_time >= DATE_ADD( NOW(), INTERVAL -30 MINUTE )\n) AS prod\nJOIN (\n  SELECT\n    p_3phsum_kw,\n    data_time\n  FROM\n    solar.consumption_meters_data\n) AS cons\nON prod.data_time = cons.data_time\nORDER BY prod.data_time DESC\nLIMIT 1;\n",
+          "rawSql": "SELECT\n  prod.p_3phsum_kw AS `Production Power`,\n  prod.p_3phsum_kw AS `Production Power Solid Color`,\n  CASE\n    WHEN prod.p_3phsum_kw > 0 Then 1\n    WHEN prod.p_3phsum_kw > 0.0625 Then 2\n    WHEN prod.p_3phsum_kw > 0.125 Then 3\n    WHEN prod.p_3phsum_kw > 0.25 Then 4\n    WHEN prod.p_3phsum_kw > 0.5 Then 5\n    WHEN prod.p_3phsum_kw > 1.0 Then 6\n    WHEN prod.p_3phsum_kw > 2.0 Then 7\n    WHEN prod.p_3phsum_kw > 4.0 Then 8\n    WHEN prod.p_3phsum_kw > 8.0 Then 9\n    WHEN prod.p_3phsum_kw > 16.0 Then 10\n  END AS `Production Power Flow`,\n  ABS( cons.p_3phsum_kw ) AS `Consumption Power`,\n  CASE\n    WHEN ABS( cons.p_3phsum_kw ) > 0 Then 1\n    WHEN ABS( cons.p_3phsum_kw ) > 0.0625 Then 2\n    WHEN ABS( cons.p_3phsum_kw ) > 0.125 Then 3\n    WHEN ABS( cons.p_3phsum_kw ) > 0.25 Then 4\n    WHEN ABS( cons.p_3phsum_kw ) > 0.5 Then 5\n    WHEN ABS( cons.p_3phsum_kw ) > 1.0 Then 6\n    WHEN ABS( cons.p_3phsum_kw ) > 2.0 Then 7\n    WHEN ABS( cons.p_3phsum_kw ) > 4.0 Then 8\n    WHEN ABS( cons.p_3phsum_kw ) > 8.0 Then 9\n    WHEN ABS( cons.p_3phsum_kw ) > 16.0 Then 10\n  END AS `Consumption Power Flow`,\n  cons.p_3phsum_kw AS `Consumption Power Color`,\n  cons.p_3phsum_kw AS `Grid Out Power Color`,\n  cons.p_3phsum_kw AS `Grid In Power Color`,\n  ( prod.p_3phsum_kw + cons.p_3phsum_kw ) AS `Home Power Usage`,\n  CASE\n    WHEN ( prod.p_3phsum_kw + cons.p_3phsum_kw ) > 0 Then 1\n    WHEN ( prod.p_3phsum_kw + cons.p_3phsum_kw ) > 0.0625 Then 2\n    WHEN ( prod.p_3phsum_kw + cons.p_3phsum_kw ) > 0.125 Then 3\n    WHEN ( prod.p_3phsum_kw + cons.p_3phsum_kw ) > 0.25 Then 4\n    WHEN ( prod.p_3phsum_kw + cons.p_3phsum_kw ) > 0.5 Then 5\n    WHEN ( prod.p_3phsum_kw + cons.p_3phsum_kw ) > 1.0 Then 6\n    WHEN ( prod.p_3phsum_kw + cons.p_3phsum_kw ) > 2.0 Then 7\n    WHEN ( prod.p_3phsum_kw + cons.p_3phsum_kw ) > 4.0 Then 8\n    WHEN ( prod.p_3phsum_kw + cons.p_3phsum_kw ) > 8.0 Then 9\n    WHEN ( prod.p_3phsum_kw + cons.p_3phsum_kw ) > 16.0 Then 10\n  END AS `Home Usage Power Flow`\nFROM ( \n  SELECT \n    p_3phsum_kw,\n    data_time\n  FROM \n    solar.production_meters_data \n  WHERE \n    data_time >= DATE_ADD( NOW(), INTERVAL -30 MINUTE )\n) AS prod\nJOIN (\n  SELECT\n    p_3phsum_kw,\n    data_time\n  FROM\n    solar.consumption_meters_data\n) AS cons\nON prod.data_time = cons.data_time\nORDER BY prod.data_time DESC\nLIMIT 1;\n",
           "refId": "Current_Total_Power",
           "sql": {
             "columns": [
@@ -2721,5 +3327,5 @@
   "timezone": "browser",
   "title": "Inverter Power kW",
   "uid": "degjozpi2jp4we",
-  "version": 111
+  "version": 127
 }

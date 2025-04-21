@@ -1,64 +1,64 @@
--- Variable statements do not seem to work in Grafana sql queries (Or I haven't figured it out yet).
--- Replace variables with their values before adding to grafana.
-SET @start_dt = 
-DATE_ADD( 
-  DATE_ADD( 
-    MAKEDATE( YEAR ( NOW() ),1 ),
-    INTERVAL MONTH( NOW() ) -1 MONTH 
-  ), 
-  INTERVAL DAY( NOW() ) -1 DAY 
-)
-;
-
-SELECT 
-	DATE_ADD(
-    @start_dt, 
-    -- Interval is the datapoint that it will be grouped to.  
-    INTERVAL HOUR( data_time ) + IF( MINUTE( data_time ) > 0, 1, 0) HOUR
-  ) AS End_Time,
-	SUM( Nrg_Production ),
-	(SUM( Nrg_Production ) + SUM( Nrg_Consumption ) ) AS Nrg_Usage,
-	( -1 * SUM( Nrg_Consumption ) ) AS Net_Nrg_Production
+SELECT
+  SUM( w.`Net Energy Generation`) OVER ( ORDER BY w.End_Time) AS `Cummulative Net Energy Generation`,
+  w.End_Time AS `End Time`,
+  w.`Energy Production`,
+  w.`Energy Useage`,
+  w.`Net Energy Generation`
 FROM (
-	SELECT 
-		prod.timestamp AS data_time,
-		COALESCE( prod.net_ltea_3phsum_kwh - LAG( prod.net_ltea_3phsum_kwh ) OVER ( ORDER BY prod.timestamp ASC ), 0 ) AS Nrg_Production,
-		COALESCE( cons.net_ltea_3phsum_kwh - LAG( cons.net_ltea_3phsum_kwh ) OVER ( ORDER BY cons.timestamp ASC ), 0 ) AS Nrg_Consumption
-	FROM (
-		SELECT 
-			FROM_UNIXTIME( ( ROUND( UNIX_TIMESTAMP( data_time ) / 60, 0 ) * 60 ) ) AS 'timestamp',
-			net_ltea_3phsum_kwh
-		FROM solar.production_meters_data
-		WHERE data_time >= ( 
-      SELECT 
-      SUBDATE( 
-        DATE_ADD( 
-          @start_dt,
-          Interval TIMESTAMPDIFF( 
-            HOUR,  
-            CONVERT_TZ(
-              @start_dt, 
-              'UTC', 'America/Los_Angeles' 
-            ), 
-            @start_dt
-          ) HOUR 
+  SELECT 
+    CONVERT_TZ(  
+      DATE_ADD(
+        DATE_ADD(
+          DATE_ADD(
+            DATE_ADD(
+              MAKEDATE(YEAR( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ), 1),
+              INTERVAL MONTH( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) -1 MONTH
+            ),
+            INTERVAL DAY( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) -1 DAY
+          ),
+          INTERVAL HOUR( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) HOUR
         ), 
-        INTERVAL IF ( TIMESTAMPDIFF( 
-          HOUR,  
-          CONVERT_TZ(
-            @start_dt, 'UTC', 'America/Los_Angeles' 
-          ), 
-          @start_dt
-        ) > HOUR( NOW() ), 1, 0)  DAY 
-      ) 
-    )	
-	) AS prod
-	JOIN (
-		SELECT 
-			FROM_UNIXTIME( ( ROUND( UNIX_TIMESTAMP( data_time ) / 60, 0 ) * 60 ) ) AS 'timestamp',
-			net_ltea_3phsum_kwh
-		FROM solar.consumption_meters_data
-	) AS cons
-	ON prod.timestamp = cons.timestamp
-) AS prod_cons
-GROUP BY End_Time;
+        INTERVAL IF(
+          MINUTE( CONVERT_TZ( data_time, 'UTC', 'America/Los_Angeles' ) ) = 0,
+          0,
+          1
+        ) HOUR
+      ),
+      'America/Los_Angeles', 'UTC'
+    ) AS End_Time,
+    SUM( Nrg_Production ) AS `Energy Production`,
+    ( -1 * (SUM( Nrg_Production ) + SUM( Nrg_Consumption ) ) ) AS `Energy Useage`,
+    ( -1 * SUM( Nrg_Consumption ) ) AS `Net Energy Generation`
+  FROM (
+    SELECT 
+      prod.timestamp AS data_time,
+      COALESCE( prod.net_ltea_3phsum_kwh - LAG( prod.net_ltea_3phsum_kwh ) OVER ( ORDER BY prod.timestamp ASC ), 0 ) AS Nrg_Production,
+      COALESCE( cons.net_ltea_3phsum_kwh - LAG( cons.net_ltea_3phsum_kwh ) OVER ( ORDER BY cons.timestamp ASC ), 0 ) AS Nrg_Consumption
+    FROM (
+      SELECT 
+        FROM_UNIXTIME( ( ROUND( UNIX_TIMESTAMP( data_time ) / 60, 0 ) * 60 ) ) AS 'timestamp',
+        net_ltea_3phsum_kwh
+      FROM solar.production_meters_data
+      WHERE data_time >= 
+        CONVERT_TZ(
+          DATE_ADD(
+            DATE_ADD(
+              MAKEDATE(YEAR ( CONVERT_TZ( NOW(), 'UTC', 'America/Los_Angeles' ) ), 1),
+              INTERVAL MONTH( CONVERT_TZ( NOW(), 'UTC', 'America/Los_Angeles' ) ) -1 MONTH 
+            ),
+            INTERVAL DAY( CONVERT_TZ( NOW(), 'UTC', 'America/Los_Angeles' ) ) -1 DAY
+          ),
+          'America/Los_Angeles', 'UTC' 
+        )
+    ) AS prod
+    JOIN (
+      SELECT 
+        FROM_UNIXTIME( ( ROUND( UNIX_TIMESTAMP( data_time ) / 60, 0 ) * 60 ) ) AS 'timestamp',
+        net_ltea_3phsum_kwh
+      FROM solar.consumption_meters_data
+    ) AS cons
+    ON prod.timestamp = cons.timestamp
+  ) AS prod_cons
+  GROUP BY End_Time
+  ORDER BY End_Time
+) AS w;
